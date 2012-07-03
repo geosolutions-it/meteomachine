@@ -1,0 +1,6 @@
+namespace=nurc
+metocFields=Ostia_MULTI-OSTIA_sst_0000.000_0000.000_20100803T120000000Z_20100803T120000000Z_0_-32768.0
+storeid=rep10_OSTIA_sst_T1292580519478
+layerid=rep10_OSTIA_sst_T1292580519478
+driver=ImageMosaic
+path=/

@@ -1,0 +1,6 @@
+namespace=nurc
+metocFields=Ostia_MULTI-OSTIA_sst-error_0000.000_0000.000_20100803T120000000Z_20100803T120000000Z_0_-32768.0
+storeid=rep10_OSTIA_sst-error_T1292580520077
+layerid=rep10_OSTIA_sst-error_T1292580520077
+driver=ImageMosaic
+path=/
