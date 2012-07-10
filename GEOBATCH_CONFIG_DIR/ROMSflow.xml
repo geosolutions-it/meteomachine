@@ -5,43 +5,27 @@
 	<description>ROMSFlow</description>
 	<name>ROMSFlow</name>
 	
-	<workingDirectory>rep10workingdir/roms</workingDirectory>
 	<autorun>true</autorun>
+	
+	<overrideConfigDir>roms</overrideConfigDir>
 	
 	<EventGeneratorConfiguration>
 		<wildCard>*.*</wildCard>
 		<watchDirectory>rep10workingdir/roms/in</watchDirectory>
 		<osType>OS_UNDEFINED</osType>
 		<eventType>FILE_ADDED</eventType>
-		<id>RomsFlow</id>
         <serviceID>fsEventGeneratorService</serviceID>
-		<description>description</description>
-		<name>test</name>
 	</EventGeneratorConfiguration>
 	
 	<EventConsumerConfiguration>
-		<id>roms</id>
-		<description>roms</description>
-		<name>roms</name>
-		
-		<workingDirectory>rep10workingdir/roms</workingDirectory>
-		<performBackup>false</performBackup>
-		
-		<FileEventRule>
-			<optional>false</optional>
-			<originalOccurrencies>1</originalOccurrencies>
-			<regex>.*\.*</regex>
-			<id>r1</id>
-			<description>description</description>
-			<name>test</name>
-		</FileEventRule>
+		<performBackup>false</performBackup>		
 		
 		<OctaveConfiguration>
 			<serviceID>ROMSGeneratorService</serviceID>
 			<id>ROMSGeneratorService</id>
 			<description>ROMSGeneratorService</description>
 			<name>ROMSActionConfiguration</name>
-			<workingDirectory>rep10workingdir/roms</workingDirectory>
+			<overrideConfigDir>.</overrideConfigDir>
 			<!-- OCTAVE ENV -->
 			<octave>
 			  <sheets>
@@ -92,12 +76,13 @@
 		</OctaveConfiguration>
 		
 		<MetocActionConfiguration>
-			<workingDirectory>rep10workingdir/roms/nc/</workingDirectory>
+			<overrideConfigDir>nc</overrideConfigDir>
 			<crs>EPSG:4326</crs>
 			<envelope/>
 			<flipY>true</flipY>
 			<metocDictionaryPath>registry_work/config/NURC-2010/Super-Ensemble/metoc-dictionary.xml</metocDictionaryPath>
 			<metocHarvesterXMLTemplatePath>registry_work/config/NURC-2010/Super-Ensemble/Nurc-Cim_Schema/2010_07_13/example/iso-models-template.xml</metocHarvesterXMLTemplatePath>
+			
 			<serviceID>NetCDFCFGeodetic2GeoTIFFsGeneratorService</serviceID>
 			<id>a2</id>
 			<description>description2</description>
@@ -105,7 +90,7 @@
 		</MetocActionConfiguration>
 		
 		<ImageMosaicActionConfiguration>
-			<workingDirectory>rep10workingdir/roms/nc</workingDirectory>
+			<overrideConfigDir>nc</overrideConfigDir>
 			<crs>EPSG:4326</crs>
 			<envelope/>
 			<dataTransferMethod>EXTERNAL</dataTransferMethod>
@@ -119,6 +104,7 @@
 			<datastorePropertiesPath>registry_work/config/NURC-2010/datastore.properties</datastorePropertiesPath>
 			<timeRegex>[0-9]{8}T[0-9]{9}Z(?!.*[0-9]{8}T[0-9]{9}Z.*)</timeRegex>
 			<elevationRegex><![CDATA[(?<=_)(\\d{4}\\.\\d{3})(?=_)]]></elevationRegex>
+			
 			<serviceID>ImageMosaicGeneratorService</serviceID>
 			<id>ImageMosaicService</id>
 			<description>ImageMosaicService</description>
@@ -126,7 +112,8 @@
 		</ImageMosaicActionConfiguration>
 		
 		<RegistryActionConfiguration>
-			<workingDirectory>rep10workingdir/mars3d/nc</workingDirectory>
+			<overrideConfigDir>nc</overrideConfigDir>
+			
 			<crs>EPSG:4326</crs>
 			<envelope/>
 			<dataTransferMethod>DIRECT</dataTransferMethod>
@@ -141,6 +128,7 @@
 			<defaultNamespace>nurc</defaultNamespace>
 			<defaultStyle>raster</defaultStyle>
 			<styles/>
+			
 			<serviceID>RegistryHarvestingGeneratorService</serviceID>
 			<id>a3</id>
 			<description>description3</description>

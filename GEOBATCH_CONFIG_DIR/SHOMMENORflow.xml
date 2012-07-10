@@ -5,7 +5,8 @@
 	<description>SHOM WW3 MENOR Flow</description>
 	<name>SHOM-MENORFlow</name>
 	
-	<workingDirectory>rep10workingdir/shom_menor/</workingDirectory>
+	<overrideConfigDir>shom_menor</overrideConfigDir>
+	
 	<autorun>true</autorun>
 	
 	<EventGeneratorConfiguration>
@@ -13,36 +14,24 @@
 		<watchDirectory>rep10workingdir/shom_menor/in</watchDirectory>
 		<osType>OS_UNDEFINED</osType>
 		<eventType>FILE_ADDED</eventType>
-		<id>SHOMMENORFlow</id>
         <serviceID>fsEventGeneratorService</serviceID>
-		<description>description</description>
-		<name>test</name>
 	</EventGeneratorConfiguration>
 	
 	<EventConsumerConfiguration>
-		<id>shom</id>
-		<description>shom</description>
-		<name>shom</name>
 		
-		<workingDirectory>rep10workingdir/shom_menor/</workingDirectory>
 		<performBackup>false</performBackup>
-		
-		<FileEventRule>
-			<optional>false</optional>
-			<originalOccurrencies>1</originalOccurrencies>
-			<regex>.*\.*</regex>
-			<id>r1</id>
-			<description>description</description>
-			<name>test</name>
-		</FileEventRule>
 		
 		<ShomConfiguration>
 			<id>a1</id>
 			<description>description2</description>
 			<name>test2</name>
+		
 			<type>MENOR</type>
+
 			<serviceID>SHOMGeneratorService</serviceID>
-			<workingDirectory>rep10workingdir/shom_menor/</workingDirectory>
+			
+			<overrideConfigDir>.</overrideConfigDir>
+			
 			<!-- FreeMarker TEMPLATE -->
 			<file>joinExisting.ncml</file>
 			<!-- Substitution map -->
@@ -56,20 +45,26 @@
 		</ShomConfiguration>
 		
 		<MetocActionConfiguration>
-			<workingDirectory>rep10workingdir/shom_menor/</workingDirectory>
+		
+			<overrideConfigDir>.</overrideConfigDir>
+			
 			<flipY>true</flipY>
 			<crs>EPSG:4326</crs>
 			<envelope/>
 			<metocDictionaryPath>registry_work/config/NURC-2010/Super-Ensemble/metoc-dictionary.xml</metocDictionaryPath>
 			<metocHarvesterXMLTemplatePath>registry_work/config/NURC-2010/Super-Ensemble/Nurc-Cim_Schema/2010_07_13/example/iso-models-template.xml</metocHarvesterXMLTemplatePath>
+			
 			<serviceID>NetCDFCFGeodetic2GeoTIFFsGeneratorService</serviceID>
+			
 			<id>a2</id>
 			<description>description2</description>
 			<name>test2</name>
 		</MetocActionConfiguration>
 		
 		<ImageMosaicActionConfiguration>
-			<workingDirectory>rep10workingdir/shom_menor/</workingDirectory>
+			
+			<overrideConfigDir>.</overrideConfigDir>
+			
 			<crs>EPSG:4326</crs>
 			<envelope/>
 			<dataTransferMethod>EXTERNAL</dataTransferMethod>
@@ -83,14 +78,17 @@
 			<datastorePropertiesPath>registry_work/config/NURC-2010/datastore.properties</datastorePropertiesPath>
 			<timeRegex>[0-9]{8}T[0-9]{9}Z(?!.*[0-9]{8}T[0-9]{9}Z.*)</timeRegex>
 			<elevationRegex><![CDATA[(?<=_)(\\d{4}\\.\\d{3})(?=_)]]></elevationRegex>
+			
 			<serviceID>ImageMosaicGeneratorService</serviceID>
+			
 			<id>ImageMosaicService</id>
 			<description>ImageMosaicService</description>
 			<name>ImageMosaicService</name>
 		</ImageMosaicActionConfiguration>
 		
 		<RegistryActionConfiguration>
-			<workingDirectory>rep10workingdir/shom_menor/</workingDirectory>
+			<overrideConfigDir>.</overrideConfigDir>
+			
 			<crs>EPSG:4326</crs>
 			<envelope/>
 			<dataTransferMethod>DIRECT</dataTransferMethod>
@@ -105,6 +103,7 @@
 			<defaultNamespace>nurc</defaultNamespace>
 			<defaultStyle>raster</defaultStyle>
 			<styles/>
+			
 			<serviceID>RegistryHarvestingGeneratorService</serviceID>
 			<id>a3</id>
 			<description>description3</description>

@@ -5,7 +5,7 @@
 	<description>MARS3DFlow</description>
 	<name>MARS3DFlow</name>
 	
-	<workingDirectory>rep10workingdir/mars3d</workingDirectory>
+	<overrideConfigDir>rep10workingdir/mars3d</overrideConfigDir>
 	<autorun>true</autorun>
 	
 	<EventGeneratorConfiguration>
@@ -13,35 +13,22 @@
 		<watchDirectory>rep10workingdir/mars3d/in</watchDirectory>
 		<osType>OS_UNDEFINED</osType>
 		<eventType>FILE_ADDED</eventType>
-		<id>Mars3dFlow</id>
+		
         <serviceID>fsEventGeneratorService</serviceID>
-		<description>description</description>
-		<name>test</name>
 	</EventGeneratorConfiguration>
 	
 	<EventConsumerConfiguration>
-		<id>mars3d</id>
-		<description>mars3d</description>
-		<name>mars3d</name>
 		
-		<workingDirectory>rep10workingdir/mars3d</workingDirectory>
 		<performBackup>false</performBackup>
-		
-		<FileEventRule>
-			<optional>false</optional>
-			<originalOccurrencies>1</originalOccurrencies>
-			<regex>.*\.*</regex>
-			<id>r1</id>
-			<description>description</description>
-			<name>test</name>
-		</FileEventRule>
 		
 		<OctaveConfiguration>
 			<serviceID>MARS3DGeneratorService</serviceID>
+		
 			<id>MARS3DGeneratorService</id>
 			<description>MARS3DGeneratorService</description>
 			<name>MARS3DActionConfiguration</name>
-			<workingDirectory>rep10workingdir/mars3d</workingDirectory>
+			
+			<overrideConfigDir>.</overrideConfigDir>
 			<!-- OCTAVE ENV -->
 			<octave>
 			  <sheets>
@@ -92,10 +79,10 @@
 		</OctaveConfiguration>
 		
 		<MetocActionConfiguration>
-			<workingDirectory>rep10workingdir/mars3d/nc/</workingDirectory>
+			<overrideConfigDir>nc</overrideConfigDir>
 			<crs>EPSG:4326</crs>
 			<envelope/>
-                        <flipY>true</flipY>
+			<flipY>true</flipY>
 			<metocDictionaryPath>registry_work/config/NURC-2010/Super-Ensemble/metoc-dictionary.xml</metocDictionaryPath>
 			<metocHarvesterXMLTemplatePath>registry_work/config/NURC-2010/Super-Ensemble/Nurc-Cim_Schema/2010_07_13/example/iso-models-template.xml</metocHarvesterXMLTemplatePath>
 			<serviceID>NetCDFCFGeodetic2GeoTIFFsGeneratorService</serviceID>
@@ -105,7 +92,7 @@
 		</MetocActionConfiguration>
 		
 		<ImageMosaicActionConfiguration>
-			<workingDirectory>rep10workingdir/mars3d/nc</workingDirectory>
+			<overrideConfigDir>nc</overrideConfigDir>
 			<crs>EPSG:4326</crs>
 			<envelope/>
 			<dataTransferMethod>EXTERNAL</dataTransferMethod>
@@ -119,14 +106,16 @@
 			<datastorePropertiesPath>registry_work/config/NURC-2010/datastore.properties</datastorePropertiesPath>
 			<timeRegex>[0-9]{8}T[0-9]{9}Z(?!.*[0-9]{8}T[0-9]{9}Z.*)</timeRegex>
 			<elevationRegex><![CDATA[(?<=_)(\\d{4}\\.\\d{3})(?=_)]]></elevationRegex>
+			
 			<serviceID>ImageMosaicGeneratorService</serviceID>
+			
 			<id>ImageMosaicService</id>
 			<description>ImageMosaicService</description>
 			<name>ImageMosaicService</name>
 		</ImageMosaicActionConfiguration>
 		
 		<RegistryActionConfiguration>
-			<workingDirectory>rep10workingdir/mars3d/nc</workingDirectory>
+			<overrideConfigDir>nc</overrideConfigDir>
 			<crs>EPSG:4326</crs>
 			<envelope/>
 			<dataTransferMethod>DIRECT</dataTransferMethod>
@@ -141,7 +130,9 @@
 			<defaultNamespace>nurc</defaultNamespace>
 			<defaultStyle>raster</defaultStyle>
 			<styles/>
+			
 			<serviceID>RegistryHarvestingGeneratorService</serviceID>
+			
 			<id>a3</id>
 			<description>description3</description>
 			<name>test3</name>
