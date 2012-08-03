@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<FlowConfiguration>
+	
+	<id>tracks</id>
+	<description>Gliders Tracks configuration flow</description>
+	<name>Gliders Tracks ingest flow</name>
+	
+	<maxStoredConsumers>10</maxStoredConsumers>
+	
+	<!-- to have a single istance, corePoolSize must be 2 -->
+	<corePoolSize>10</corePoolSize>
+	<maximumPoolSize>10</maximumPoolSize>
+	<workQueueSize>100</workQueueSize>
+	<keepAliveTime>150</keepAliveTime>
+	<autorun>true</autorun>
+	
+	<EventGeneratorConfiguration>
+		<wildCard>*.*</wildCard>
+		<watchDirectory>tracks/in</watchDirectory>
+		<osType>OS_UNDEFINED</osType>
+		<eventType>FILE_ADDED</eventType>
+		<interval>0/10 * * * * ?</interval><!-- CRON: every 10 sec -->
+		<!--<interval>20</interval> each 20 sec -->
+		<id>GlidersTracksFlow</id>
+		<serviceID>fsEventGeneratorService</serviceID>
+		<description>Gliders Tracks event generator description</description>
+		<name>Tracks</name>
+	</EventGeneratorConfiguration>
+	
+	<EventConsumerConfiguration>
+		<id>tracks</id>
+		<description>tracks</description>
+		<name>tracks</name>
+		
+		<performBackup>false</performBackup>
+		
+		<TracksIngestConfiguration>
+			<serviceID>TracksIngestGeneratorService</serviceID>
+			<id>TracksIngestGeneratorService</id>
+			<description>TracksIngest action</description>
+			<name>TracksIngestConfiguration</name>
+			<listenerConfigurations/>
+			<failIgnored>false</failIgnored>
+			
+			<wpsServiceCapabilitiesURL>http://localhost:8080/geoserver/ows?service=wps&amp;version=1.0.0&amp;request=GetCapabilities</wpsServiceCapabilitiesURL>
+			<wpsProcessIdentifier>gs:KMZ</wpsProcessIdentifier>
+			<targetWorkspace>it.geosolutions</targetWorkspace>
+			<targetDataStore>nurc_gliders</targetDataStore>
+			
+		</TracksIngestConfiguration>
+		
+	</EventConsumerConfiguration>
+
+</FlowConfiguration>

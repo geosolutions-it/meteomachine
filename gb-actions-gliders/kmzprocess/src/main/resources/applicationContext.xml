@@ -4,25 +4,33 @@
 <beans default-init-method="init" default-destroy-method="dispose">
 
 	<!-- Environment Initialization -->
-	<bean id="SettingGeneratorService"
-		class="it.geosolutions.geobatch.gliders.ingest.SettingGeneratorService" depends-on="IEConfigDAO">
+	<bean id="TracksIngestGeneratorService"
+		class="it.geosolutions.geobatch.gliders.ingest.TracksIngestGeneratorService">
 		<constructor-arg type="String">
-			<value>SettingGeneratorService</value>
+			<value>TracksIngestGeneratorService</value>
 		</constructor-arg>
 		<constructor-arg type="String">
-			<value>SettingGeneratorService</value>
+			<value>TracksIngestGeneratorService</value>
 		</constructor-arg>
 		<constructor-arg type="String">
-			<value>SettingGeneratorService</value>
+			<value>TracksIngestGeneratorService</value>
 		</constructor-arg>
-		
-		<property name="ieConfigDAO" ref="IEConfigDAO" />
-		
+
+		<property name="wpsHTTPClient">
+			<bean class="org.geotools.data.ows.SimpleHttpClient">
+				<property name="user" value="admin" /> <!-- HTTP BASIC Authentication user name -->
+				<property name="password" value="geoserver" /> <!-- HTTP BASIC Authentication password -->
+				<property name="connectTimeout" value="300" /> <!-- tcp/ip connect timeout in seconds -->
+				<property name="readTimeout" value="300" /> <!-- socket read timeout in seconds -->
+			</bean>
+		</property>
+
 	</bean>
-	
-	<bean id="SettingAliasRegistrar"
-		class="it.geosolutions.geobatch.gliders.ingest.SettingAliasRegistrar"
+
+	<bean id="TracksIngestAliasRegistrar"
+		class="it.geosolutions.geobatch.gliders.ingest.TracksIngestAliasRegistrar"
 		lazy-init="false">
 		<constructor-arg ref="aliasRegistry" />
 	</bean>
+
 </beans>

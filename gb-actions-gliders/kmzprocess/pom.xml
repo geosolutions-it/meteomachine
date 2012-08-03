@@ -1,11 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
-	<!--
-		=======================================================================
-		Maven Project Configuration File GeoSolutions GeoBatch Project
-		http://geobatch.codehaus.org Version: $Id: pom.xml 329 2011-06-14
-		13:00:49Z ccancellieri $
-		=======================================================================
-	-->
+<!-- ======================================================================= 
+	Maven Project Configuration File GeoSolutions GeoBatch Project http://geobatch.codehaus.org 
+	Version: $Id: pom.xml 329 2011-06-14 13:00:49Z ccancellieri $ ======================================================================= -->
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 
                                http://maven.apache.org/maven-v4_0_0.xsd">
@@ -18,16 +14,14 @@
 	</parent>
 
 	<!-- =========================================================== -->
-	<!--     Module Description                                      -->
+	<!-- Module Description -->
 	<!-- =========================================================== -->
 	<groupId>it.geosolutions.geobatch.gliders</groupId>
 	<artifactId>gb-action-gliders-kmzprocess</artifactId>
 	<packaging>jar</packaging>
 	<name>GeoBatch action: kmzprocess</name>
 	<url>http://www.geo-solutions.it/maven_reports/gb/</url>
-	<!--
-		<url>flowmanagers/</url>
-	-->
+	<!-- <url>flowmanagers/</url> -->
 
 	<scm>
 		<connection>
@@ -49,16 +43,13 @@
 	</licenses>
 
 	<!-- =========================================================== -->
-	<!--     Dependency Management                                   -->
+	<!-- Dependency Management -->
 	<!-- =========================================================== -->
 	<dependencies>
 
 		<!-- YOUR DEPENDENCIES HERE -->
 
-		<!--
-			NOTE: please avoid specify version of the arctifact unless it is
-			necessary
-		-->
+		<!-- NOTE: please avoid specify version of the arctifact unless it is necessary -->
 
 		<!-- GeoBatch CORE -->
 		<dependency>
@@ -92,7 +83,7 @@
 			</exclusions>
 		</dependency>
 
-		<!--  log4j -->
+		<!-- log4j -->
 		<dependency>
 			<groupId>log4j</groupId>
 			<artifactId>log4j</artifactId>
@@ -115,6 +106,41 @@
 			<artifactId>slf4j-simple</artifactId>
 			<version>1.5.6</version>
 		</dependency>
+
+		<!-- BEGIN: Geographic Domain -->
+		<dependency>
+			<groupId>com.vividsolutions</groupId>
+			<artifactId>jts</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.geotools</groupId>
+			<artifactId>gt-opengis</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.geotools</groupId>
+			<artifactId>gt-api</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.geotools</groupId>
+			<artifactId>gt-main</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.geotools</groupId>
+			<artifactId>gt-metadata</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.geotools</groupId>
+			<artifactId>gt-referencing</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.geotools</groupId>
+			<artifactId>gt-shapefile</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.geotools</groupId>
+			<artifactId>gt-wps</artifactId>
+		</dependency>
+		<!-- END: Geographic Domain -->
 
 	</dependencies>
 </project>
