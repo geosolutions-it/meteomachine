@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ie-config updateVersion="0">
+   <global>
+       <geoserver>
+           <geoserverUrl>http://192.168.139.128:8484/figis/geoserver</geoserverUrl> 
+           <geoserverUsername>admin</geoserverUsername>
+           <geoserverPassword>******</geoserverPassword>
+       </geoserver>
+       <db>
+           <database>orcl</database>
+           <schema>FIGIS_GIS</schema>
+           <user>FIGIS_GIS</user>
+           <password>******</password>
+           <port>1521</port>
+           <host>192.168.139.128</host>
+       </db>
+       <clean>false</clean>
+   </global>
+   <intersections>
+       <intersection mask="true" force="true" preserveTrgGeom="false">
+           <srcLayer>fifao:FAO_DIV</srcLayer>
+           <trgLayer>fifao:NJA</trgLayer>
+		   <maskLayer>fifao:UN_CONTINENT</maskLayer>
+           <srcCodeField>F_SUBAREA</srcCodeField>
+           <trgCodeField>ISO3_TERRI</trgCodeField>
+           <areaCRS>EPSG:54012</areaCRS>
+       </intersection>
+       <intersection mask="true" force="false" preserveTrgGeom="false">
+           <srcLayer>fifao:FAO_SUB_DIV</srcLayer>
+           <trgLayer>fifao:NJA</trgLayer>
+		   <maskLayer>fifao:UN_CONTINENT</maskLayer>
+           <srcCodeField>F_SUBDIVIS</srcCodeField>
+           <trgCodeField>ISO3_TERRI</trgCodeField>
+           <areaCRS>EPSG:54012</areaCRS>
+       </intersection>
+       <intersection mask="true" force="false" preserveTrgGeom="false">
+           <srcLayer>fifao:FAO_MAJOR</srcLayer>
+           <trgLayer>fifao:ICCAT_SMU</trgLayer>
+		   <maskLayer>fifao:UN_CONTINENT</maskLayer>
+           <srcCodeField>F_AREA</srcCodeField>
+           <trgCodeField>ICCAT_SMU</trgCodeField>
+           <areaCRS>EPSG:54012</areaCRS>
+       </intersection>
+   </intersections>
+</ie-config>

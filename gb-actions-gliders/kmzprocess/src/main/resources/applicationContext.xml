@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
+
+<beans default-init-method="init" default-destroy-method="dispose">
+
+	<!-- Environment Initialization -->
+	<bean id="SettingGeneratorService"
+		class="it.geosolutions.geobatch.gliders.ingest.SettingGeneratorService" depends-on="IEConfigDAO">
+		<constructor-arg type="String">
+			<value>SettingGeneratorService</value>
+		</constructor-arg>
+		<constructor-arg type="String">
+			<value>SettingGeneratorService</value>
+		</constructor-arg>
+		<constructor-arg type="String">
+			<value>SettingGeneratorService</value>
+		</constructor-arg>
+		
+		<property name="ieConfigDAO" ref="IEConfigDAO" />
+		
+	</bean>
+	
+	<bean id="SettingAliasRegistrar"
+		class="it.geosolutions.geobatch.gliders.ingest.SettingAliasRegistrar"
+		lazy-init="false">
+		<constructor-arg ref="aliasRegistry" />
+	</bean>
+</beans>
