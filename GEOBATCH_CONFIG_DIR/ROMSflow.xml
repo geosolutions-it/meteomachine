@@ -21,7 +21,7 @@
 		<performBackup>false</performBackup>		
 		
 		<OctaveConfiguration>
-			<serviceID>ROMSGeneratorService</serviceID>
+			<serviceID>OctaveFreeMarkerGeneratorService</serviceID>
 			<id>ROMSGeneratorService</id>
 			<description>ROMSGeneratorService</description>
 			<name>ROMSActionConfiguration</name>

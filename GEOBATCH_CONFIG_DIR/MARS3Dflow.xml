@@ -22,7 +22,7 @@
 		<performBackup>false</performBackup>
 		
 		<OctaveConfiguration>
-			<serviceID>MARS3DGeneratorService</serviceID>
+			<serviceID>OctaveFreeMarkerGeneratorService</serviceID>
 		
 			<id>MARS3DGeneratorService</id>
 			<description>MARS3DGeneratorService</description>
