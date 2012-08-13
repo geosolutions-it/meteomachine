@@ -1,8 +1,8 @@
 <%
 /*
  *  GeoBatch - Open Source geospatial batch processing system
- *  http://geobatch.codehaus.org/
- *  Copyright (C) 2007-2008-2009 GeoSolutions S.A.S.
+ *  http://geobatch.geo-solutions.it/
+ *  Copyright (C) 2007-2012 GeoSolutions S.A.S.
  *  http://www.geo-solutions.it
  *
  *  GPLv3 + Classpath exception
@@ -53,6 +53,16 @@
 			int pages = Math.round(flowManagers.size() / (float)flowsPerPage);
 			pages = (pages == 0 ? 1 : pages+1);
 		%>
+
+		function showLoading() {
+		  $("#loaded").hide();
+		  $("#loading").show();
+		}
+
+		function hideLoading() {
+		  $("#loading").hide();
+		  $("#loaded").show();
+		}
 		
 		$(function(){
 
@@ -78,7 +88,9 @@
 			// Refresh Button
 			$("a.autorefresh").click(
 				function() {
+					showLoading();
 					$("#tab-instances-"+this.id).load(this.title);
+					hideLoading();
 				}
 			);
 					
@@ -168,14 +180,15 @@
 									<font style="font-style: italic; font-size: 12px"><c:out value="${fm.configuration.description}"/></font>
 									<div class="tabs">
 										<ul>
-											<li><a href="#tab-config-<%= i %>">Configuration</a></li>
-											<li><a href="flowinfo.do?fmId=${fm.id}" title="tab-instances-<%= i %>">Instances</a> <a class="autorefresh" id="<%= i %>" title="flowinfo.do?fmId=${fm.id}"><img src="img/arrow_refresh.png"/></a></li>
+											<li><a href="#tab-config-<%= i %>" style="cursor: default">Configuration</a></li>
+											<li>
+												<a href="flowinfo.do?fmId=${fm.id}" title="tab-instances-<%= i %>" style="cursor: default">Instances</a> <a class="autorefresh" id="<%= i %>" title="flowinfo.do?fmId=${fm.id}"><img id="loading" src="img/arrow_refresh.png" style="display:none;cursor: wait"/><img id="loaded" src="img/arrow_refresh.png" style="cursor: pointer; cursor: hand"/></a>
+											</li>
 										</ul>
 										<div id="tab-config-<%= i %>">
 											<p>
 												<strong>Input directory:</strong> <c:out value="${fm.configuration.eventGeneratorConfiguration.watchDirectory}"/><br/>
-												<strong>Working directory:</strong> <c:out value="${fm.configuration.workingDirectory}"/><br/>
-												
+												<!-- removed working dir here -->
 												<strong>Status:</strong>
 												<c:choose> 
 					  								<c:when test="${fm.running}">
@@ -231,6 +244,6 @@
     </div><!-- /.wrap> -->
   </div><!-- /#main -->
   <center><p><img src="img/geoSolutions-logo.png" /></p>
-  <p>Copyright &copy; 2005 - 2011 GeoSolutions.</p></center>
+  <p>Copyright &copy; 2005 - 2012 GeoSolutions.</p></center>
 </body>
 </html>

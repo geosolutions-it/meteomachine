@@ -1,8 +1,8 @@
 <%
 /*
  *  GeoBatch - Open Source geospatial batch processing system
- *  http://geobatch.codehaus.org/
- *  Copyright (C) 2007-2008-2009 GeoSolutions S.A.S.
+ *  http://geobatch.geo-solutions.it/
+ *  Copyright (C) 2007-2012 GeoSolutions S.A.S.
  *  http://www.geo-solutions.it
  *
  *  GPLv3 + Classpath exception
@@ -152,7 +152,8 @@
 			</tbody>
 		</table>
 
-        <P/><h2>FTP Server stats</h2>
+        <P/>
+        <h2>FTP Server stats</h2>
         Start time <c:out value="${ftpStats.startTime}"/>
         <br/>
         <table class="statsTable" border="0" cellpadding="2" cellspacing="1" >
@@ -203,6 +204,6 @@
     </div><!-- /.wrap> -->
   </div><!-- /#main -->
   <center><p><img src="img/geoSolutions-logo.png" /></p>
-  <p>Copyright &copy; 2005 - 2011 GeoSolutions.</p></center>
+  <p>Copyright &copy; 2005 - 2012 GeoSolutions.</p></center>
 </body>
 </html>
