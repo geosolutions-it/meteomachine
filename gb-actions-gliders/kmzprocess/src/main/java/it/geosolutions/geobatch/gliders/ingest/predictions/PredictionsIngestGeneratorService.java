@@ -28,7 +28,7 @@
  * <http://www.geo-solutions.it/>.
  *
  */
-package it.geosolutions.geobatch.gliders.ingest;
+package it.geosolutions.geobatch.gliders.ingest.predictions;
 
 import it.geosolutions.geobatch.catalog.impl.BaseService;
 import it.geosolutions.geobatch.flow.event.action.ActionService;
@@ -45,23 +45,23 @@ import org.slf4j.LoggerFactory;
  * @author Alessio Fabiani - alessio.fabiani@geo-solutions.it
  *
  */
-public class TracksIngestGeneratorService extends BaseService implements ActionService<EventObject, TracksIngestConfiguration>
+public class PredictionsIngestGeneratorService extends BaseService implements ActionService<EventObject, PredictionsIngestConfiguration>
 {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(TracksIngestGeneratorService.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(PredictionsIngestGeneratorService.class);
 
     private HTTPClient wpsHTTPClient = null;
     
-    public TracksIngestGeneratorService(String id, String name, String description)
+    public PredictionsIngestGeneratorService(String id, String name, String description)
     {
         super(id, name, description);
     }
 
-    public TracksIngestAction createAction(TracksIngestConfiguration configuration)
+    public PredictionsIngestAction createAction(PredictionsIngestConfiguration configuration)
     {
         try
         {
-        	TracksIngestAction glidersTracksIngestAction = new TracksIngestAction(configuration);
+        	PredictionsIngestAction glidersTracksIngestAction = new PredictionsIngestAction(configuration);
         	glidersTracksIngestAction.setWpsHTTPClient(wpsHTTPClient);
 
             return glidersTracksIngestAction;
@@ -77,7 +77,7 @@ public class TracksIngestGeneratorService extends BaseService implements ActionS
         }
     }
 
-    public boolean canCreateAction(TracksIngestConfiguration configuration)
+    public boolean canCreateAction(PredictionsIngestConfiguration configuration)
     {
         LOGGER.info("------------------->Checking setting parameters");
         try
@@ -85,6 +85,8 @@ public class TracksIngestGeneratorService extends BaseService implements ActionS
             // absolutize working dir
         	String wpsServiceCapabilitiesURL = configuration.getWpsServiceCapabilitiesURL();
             String wpsProcessIdentifier = configuration.getWpsProcessIdentifier();
+        	String targetCruise = configuration.getTargetCruise();
+        	String targetGliderRegex = configuration.getTargetGliderRegex();
             String targetWorkspace = configuration.getTargetWorkspace();
             String targetDataStore = configuration.getTargetDataStore();
 
@@ -119,10 +121,10 @@ public class TracksIngestGeneratorService extends BaseService implements ActionS
                 return false;
             }
 
-            if (targetWorkspace != null && targetDataStore != null)
+            if (targetGliderRegex != null && targetCruise != null && targetWorkspace != null && targetDataStore != null)
             {
+                LOGGER.info("WPS Process target Cruise and Glider Regex are " + targetCruise+"; "+targetGliderRegex);
                 LOGGER.info("WPS Process target Workspace and DataStore are " + targetWorkspace+":"+targetDataStore);
-
             }
             else
             {

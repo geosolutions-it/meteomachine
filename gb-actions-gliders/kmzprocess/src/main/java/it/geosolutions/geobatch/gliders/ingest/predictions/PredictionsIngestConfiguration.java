@@ -28,7 +28,7 @@
  * <http://www.geo-solutions.it/>.
  *
  */
-package it.geosolutions.geobatch.gliders.ingest;
+package it.geosolutions.geobatch.gliders.ingest.predictions;
 
 import it.geosolutions.geobatch.catalog.Configuration;
 import it.geosolutions.geobatch.configuration.event.action.ActionConfiguration;
@@ -40,15 +40,17 @@ import it.geosolutions.geobatch.configuration.event.action.ActionConfiguration;
  *
  */
 
-public class TracksIngestConfiguration extends ActionConfiguration implements Configuration
+public class PredictionsIngestConfiguration extends ActionConfiguration implements Configuration
 {
 
     private String wpsServiceCapabilitiesURL = null;
     private String wpsProcessIdentifier = null;
+    private String targetCruise = null;
+    private String targetGliderRegex = null;
     private String targetWorkspace = null;
     private String targetDataStore = null;
     
-	public TracksIngestConfiguration(String id, String name, String description)
+	public PredictionsIngestConfiguration(String id, String name, String description)
     {
         super(id, name, description);
 
@@ -86,6 +88,34 @@ public class TracksIngestConfiguration extends ActionConfiguration implements Co
 	}
 
 	/**
+	 * @param targetCruise the targetCruise to set
+	 */
+	public void setTargetCruise(String targetCruise) {
+		this.targetCruise = targetCruise;
+	}
+
+	/**
+	 * @return the targetCruise
+	 */
+	public String getTargetCruise() {
+		return targetCruise;
+	}
+
+	/**
+	 * @param targetGliderRegex the targetGliderRegex to set
+	 */
+	public void setTargetGliderRegex(String targetGliderRegex) {
+		this.targetGliderRegex = targetGliderRegex;
+	}
+
+	/**
+	 * @return the targetGliderRegex
+	 */
+	public String getTargetGliderRegex() {
+		return targetGliderRegex;
+	}
+
+	/**
 	 * @param targetWorkspace the targetWorkspace to set
 	 */
 	public void setTargetWorkspace(String targetWorkspace) {
@@ -114,13 +144,15 @@ public class TracksIngestConfiguration extends ActionConfiguration implements Co
 	}
 
 	@Override
-    public TracksIngestConfiguration clone()
+    public PredictionsIngestConfiguration clone()
     {
-        final TracksIngestConfiguration ret = new TracksIngestConfiguration(this.getId(), this.getName(), this.getDescription());
+        final PredictionsIngestConfiguration ret = new PredictionsIngestConfiguration(this.getId(), this.getName(), this.getDescription());
 
         // TODO CLONE YOUR MEMBERS
         ret.setWpsProcessIdentifier(wpsProcessIdentifier);
         ret.setWpsServiceCapabilitiesURL(wpsServiceCapabilitiesURL);
+        ret.setTargetCruise(targetCruise);
+        ret.setTargetGliderRegex(targetGliderRegex);
         ret.setTargetDataStore(targetDataStore);
         ret.setTargetWorkspace(targetWorkspace);
         

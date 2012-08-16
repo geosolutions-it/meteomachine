@@ -29,7 +29,7 @@
  *
  */
 
-package it.geosolutions.geobatch.gliders.ingest;
+package it.geosolutions.geobatch.gliders.ingest.tracks;
 
 import it.geosolutions.geobatch.registry.AliasRegistrar;
 import it.geosolutions.geobatch.registry.AliasRegistry;

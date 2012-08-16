@@ -28,7 +28,7 @@
  * <http://www.geo-solutions.it/>.
  *
  */
-package it.geosolutions.geobatch.gliders.ingest;
+package it.geosolutions.geobatch.gliders.ingest.predictions;
 
 import it.geosolutions.filesystemmonitor.monitor.FileSystemEvent;
 import it.geosolutions.geobatch.flow.event.action.ActionException;
@@ -45,6 +45,8 @@ import java.util.Arrays;
 import java.util.EventObject;
 import java.util.LinkedList;
 import java.util.Queue;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import net.opengis.wps10.InputReferenceType;
 import net.opengis.wps10.MethodType;
@@ -52,6 +54,7 @@ import net.opengis.wps10.OutputDefinitionType;
 import net.opengis.wps10.ResponseFormType;
 import net.opengis.wps10.Wps10Factory;
 
+import org.apache.commons.io.FilenameUtils;
 import org.eclipse.emf.ecore.EObject;
 import org.geotools.data.ows.HTTPClient;
 import org.geotools.data.wps.WebProcessingService;
@@ -66,14 +69,16 @@ import org.slf4j.LoggerFactory;
  * @author Alessio Fabiani - alessio.fabiani@geo-solutions.it
  *
  */
-public class TracksIngestAction extends BaseAction<EventObject>
+public class PredictionsIngestAction extends BaseAction<EventObject>
 {
-	private static final Logger LOGGER = LoggerFactory.getLogger(TracksIngestAction.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(PredictionsIngestAction.class);
 	
 	private static final Wps10Factory wpsFactory = Wps10Factory.eINSTANCE;
 
 	private String wpsServiceCapabilitiesURL = null;
     private String wpsProcessIdentifier = null;
+    private String targetCruise = null;
+    private String targetGliderRegex = null;
     private String targetWorkspace = null;
     private String targetDataStore = null;
 
@@ -82,9 +87,9 @@ public class TracksIngestAction extends BaseAction<EventObject>
     /**
      * configuration
      */
-    private final TracksIngestConfiguration conf;
+    private final PredictionsIngestConfiguration conf;
 
-    public TracksIngestAction(TracksIngestConfiguration configuration)
+    public PredictionsIngestAction(PredictionsIngestConfiguration configuration)
     {
         super(configuration);
         conf = configuration;
@@ -97,6 +102,8 @@ public class TracksIngestAction extends BaseAction<EventObject>
     {
     	wpsServiceCapabilitiesURL = conf.getWpsServiceCapabilitiesURL();
         wpsProcessIdentifier = conf.getWpsProcessIdentifier();
+        targetCruise = conf.getTargetCruise();
+        targetGliderRegex = conf.getTargetGliderRegex();
         targetWorkspace = conf.getTargetWorkspace();
         targetDataStore = conf.getTargetDataStore();
 
@@ -139,8 +146,27 @@ public class TracksIngestAction extends BaseAction<EventObject>
                         ((InputReferenceType)kmzFileReference).setMethod(MethodType.GET_LITERAL);
                         ((InputReferenceType)kmzFileReference).setHref(glidersTracksKMZFile.toURI().toURL().toExternalForm());
                         
-                        execRequest.addInput("input Gliders KMZ file", Arrays.asList(kmzFileReference));
+                        execRequest.addInput("input Predictions KMZ file", Arrays.asList(kmzFileReference));
 
+                        // Cruise and Glider simple Inputs
+                        execRequest.addInput("cruise", Arrays.asList(wps.createLiteralInputValue(targetCruise)));
+                        final Matcher gliderNameMatcher = Pattern.compile(targetGliderRegex).matcher(FilenameUtils.getBaseName(glidersTracksKMZFile.getAbsolutePath()));
+                        String gliderName = null;
+						if(gliderNameMatcher.find(0))
+						{
+							gliderName = FilenameUtils.getBaseName(glidersTracksKMZFile.getAbsolutePath()).substring(gliderNameMatcher.start(), gliderNameMatcher.end());
+						}
+						else
+                        {
+                        	// ERROR
+                        	if (LOGGER.isErrorEnabled())
+                            {
+                                LOGGER.error("Gliders Tracks Ingest action.execute(): Exception while executing WPS Request.");
+                            }
+                        	throw new ActionException(this,"Could not match Glider name on given file name: " + gliderName );
+                        }
+                    	execRequest.addInput("glider", Arrays.asList(wps.createLiteralInputValue(gliderName)));
+                        
                         // Workspace and DataStore simple Inputs
                         execRequest.addInput("workspace", Arrays.asList(wps.createLiteralInputValue(targetWorkspace)));
                         execRequest.addInput("store", Arrays.asList(wps.createLiteralInputValue(targetDataStore)));
@@ -204,7 +230,7 @@ public class TracksIngestAction extends BaseAction<EventObject>
                             // OK
                         	if (LOGGER.isDebugEnabled())
                             {
-                                LOGGER.debug("Gliders Tracks Ingest action.execute(): Request Successfully send to WPS Process.");
+                                LOGGER.debug("Gliders Predictions Ingest action.execute(): Request Successfully send to WPS Process.");
                             }
                         }
                         else
