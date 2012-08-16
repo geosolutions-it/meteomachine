@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
+
+<beans>
+	<bean id="kmzGlidersProcess" class="org.geoserver.wps.gs.KMZGlidersProcess">
+		<constructor-arg index="0" ref="geoServer"/>
+	</bean>
+
+	<bean id="kmzPredictionsProcess" class="org.geoserver.wps.gs.KMZPredictionsProcess">
+		<constructor-arg index="0" ref="geoServer"/>
+	</bean>
+
+	<!-- The PPIO that need to be registered into SPI because of their dependencies -->
+	<bean id="kmzPPIO" class="org.geoserver.wps.ppio.KMZPPIO" >
+      <constructor-arg ref="wpsResourceManager"/>
+    </bean>
+</beans>
