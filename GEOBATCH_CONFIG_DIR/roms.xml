@@ -1,0 +1,267 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<FlowConfiguration>
+    <id>roms</id>
+    <name>NURC: ROMS ingestion</name>
+    <description>Create images from netcdf publish on GeoServer</description>
+	
+    <corePoolSize>2</corePoolSize>
+    <maximumPoolSize>2</maximumPoolSize>
+    <keepAliveTime>1500</keepAliveTime>
+    <workQueueSize>100</workQueueSize>
+	
+    <autorun>true</autorun>
+	
+    <EventGeneratorConfiguration>
+        <id>id</id>
+        <serviceID>fsEventGeneratorService</serviceID>
+
+        <wildCard>*_his.nc</wildCard>
+        <!--<watchDirectory>/opt/ingestion/</watchDirectory>-->
+        <watchDirectory>/opt/homeext/geosol/prj/nurc/models/in</watchDirectory>
+        <!--watchDirectory>arw_3km_run00/in/</watchDirectory-->
+        <osType>OS_UNDEFINED</osType>
+        <eventType>FILE_ADDED</eventType>
+        <interval>2</interval> <!-- every 2 seconds -->
+    </EventGeneratorConfiguration>
+	
+    <EventConsumerConfiguration>
+        <id>NURCModels</id>
+		
+        <listenerId>NURCModelsLogger</listenerId>
+        <listenerId>NURCModelsCumulator</listenerId>
+
+        <performBackup>false</performBackup>
+        <preserveInput>false</preserveInput>
+
+
+<!--
+            <OctaveFreeMarkerConfiguration>
+            <id>octave</id>
+            <serviceID>OctaveFreeMarkerGeneratorService</serviceID>
+
+            <name>RegularGrid</name>
+            <description>Interpolate a regular grid and rename variables</description>
+
+            <octave>
+                <sheets>
+                    <sheet name="sheet01">
+                        <commands>
+                            <OctaveCommand executed="false">
+                                <command>source "/usr/share/octave/3.6.2/m/startup/octaverc";</command>
+                            </OctaveCommand>
+                            <OctaveCommand executed="false">
+                                <command>cd "/home/geosol/prj/nurc/meteomachine/GEOBATCH_CONFIG_DIR/models/octave";</command>
+                            </OctaveCommand>
+                        </commands>
+                        <definitions/>
+                        <functions>
+                            <function name="roms_f">
+                                <commands/>
+                                <returns/>
+                                <definitions>
+                                    <OctaveFile name="file_in"  value="${IN_FILE}" output="false" input="true"/>
+                                    <OctaveFile name="file_out" value="${OUT_FILE}" output="false" input="true"/>
+                                </definitions>
+                            </function>
+                        </functions>
+                        <returns/>
+                    </sheet>
+                </sheets>
+            </octave>
+
+        </OctaveFreeMarkerConfiguration>
+-->
+
+
+        <Netcdf2GeotiffConfiguration>
+            <id>netcdf2geotiff</id>
+            <serviceID>Netcdf2GeotiffService</serviceID>
+
+            <name>NetCDF to GeoTIFF</name>
+            <description>NURC ROMS: netcdf -> geotiff</description>
+            
+            <!--<overrideConfigDir>./</overrideConfigDir>-->
+			
+            <!--<layerParentDirectory>/opt/data/models/arw_3km_run00/</layerParentDirectory>-->
+            <!--layerParentDirectory>/home/carlo/work/project/Lamma/trunk/lamma_2012/GEOBATCH_TEMP_DIR/arw_3km_run12/</layerParentDirectory-->
+			
+            <crs>EPSG:4326</crs>
+            <envelope/>
+            <metocDictionaryPath>dict.xml</metocDictionaryPath>
+			
+            <flipY>true</flipY>
+			
+            <variables>
+                <string>watvel-u</string>
+                <string>watvel-v</string>
+            </variables>
+
+            <listenerId>NURCModelsLogger</listenerId>
+            <listenerId>NURCModelsCumulator</listenerId>
+            <listenerId>NURCModelsStatus</listenerId>
+
+        </Netcdf2GeotiffConfiguration>
+				
+        <ScriptingConfiguration>
+            <serviceID>ScriptingService</serviceID>
+
+            <id>uvMerge</id>
+            <name>UV components merge</name>
+            <description>preprocessing Groovy Script</description>
+
+            <listenerId>NURCModelsLogger</listenerId>
+            <listenerId>NURCModelsCumulator</listenerId>
+            <listenerId>NURCModelsStatus</listenerId>
+
+
+            <!--<overrideConfigDir>../</overrideConfigDir>-->
+
+            <language>groovy</language>
+            <scriptFile>uvmerge.groovy</scriptFile>
+
+            <properties>
+                <entry>
+                    <string>defaultStyle</string>
+                    <string>garrows</string>
+                </entry>
+                <!-- captured group is used int the output image name -->
+                <!-- output name will be namevar_captgrp  -->
+                <entry>
+                    <string>imageNameRegex</string>
+                    <!--<string>[/A-z0-9]+_(.*)\.tiff</string>-->
+                    <string>watvel..(.*).tiff</string>
+                </entry>
+                <!-- recognize the IMC to merge -->
+                <entry>
+                    <string>imcRegex</string>
+                    <string>watvel.*_imc.xml</string>
+                </entry>
+                <!--Composing outdir name-->
+                <!-- outdir = prefixcaptgrp+outdirname+suffixcaptgrp-->
+                <entry>
+                    <string>outDirName</string>
+                    <string>WATVEL</string>
+                </entry>
+                <entry>
+                    <string>prefixRegex</string>
+                    <string>(watvel).*</string>
+                </entry>
+                <entry>
+                    <string>suffixRegex</string>
+                    <string>.*(_[0-9]+T[0-9]+Z)</string>
+                    <!--watvel-u_0002.000_0002.000_20100801T000000000Z_20100801T000000000Z_0_1.0E37.tiff-->
+                    <!-- VARNAME minZ maxZ runtime forecasttime tau nodata -->
+                    <!--<string>.*_.*_.*_([0-9]+T[0-9]+Z)_.*_.*_.*.tiff</string>-->
+                    <!--<string>.*_.*(_.*_[0-9]+T[0-9]+Z_.*)_.*_.*.tiff</string>-->
+                    <!--<string>.*_(.*)</string>-->
+                </entry>
+            </properties>
+
+        </ScriptingConfiguration>
+
+        <ImageMosaicActionConfiguration>
+            <serviceID>ImageMosaicGeneratorService</serviceID>
+
+            <id>ImageMosaicService</id>
+            <name>ImageMosaicService</name>
+            <description>ImageMosaicService</description>
+
+            <overrideConfigDir>./</overrideConfigDir>
+
+            <listenerId>NURCModelsLogger</listenerId>
+            <listenerId>NURCModelsCumulator</listenerId>
+            <listenerId>NURCModelsStatus</listenerId>
+
+            <crs>EPSG:4326</crs>
+
+            <envelope/>
+            <dataTransferMethod>EXTERNAL</dataTransferMethod>
+            <geoserverUID>admin</geoserverUID>
+            <!--geoserverPWD>geoserver</geoserverPWD>
+         			<geoserverURL>http://localhost:8181/geoserver</geoserverURL-->
+            <geoserverPWD>j6Knno8r</geoserverPWD>
+            <geoserverURL>http://172.16.1.134:8080/geoserver</geoserverURL>
+            <defaultNamespace>ARW_3KM_RUN00</defaultNamespace>
+            <defaultStyle>raster</defaultStyle>
+
+            <wmsPath>/</wmsPath>
+            <backgroundValue>NaN</backgroundValue>
+            <outputTransparentColor/>
+            <inputTransparentColor/>
+
+            <allowMultithreading>true</allowMultithreading>
+            <useJaiImageRead>false</useJaiImageRead>
+
+            <tileSizeH>256</tileSizeH>
+            <tileSizeW>256</tileSizeW>
+
+            <NativeMinBoundingBoxX>4</NativeMinBoundingBoxX>
+            <NativeMinBoundingBoxY>40</NativeMinBoundingBoxY>
+            <NativeMaxBoundingBoxX>17.98</NativeMaxBoundingBoxX>
+            <NativeMaxBoundingBoxY>49</NativeMaxBoundingBoxY>
+
+            <latLonMinBoundingBoxX>4</latLonMinBoundingBoxX>
+            <latLonMinBoundingBoxY>40</latLonMinBoundingBoxY>
+            <latLonMaxBoundingBoxX>17.98</latLonMaxBoundingBoxX>
+            <latLonMaxBoundingBoxY>49</latLonMaxBoundingBoxY>
+
+            <!--NONE, REPROJECT_TO_DECLARED, FORCE_DECLARED-->
+            <projectionPolicy>NONE</projectionPolicy>
+            <!-- METADATA -->
+            <timeDimEnabled>true</timeDimEnabled>
+            <!-- LIST, CONTINUOUS_INTERVAL, DISCRETE_INTERVAL -->
+            <timePresentationMode>LIST</timePresentationMode>
+            <elevDimEnabled>true</elevDimEnabled>
+            <elevationPresentationMode>LIST</elevationPresentationMode>
+            <!--  <dirName>DIR</dirName>-->
+            <styles/>
+			
+            <!--<datastorePropertiesPath>config/datastore.properties</datastorePropertiesPath>-->
+            <timeRegex>[0-9]{8}T[0-9]{9}Z(\?!.\*[0-9]{8}T[0-9]{9}Z.\*)</timeRegex>
+            <elevationRegex><![CDATA[(?<=_)(\\d{4}\\.\\d{3})(?=_)]]>
+            </elevationRegex>
+
+        </ImageMosaicActionConfiguration>
+
+		
+        <GeoServerReloadConfiguration>
+            <serviceID>GeoServerReloadService</serviceID>
+            <id>GeoServerReloadAction</id>
+            <name>GeoServerReloadAction</name>
+            <description>GeoServerReload</description>
+
+            <listenerId>NURCModelsLogger</listenerId>
+            <listenerId>NURCModelsCumulator</listenerId>
+            <listenerId>NURCModelsStatus</listenerId>
+			
+            <dirty>false</dirty>
+            <failIgnored>false</failIgnored>
+		  
+
+            <geoserverList>/opt/GEOBATCH_DATA_DIR/commons/GeoServerList.xml</geoserverList>
+			
+            <!--geoserverList>/home/carlo/work/project/Lamma/trunk/lamma_2012/GEOBATCH_CONFIG_DIR/commons/GeoServerList.xml</geoserverList-->
+            <executorSize>10</executorSize>
+			
+            <overrideConfigDir>./</overrideConfigDir>
+			
+        </GeoServerReloadConfiguration>
+
+    </EventConsumerConfiguration>
+    
+    <ListenerConfigurations>
+        <LoggingProgressListener>
+            <serviceID>loggingListenerService</serviceID>
+            <id>NURCModelsLogger</id>
+            <loggerName>it.geosolutions.geobatch</loggerName>
+        </LoggingProgressListener>
+        <CumulatingProgressListener>
+            <serviceID>cumulatingListenerService</serviceID>
+            <id>NURCModelsCumulator</id>
+        </CumulatingProgressListener>
+        <StatusProgressListener>
+            <serviceID>statusListenerService</serviceID>
+            <id>NURCModelsStatus</id>
+        </StatusProgressListener>
+    </ListenerConfigurations>
+</FlowConfiguration>
