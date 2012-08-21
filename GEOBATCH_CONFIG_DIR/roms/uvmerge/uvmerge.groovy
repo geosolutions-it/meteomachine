@@ -41,7 +41,8 @@ import javax.imageio.stream.FileImageInputStream;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import it.geosolutions.geobatch.lamma.misc.*;
+//import it.geosolutions.geobatch.lamma.misc.*;
+import it.geosolutions.geobatch.metocs.utils.*;
 
 /** 
  * Script Main "execute" function
