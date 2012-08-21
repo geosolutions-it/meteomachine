@@ -19,6 +19,7 @@
 	<modules>
 		<module>utils</module>
 		<module>netcdf2geotiff</module>
+                <module>forecastcleaner</module>
 	</modules>
 
 </project>
