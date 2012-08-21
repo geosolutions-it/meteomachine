@@ -8,7 +8,7 @@
 	<parent>
 	    <groupId>it.geosolutions.geobatch.gliders</groupId>
 	    <artifactId>metocs</artifactId>
-	    <version>1.3-SNAPSHOT</version>
+	    <version>1.0-SNAPSHOT</version>
 	</parent>
 	<!-- =========================================================== -->
 	<!-- Module Description -->
@@ -51,21 +51,6 @@
 		 </exclusions>
 		</dependency>
 
-<!--		<dependency>
-            <groupId>essi-unidata</groupId>
-            <artifactId>netcdf-java</artifactId>
-            <version>4.0.49</version>
-        </dependency>-->
-        <!--
-        <dependency>
-            <groupId>essi-unidata</groupId>
-			<artifactId>grib</artifactId> 
-            <version>6.0.18</version>
-        </dependency -->
-		<!-- dependency> 
-            <groupId>essi-unidata</groupId>
-            <artifactId>grib</artifactId>
-            <version>8.0.29</version> </dependency -->
 		<!-- from http://maven.geotoolkit.org/edu/ucar/netcdf/4.2.32/ -->
 		<dependency>
 			<groupId>edu.ucar</groupId>

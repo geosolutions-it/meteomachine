@@ -16,12 +16,12 @@
     <parent>
 		<groupId>it.geosolutions.geobatch</groupId>
 		<artifactId>gb</artifactId>
-		<version>1.3-SNAPSHOT</version>
+		<version>1.3-BETA2</version>
     </parent>
 
     <groupId>it.geosolutions.geobatch.gliders</groupId>
     <artifactId>gb-gliders</artifactId>
-    <!-- version>1.3-SNAPSHOT</version -->
+    <version>1.0-SNAPSHOT</version>
     <packaging>pom</packaging>
 
     <name>GeoSolutions GeoBatch - GLIDERS</name>
@@ -144,11 +144,12 @@
         <test.maxHeapSize>512M</test.maxHeapSize>
         <src.output>${basedir}/target</src.output>
 		
-		<gs.manager>1.4-SNAPSHOT</gs.manager>
+		<gs.manager>1.4.3</gs.manager>
 		<gb.version>1.3-SNAPSHOT</gb.version>
-		<geotools.version>8-SNAPSHOT</geotools.version>
+		<geotools.version>8.0</geotools.version>
 		<geoserver.version>2.2-RC1</geoserver.version>
 		<tools.version>1.1-SNAPSHOT</tools.version>
+		<app.version>1.0-SNAPSHOT</app.version>
     </properties>
 
   
@@ -161,12 +162,8 @@
     <dependencyManagement>
         <dependencies>
 			<!-- inherit DependencyManagement -->
-			<dependency>
-				<groupId>it.geosolutions</groupId>
-				<artifactId>geoserver-manager</artifactId>
-				<version>${gs.manager}</version>
-			</dependency>
-
+			
+		<!-- GEOBATCH DEPENDENCIES -->
 			<dependency>
 				<groupId>it.geosolutions.geobatch</groupId>
 				<artifactId>gb</artifactId>
@@ -181,12 +178,24 @@
 				<version>${gb.version}</version>
 			</dependency>
 
+		<dependency>
+			<groupId>it.geosolutions.geobatch</groupId>
+			<artifactId>gb-action-imagemosaic</artifactId>
+				<version>${gb.version}</version>
+		</dependency>
+
 			<dependency>
 				<groupId>it.geosolutions.geobatch</groupId>
 				<artifactId>gb-ftp-server</artifactId>
 				<version>${gb.version}</version>
 			</dependency>
-
+			
+		<dependency>
+			<groupId>it.geosolutions.geobatch</groupId>
+			<artifactId>gb-action-geoserver</artifactId>
+				<version>${gb.version}</version>
+		</dependency>
+		
 			<dependency>
 				<groupId>it.geosolutions.geobatch</groupId>
 				<artifactId>gb-users</artifactId>
@@ -270,6 +279,33 @@
 				<version>${gb.version}</version>
 			</dependency>
 			
+		<dependency>
+		    <groupId>it.geosolutions.geobatch</groupId>
+		    <artifactId>gb-action-octave-fileinfileout</artifactId>
+				<version>${gb.version}</version>
+		</dependency>
+
+		<dependency>
+            <groupId>it.geosolutions.geobatch</groupId>
+            <artifactId>gb-octave</artifactId>
+				<version>${gb.version}</version>
+		</dependency>
+
+		<dependency>
+		    <groupId>it.geosolutions.geobatch</groupId>
+		    <artifactId>gb-action-scripting</artifactId>
+				<version>${gb.version}</version>
+		</dependency>			
+			
+			<!-- GEOSERVER MANAGER -->
+			<dependency>
+				<groupId>it.geosolutions</groupId>
+				<artifactId>geoserver-manager</artifactId>
+				<version>${gs.manager}</version>
+			</dependency>
+
+
+			
 			<dependency>
 				<groupId>it.geosolutions.tools</groupId>
 				<artifactId>tools</artifactId>
@@ -288,24 +324,27 @@
 			<dependency>
 				<groupId>it.geosolutions.geobatch.gliders</groupId>
 				<artifactId>gb-action-gliders-kmzprocess</artifactId>
-				<version>${gb.version}</version>
+				<version>${app.version}</version>
 			</dependency>
 
 			<dependency>
                 <groupId>it.geosolutions.geobatch.gliders</groupId>
                 <artifactId>metocs</artifactId> <!-- pom module -->
-                <version>${gb.version}</version>
+                <version>${app.version}</version>
 			</dependency>
 			<dependency>
                 <groupId>it.geosolutions.geobatch.gliders</groupId>
                 <artifactId>gb-action-metocs-utils</artifactId>
-                <version>${gb.version}</version>
+                <version>${app.version}</version>
 			</dependency>
-			<dependency>
-                <groupId>it.geosolutions.geobatch.gliders</groupId>
-                <artifactId>gb-action-metocs-netcdf2geotiff</artifactId>
-                <version>${gb.version}</version>
-			</dependency>
+
+		
+		<dependency>
+		    <groupId>it.geosolutions.geobatch.metocs</groupId>
+		    <artifactId>gb-action-metocs-netcdf2geotiff</artifactId>
+		    <version>${app.version}</version>
+		</dependency>
+					
  
             <!--  BEGIN: Geographic Domain -->
             <dependency>
@@ -362,14 +401,7 @@
             </dependency>
             <dependency>
                 <groupId>org.geotools</groupId>
-                <artifactId>gt-epsg-wkt</artifactId>
-                <scope>runtime</scope>
-                <version>${geotools.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.geotools</groupId>
                 <artifactId>gt-coverage</artifactId>
-                <scope>runtime</scope>
                 <version>${geotools.version}</version>
             </dependency>
             <dependency>
@@ -494,8 +526,8 @@
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
                 <configuration>
-                    <source>1.5</source>  <!-- The -source argument for the Java compiler. -->
-                    <target>1.5</target>  <!-- The -target argument for the Java compiler. -->
+                    <source>1.6</source>  <!-- The -source argument for the Java compiler. -->
+                    <target>1.6</target>  <!-- The -target argument for the Java compiler. -->
                     <debug>true</debug>   <!-- Whether to include debugging information.   -->
                     <encoding>UTF-8</encoding> <!-- The -encoding argument for the Java compiler. -->
                 </configuration>
@@ -621,22 +653,7 @@
             <name>java.net Repository</name>
             <url>http://download.java.net/maven/2/</url>
         </repository>
-		<!-- camel -->
-		<repository>
-			<id>camel.internal.maven.repository</id>
-			<name>Camel internal Maven Repo</name>
-			<url>http://svn.apache.org/repos/asf/camel/m2-repo</url>
-		</repository> 
 
-        <repository>
-            <id>JBoss</id>
-            <url>http://repository.jboss.com/maven2</url>
-        </repository>
-
-        <repository>
-            <id>Hibernate Spatial repo</id>
-            <url>http://www.hibernatespatial.org/repository</url>
-        </repository>
 
         <repository>
             <snapshots>
