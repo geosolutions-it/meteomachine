@@ -79,7 +79,7 @@
                 <version>1.1.0</version>
         </dependency>
 
-        <dependency>
+<!--        <dependency>
             <groupId>essi-unidata</groupId>
             <artifactId>netcdf-java</artifactId>
             <version>4.0.41</version>
@@ -89,7 +89,7 @@
                     <artifactId>slf4j-log4j12</artifactId>
                 </exclusion>
             </exclusions>
-        </dependency>
+        </dependency>-->
 
         <!-- GeoBatch tools -->
         <dependency>
@@ -165,13 +165,11 @@
 		<dependency>
 			<groupId>javax.media</groupId>
 			<artifactId>jai_core</artifactId>
-            <version>1.1.3</version>
             <scope>compile</scope>
 		</dependency>
 		<dependency>
 			<groupId>javax.media</groupId>
 			<artifactId>jai_codec</artifactId>
-            <version>1.1.3</version>
 		</dependency>
 		<dependency>
 			<groupId>javax.media</groupId>

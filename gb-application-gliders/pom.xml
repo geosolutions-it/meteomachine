@@ -95,11 +95,14 @@
 		    <groupId>it.geosolutions.geobatch</groupId>
 		    <artifactId>gb-action-scripting</artifactId>
 		</dependency>
+
+        <!-- dunno if this artifact is available in any repo,
+             will import needed classes in metocs/utilities
 		<dependency>
             <groupId>it.geosolutions.geobatch.lamma</groupId>
             <artifactId>gb-actions-lamma</artifactId>
             <version>1.1-SNAPSHOT</version>
-        </dependency>
+        </dependency> -->
 
 		<!-- repo:sourcerepo prj:metocs branch:development -->
 		<dependency>
