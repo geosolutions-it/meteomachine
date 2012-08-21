@@ -5,4 +5,9 @@
 		class="org.springframework.beans.factory.config.CommonsLogFactoryBean">
 		<property name="logName" value="log" />
 	</bean>
+
+    <bean class="org.springframework.beans.factory.config.PropertyOverrideConfigurer">
+        <property name="locations" value="classpath:netcfd-spi-ovr.properties"/>
+        <property name="ignoreResourceNotFound" value="false"/>
+    </bean>
 </beans>

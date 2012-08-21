@@ -9,9 +9,24 @@
 ======================================================================= -->
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
     <modelVersion>4.0.0</modelVersion>
-    
+
+    <!-- =========================================================== -->
+    <!--     Project Description                                     -->
+    <!-- =========================================================== -->
+    <parent>
+		<groupId>it.geosolutions.geobatch</groupId>
+		<artifactId>gb</artifactId>
+		<version>1.3-SNAPSHOT</version>
+    </parent>
+
+    <groupId>it.geosolutions.geobatch.gliders</groupId>
+    <artifactId>gb-gliders</artifactId>
+    <!-- version>1.3-SNAPSHOT</version -->
+    <packaging>pom</packaging>
+
     <name>GeoSolutions GeoBatch - GLIDERS</name>
-    <url>http://www.geo-solutions.it/maven_reports/gb/</url>
+
+    <!-- =========================================================== -->
 
     <scm>
         <connection>
@@ -136,19 +151,6 @@
 		<tools.version>1.1-SNAPSHOT</tools.version>
     </properties>
 
-    <!-- =========================================================== -->
-    <!--     Project Description                                     -->
-    <!-- =========================================================== -->
-    <parent>
-		<groupId>it.geosolutions.geobatch</groupId>
-		<artifactId>gb</artifactId>
-		<version>1.3-SNAPSHOT</version>
-    </parent>
-
-    <groupId>it.geosolutions.geobatch.gliders</groupId>
-    <artifactId>gb-gliders</artifactId>
-    <!-- version>1.3-SNAPSHOT</version -->
-    <packaging>pom</packaging>
   
     <!-- =========================================================== -->
     <!--     Dependency Management                                   -->
@@ -238,13 +240,7 @@
 				<artifactId>gb-action-ftp</artifactId>
 				<version>${gb.version}</version>
 			</dependency>
-			
-			<dependency>
-				<groupId>it.geosolutions.geobatch</groupId>
-				<artifactId>gb-core-impl</artifactId>
-				<version>${gb.version}</version>
-			</dependency>
-			
+						
 			<dependency>
 				<groupId>it.geosolutions.geobatch</groupId>
 				<artifactId>gb-alias-registry</artifactId>
@@ -288,10 +284,27 @@
 				<version>${tools.version}</version>
 			</dependency>
 
+            <!-- MODULES IN THIS PROJECT -->
 			<dependency>
 				<groupId>it.geosolutions.geobatch.gliders</groupId>
 				<artifactId>gb-action-gliders-kmzprocess</artifactId>
 				<version>${gb.version}</version>
+			</dependency>
+
+			<dependency>
+                <groupId>it.geosolutions.geobatch.gliders</groupId>
+                <artifactId>metocs</artifactId> <!-- pom module -->
+                <version>${gb.version}</version>
+			</dependency>
+			<dependency>
+                <groupId>it.geosolutions.geobatch.gliders</groupId>
+                <artifactId>gb-action-metocs-utils</artifactId>
+                <version>${gb.version}</version>
+			</dependency>
+			<dependency>
+                <groupId>it.geosolutions.geobatch.gliders</groupId>
+                <artifactId>gb-action-metocs-netcdf2geotiff</artifactId>
+                <version>${gb.version}</version>
 			</dependency>
  
             <!--  BEGIN: Geographic Domain -->

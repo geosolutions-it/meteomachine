@@ -1,0 +1,29 @@
+<it.geosolutions.geobatch.metocs.netcdf2geotiff.checker.MetocsBaseDictionary>
+  <dictionary>
+    <entry>
+      <string>VAR_1</string>
+      <map>
+        <entry>
+          <string>TIME</string>
+          <string>Time</string>
+        </entry>
+        <entry>
+          <string>LAT</string>
+          <string>lat</string>
+        </entry>
+        <entry>
+          <string>LON</string>
+          <string>lon</string>
+        </entry>
+        <entry>
+          <string>UOM</string>
+          <string>uom</string>
+        </entry>
+        <entry>
+          <string>Z</string>
+          <string>Elevation</string>
+        </entry>
+      </map>
+    </entry>
+  </dictionary>
+</it.geosolutions.geobatch.metocs.netcdf2geotiff.checker.MetocsBaseDictionary>

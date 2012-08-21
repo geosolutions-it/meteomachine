@@ -1,0 +1,27 @@
+<map>
+    <entry>
+      <string>VAR_1</string>
+      <map>
+        <entry>
+          <string>Z</string>
+          <string>Elevation</string>
+        </entry>
+        <entry>
+          <string>TIME</string>
+          <string>Time</string>
+        </entry>
+        <entry>
+          <string>LAT</string>
+          <string>lat</string>
+        </entry>
+        <entry>
+          <string>UOM</string>
+          <string>uom</string>
+        </entry>
+        <entry>
+          <string>LON</string>
+          <string>lon</string>
+        </entry>
+      </map>
+    </entry>
+</map>

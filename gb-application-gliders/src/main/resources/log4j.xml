@@ -20,42 +20,33 @@
 		</layout>
 	</appender>
 
-	<logger name="it.geosolutions" additivity="true">
-		<!-- <level value="warning" /> -->
-		<level value="debug" /><!--  DEBUG  -->
-		<appender-ref ref="rolling" />
-		<appender-ref ref="console" />
+
+    <logger name="it.geosolutions">
+		<level value="debug" />
 	</logger>
 
-	<logger name="org.quartz" additivity="true">
+<!--	<logger name="org.quartz" additivity="false">
 		<level value="info" />
-		<appender-ref ref="rolling" />
-		<appender-ref ref="console" />
 	</logger>
 
-	<logger name="org.hibernate" additivity="true">
+	<logger name="org.hibernate" additivity="false">
 		<level value="info" />
-		<appender-ref ref="rolling" />
-		<appender-ref ref="console" />
 	</logger>
 
-	<!-- SPRING  -->
-	<logger name="org.springframework" additivity="true">
+	<logger name="org.springframework" additivity="false">
 		<level value="info" />
-		<appender-ref ref="rolling" />
-		<appender-ref ref="console" />
 	</logger>
 	
-	<!-- JETTY  -->
-	<logger name="org.mortbay.jetty"  additivity="true">
+	<logger name="org.mortbay.jetty"  additivity="false">
 		<level value="info" />
-		<appender-ref ref="rolling" />
-		<appender-ref ref="console" />
-	</logger>
+	</logger>-->
+
+	<logger name="com.mchange.v2.c3p0"  additivity="false">
+		<level value="warn" />
+    </logger>
 
 	<root>
-		<!-- <priority value="debug" />-->
-		<level value="debug" />
+		<level value="info" />
 		<appender-ref ref="rolling" />
 		<appender-ref ref="console" />
 	</root>

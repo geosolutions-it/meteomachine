@@ -27,7 +27,7 @@
     <version>1.3-SNAPSHOT</version>
     <packaging>pom</packaging>
 
-    <name>GeoBatch actions</name>
+    <name>GeoBatch actions: Gliders </name>
     <description>GeoSolutions GeoBatch actions.</description>
 
     <url>http://www.geo-solutions.it/maven_reports/gb/flow-managers/</url>
@@ -157,5 +157,10 @@
         </profile>
         
     </profiles>
-    
+
+    <modules>
+<!--        <module>netcdf2geotiff</module> -->
+        <module>metoc</module>
+    </modules>
+
 </project>

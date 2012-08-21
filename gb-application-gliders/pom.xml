@@ -15,15 +15,18 @@
 		<artifactId>gb-gliders</artifactId>
 		<version>1.3-SNAPSHOT</version>
 	</parent>
+
 	<!-- =========================================================== -->
 	<!-- Module Description -->
 	<!-- =========================================================== -->
+	
 	<groupId>it.geosolutions.geobatch.gliders</groupId>
 	<artifactId>gb-application-gliders</artifactId>
 	<version>1.3-SNAPSHOT</version>
+
 	<packaging>war</packaging>
 
-	<name>GeoBatch Application</name>
+	<name>GeoBatch MeteoMachine Application</name>
 	<description>GeoSolutions GeoBatch Application</description>
 
 	<url>http://www.geo-solutions.it/maven_reports/gb/library/</url>
@@ -33,8 +36,6 @@
 	</organization>
 
 	<scm>
-		<connection>scm:svn:http://svn.geotools.org/geotools/trunk/gt/modules/web/</connection>
-		<url>http://svn.geotools.org/geotools/trunk/gt/modules/web/</url>
 	</scm>
 
 	<licenses>
@@ -46,7 +47,7 @@
 	</licenses>
 
 	<properties>
-		<netbeans.hint.deploy.server>Tomcat60</netbeans.hint.deploy.server>
+		<netbeans.hint.deploy.server>Tomcat</netbeans.hint.deploy.server>
 		<flow.dir>geobatch/WEB-INF/</flow.dir>
 	</properties>
 
@@ -55,6 +56,64 @@
 	<!-- =========================================================== -->
 
 	<dependencies>
+	  
+		<!-- ============================== -->
+		<!-- GeoBatch core -->
+		<!-- ============================== -->
+		<dependency>
+			<groupId>it.geosolutions.geobatch</groupId>
+			<artifactId>gb-core-impl</artifactId>
+		</dependency>
+
+		<dependency>
+			<groupId>it.geosolutions.geobatch</groupId>
+			<artifactId>gb-gui</artifactId>
+		</dependency>
+
+		<dependency>
+		    <groupId>it.geosolutions.geobatch</groupId>
+		    <artifactId>gb-dao-xstream</artifactId>
+		</dependency>
+
+		<!-- ============================== -->
+		<!-- Required actions -->
+		<!-- ============================== -->
+
+		<!--  Models -->
+
+		<dependency>
+		    <groupId>it.geosolutions.geobatch</groupId>
+		    <artifactId>gb-action-octave-fileinfileout</artifactId>
+		</dependency>
+
+		<dependency>
+            <groupId>it.geosolutions.geobatch</groupId>
+            <artifactId>gb-octave</artifactId>
+		</dependency>
+
+		<dependency>
+		    <groupId>it.geosolutions.geobatch</groupId>
+		    <artifactId>gb-action-scripting</artifactId>
+		</dependency>
+		<dependency>
+            <groupId>it.geosolutions.geobatch.lamma</groupId>
+            <artifactId>gb-actions-lamma</artifactId>
+            <version>1.1-SNAPSHOT</version>
+        </dependency>
+
+		<!-- repo:sourcerepo prj:metocs branch:development -->
+		<dependency>
+		    <groupId>it.geosolutions.geobatch.metocs</groupId>
+		    <artifactId>gb-action-metocs-netcdf2geotiff</artifactId>
+		    <version>1.3-SNAPSHOT</version>
+		</dependency>
+<!--
+		<dependency>
+			<groupId>it.geosolutions.geobatch.gliders</groupId>
+			<artifactId>gb-action-gliders-kmzprocess</artifactId>
+		</dependency>
+-->
+		
 		<!--  log4j -->
 		<dependency>
 			<groupId>log4j</groupId>
@@ -73,25 +132,20 @@
 			<artifactId>slf4j-log4j12</artifactId>
 			<version>1.5.6</version>
 		</dependency>
-		<dependency>
-			<groupId>org.slf4j</groupId>
-			<artifactId>slf4j-simple</artifactId>
-			<version>1.5.6</version>
-		</dependency>
+
 
 		<!-- ============================== -->
-		<!-- Platform -->
+		<!--  -->
 		<!-- ============================== -->
-		<dependency>
-			<groupId>it.geosolutions.geobatch</groupId>
-			<artifactId>gb-gui</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>it.geosolutions.geobatch.gliders</groupId>
-			<artifactId>gb-action-gliders-kmzprocess</artifactId>
-		</dependency>
 
-		<!-- ============================== -->
+        <dependency>
+            <groupId>javax.media</groupId>
+            <artifactId>jai_core</artifactId>
+            <version>1.1.3</version>
+            <scope>compile</scope>
+        </dependency>
+
+        <!-- ============================== -->
 		<!-- Test: JETTY -->
 		<!-- ============================== -->
 		<dependency>
@@ -149,13 +203,32 @@
 					</connectors>
 					<contextPath>geobatch</contextPath>
 					<webAppSourceDirectory>${project.build.directory}/geobatch</webAppSourceDirectory>
+                    <systemProperties>
+                        <systemProperty>
+                            <name>GEOBATCH_CONFIG_DIR</name>
+                            <value>/home/geosol/prj/nurc/meteomachine/GEOBATCH_CONFIG_DIR</value>
+                        </systemProperty>
+<!--                        <GEOBATCH_CONFIG_DIR>/home/geosol/prj/nurc/meteomachine/GEOBATCH_CONFIG_DIR</GEOBATCH_CONFIG_DIR>-->
+                    </systemProperties>
+                    <webAppConfig>
+
+                    </webAppConfig>
 				</configuration>
 			</plugin>
-
+		 <plugin>
+		  <groupId>org.apache.maven.plugins</groupId>
+		  <artifactId>maven-compiler-plugin</artifactId>
+		  <version>2.3.2</version>
+		  <configuration>
+		   <source>1.6</source>
+		   <target>1.6</target>
+		  </configuration>
+		 </plugin>
 		</plugins>
 	</build>
 
 	<profiles>
+
 		<profile>
 			<id>kmzprocess</id>
 			<activation>
@@ -215,23 +288,6 @@
 			<properties>
 				<all>true</all>
 			</properties>
-		</profile>
-
-		<profile>
-			<id>dao.xstream</id>
-
-			<activation>
-				<property>
-					<name>all</name>
-				</property>
-			</activation>
-
-			<dependencies>
-				<dependency>
-					<groupId>it.geosolutions.geobatch</groupId>
-					<artifactId>gb-dao-xstream</artifactId>
-				</dependency>
-			</dependencies>
 		</profile>
 
 	</profiles>
