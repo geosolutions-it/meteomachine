@@ -71,7 +71,7 @@
 			<artifactId>unidataCommon</artifactId>
 		</dependency>
 		
-		<-- XSTREAM -->
+		<!-- XSTREAM -->
 		<dependency>
 			<groupId>com.thoughtworks.xstream</groupId>
 			<artifactId>xstream</artifactId>
