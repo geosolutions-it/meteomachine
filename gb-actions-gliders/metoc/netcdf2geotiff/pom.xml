@@ -55,17 +55,14 @@
 		<dependency>
 			<groupId>edu.ucar</groupId>
 			<artifactId>grib</artifactId>
-			<version>4.2.32</version>
 		</dependency>
 		<dependency>
 			<groupId>edu.ucar</groupId>
 			<artifactId>netcdf</artifactId>
-			<!--<version>4.2.32</version>-->
 		</dependency>
 		<dependency>
 			<groupId>edu.ucar</groupId>
 			<artifactId>unidataCommon</artifactId>
-			<version>4.2.32</version>
 		</dependency>
 		<dependency>
 			<groupId>com.thoughtworks.xstream</groupId>

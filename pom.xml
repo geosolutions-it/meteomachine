@@ -23,7 +23,6 @@
     <artifactId>gb-gliders</artifactId>
     <version>1.0-SNAPSHOT</version>
     <packaging>pom</packaging>
-
     <name>GeoSolutions GeoBatch - GLIDERS</name>
 
     <!-- =========================================================== -->
@@ -345,7 +344,23 @@
 		    <version>${app.version}</version>
 		</dependency>
 					
- 
+    <!-- netcdf libs -->
+		<dependency>
+			<groupId>edu.ucar</groupId>
+			<artifactId>grib</artifactId>
+			<version>4.2.32</version>
+		</dependency>
+		<dependency>
+			<groupId>edu.ucar</groupId>
+			<artifactId>netcdf</artifactId>
+			<<version>4.2.32</version>
+		</dependency>
+		<dependency>
+			<groupId>edu.ucar</groupId>
+			<artifactId>unidataCommon</artifactId>
+			<version>4.2.32</version>
+		</dependency>    
+    
             <!--  BEGIN: Geographic Domain -->
             <dependency>
                 <groupId>com.vividsolutions</groupId>
@@ -447,7 +462,7 @@
       NOTE: do not specify version here unless it is necessary/required
       NOTE: in this case I suggest to use the dependencyManagement block above
       -->
-    <!--  geoserver manager  -->
+
 
     </dependencies>
 
