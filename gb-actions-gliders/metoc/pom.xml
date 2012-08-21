@@ -4,23 +4,21 @@
          http://maven.apache.org/maven-v4_0_0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 
-    <parent>
-        <groupId>it.geosolutions.geobatch.gliders</groupId>
-        <artifactId>gb-actions-gliders</artifactId>
-	<version>1.0-SNAPSHOT</version>
-    </parent>
+	<parent>
+		<groupId>it.geosolutions.geobatch.gliders</groupId>
+		<artifactId>gb-actions-gliders</artifactId>
+		<version>1.0-SNAPSHOT</version>
+	</parent>
 
-    <groupId>it.geosolutions.geobatch.gliders</groupId>
-    <artifactId>metocs</artifactId>
-    <packaging>pom</packaging>
+	<groupId>it.geosolutions.geobatch.gliders</groupId>
+	<artifactId>metocs</artifactId>
+	<packaging>pom</packaging>
 
-    <name>GeoBatch NURC: METOCS modules</name>
+	<name>GeoBatch NURC: METOCS modules</name>
 
-    <!-- =========================================================== -->
-	
-    <modules>
-      <module>utils</module>
-      <module>netcdf2geotiff</module>
-    </modules>
+	<modules>
+		<module>utils</module>
+		<module>netcdf2geotiff</module>
+	</modules>
 
 </project>
