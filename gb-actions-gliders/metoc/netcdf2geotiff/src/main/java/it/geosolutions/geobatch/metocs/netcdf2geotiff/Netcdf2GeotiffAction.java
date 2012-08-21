@@ -321,7 +321,7 @@ public class Netcdf2GeotiffAction
                             final String coverageName = checker.buildName(var, t, z);
 
                             if (LOGGER.isDebugEnabled()) {
-                                LOGGER.debug("Writing GeoTiff named: \'" + coverageName + "\'");
+                                LOGGER.debug("Writing GeoTiff named \'" + coverageName + "\'");
                             }
 
                             // Storing variables Variables as GeoTIFFs

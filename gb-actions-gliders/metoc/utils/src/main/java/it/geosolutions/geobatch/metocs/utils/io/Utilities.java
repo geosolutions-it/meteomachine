@@ -107,7 +107,7 @@ public class Utilities {
         //
         // /////////////////////////////////////////////////////////////////////
         if (LOGGER.isTraceEnabled())
-            LOGGER.trace("Writing down the file in the decoded directory...");
+            LOGGER.info("Writing coverage -- dir:" + outDir + " coverageName:"+coverageName);
         final GeoTiffFormat wformat = new GeoTiffFormat();
         final GeoTiffWriteParams wp = new GeoTiffWriteParams();
         if (!Double.isNaN(compressionRatio)) {
@@ -220,7 +220,7 @@ public class Utilities {
         //
         // /////////////////////////////////////////////////////////////////////
         if (LOGGER.isInfoEnabled())
-            LOGGER.info("Writing down the file in the decoded directory...");
+            LOGGER.info("Writing coverage -- dir:" + outDir + " file:"+fileName);
         final GeoTiffFormat wformat = new GeoTiffFormat();
         final GeoTiffWriteParams wp = new GeoTiffWriteParams();
         if (!Double.isNaN(compressionRatio)) {
