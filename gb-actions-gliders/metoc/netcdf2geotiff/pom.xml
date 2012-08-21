@@ -36,10 +36,14 @@
 	<!-- Dependency Management -->
 	<!-- =========================================================== -->
 	<dependencies>
+	
+		<!-- ImageMosaic Related Actions -->
 		<dependency>
 			<groupId>it.geosolutions.geobatch</groupId>
 			<artifactId>gb-action-imagemosaic</artifactId>
 		</dependency>
+		
+		<!-- Utils Actions -->
 		<dependency>
 			<groupId>it.geosolutions.geobatch.gliders</groupId>
 			<artifactId>gb-action-metocs-utils</artifactId>
@@ -52,6 +56,8 @@
 		</dependency>
 
 		<!-- from http://maven.geotoolkit.org/edu/ucar/netcdf/4.2.32/ -->
+		<!-- NETCDF -->
+		<!--  we need this one for the GriB files -->
 		<dependency>
 			<groupId>edu.ucar</groupId>
 			<artifactId>grib</artifactId>
@@ -64,6 +70,8 @@
 			<groupId>edu.ucar</groupId>
 			<artifactId>unidataCommon</artifactId>
 		</dependency>
+		
+		<-- XSTREAM -->
 		<dependency>
 			<groupId>com.thoughtworks.xstream</groupId>
 			<artifactId>xstream</artifactId>

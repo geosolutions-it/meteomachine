@@ -21,9 +21,7 @@
  */
 package it.geosolutions.geobatch.metocs.netcdf2geotiff.im;
 
-import it.geosolutions.geobatch.metocs.netcdf2geotiff.cf.*;
 import it.geosolutions.geobatch.metocs.netcdf2geotiff.checker.AbsCheckerSPI;
-import com.thoughtworks.xstream.XStream;
 import it.geosolutions.geobatch.metocs.netcdf2geotiff.checker.MetocsBaseDictionary;
 import it.geosolutions.geobatch.metocs.netcdf2geotiff.checker.NetcdfChecker;
 
@@ -31,6 +29,7 @@ import java.io.File;
 import java.util.EventObject;
 import java.util.HashMap;
 import java.util.Map;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
