@@ -26,18 +26,30 @@ import it.geosolutions.filesystemmonitor.monitor.FileSystemEventType;
 import it.geosolutions.geobatch.flow.event.action.ActionException;
 import it.geosolutions.geobatch.flow.event.action.BaseAction;
 import it.geosolutions.geobatch.imagemosaic.ImageMosaicCommand;
+
 import java.io.File;
+import java.io.IOException;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.LinkedList;
+import java.util.Properties;
 import java.util.Queue;
 import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
 import org.apache.commons.io.FilenameUtils;
 import org.geotools.data.DataStore;
-
+import org.geotools.data.DataStoreFactorySpi;
+import org.geotools.data.shapefile.ShapefileDataStoreFactory;
+import org.geotools.data.simple.SimpleFeatureCollection;
+import org.geotools.data.simple.SimpleFeatureIterator;
+import org.geotools.filter.text.cql2.CQLException;
+import org.geotools.filter.text.ecql.ECQL;
+import org.geotools.gce.imagemosaic.Utils;
+import org.opengis.feature.simple.SimpleFeature;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -57,7 +69,10 @@ import org.slf4j.LoggerFactory;
 public class ForecastCleanerAction
     extends BaseAction<FileSystemEvent> {
 
-    protected final static Logger LOGGER = LoggerFactory.getLogger(ForecastCleanerAction.class);
+	/** {@link ShapefileDataStoreFactory} singleton for later usage.*/
+    private static final ShapefileDataStoreFactory SHAPEFILE_DATA_STORE_FACTORY = new ShapefileDataStoreFactory();
+
+	protected final static Logger LOGGER = LoggerFactory.getLogger(ForecastCleanerAction.class);
 
     private final ForecastCleanerConfiguration configuration;
 
@@ -188,10 +203,30 @@ public class ForecastCleanerAction
         }
     }
 
-    private DataStore openDataStore() {
+    private DataStore openDataStore(final URL propsURL) throws IOException {
         // TODO!!!
         // datastore params should be read from the datastore file in the mosaic dir
-        LOGGER.error("NOT IMPLEMENTED YET");
+
+        
+        // load the datastore.properties file
+        final Properties properties = Utils.loadPropertiesFromURL(propsURL);
+        if(properties!=null){
+        	
+    		// SPI
+    		final String SPIClass = properties.getProperty("SPI");
+    		try {
+    			// create a datastore as instructed
+    			final DataStoreFactorySpi spi = (DataStoreFactorySpi) Class.forName(SPIClass).newInstance();
+    			return spi.createDataStore(Utils.createDataStoreParamsFromPropertiesFile(properties, spi));
+    		} catch (Exception e) {
+    			throw new IOException(e);
+    		}
+        } else {
+        	// try for a shapefile store
+        	if(ForecastCleanerAction.SHAPEFILE_DATA_STORE_FACTORY.canProcess(propsURL)){
+        		return ForecastCleanerAction.SHAPEFILE_DATA_STORE_FACTORY.createDataStore(propsURL);
+        	}
+        }
         return null;
     }
 
@@ -203,10 +238,43 @@ public class ForecastCleanerAction
         return null;
     }
 
-    private Set<File> selectOldForecast(DataStore granuleDataStore, String cqlFilter) {
+    /**
+     * 
+     * @param granuleDataStore
+     * @param typeName
+     * @param cqlFilter
+     * @return
+     * @throws IOException
+     */
+    private Set<File> selectOldForecast(DataStore granuleDataStore, String typeName, String cqlFilter) throws IOException {
         // TODO!!!
-        LOGGER.error("NOT IMPLEMENTED YET");
-        return Collections.EMPTY_SET;
+        
+    	SimpleFeatureIterator iterator=null;
+    	final Set<File> retValue= new HashSet<File>();
+    	try {
+			final SimpleFeatureCollection features = granuleDataStore.getFeatureSource(typeName).getFeatures(ECQL.toFilter(cqlFilter));
+			iterator = features.features();
+			while(iterator.hasNext()){
+				
+				// get feature
+				SimpleFeature granule = iterator.next();
+				
+				// get attribute location
+				// TODO make the attribute parametric by inspecting the mosaic properties file
+				String location = (String) granule.getAttribute(Utils.Prop.LOCATION_ATTRIBUTE); // I am using the default name for the attribute.
+				
+				// TODO I am here assuming that the location is absolute, but it might be relative to the base dir!!!!
+				retValue.add(new File(location));
+			}
+		} catch (CQLException e) {
+			throw new IOException(e);
+		} finally {
+			// release resources
+			if(iterator!=null){
+				iterator.close();
+			}
+		}
+        return retValue;
     }
 
     //=========================================================================
