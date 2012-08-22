@@ -138,7 +138,7 @@ public class ForecastCleanerAction
             Set<File> fileset = extractMatchingFiles(imc);
             Set<GranuleFilter> filters = buildFilters(fileset);
 
-            addDeleteEntries(imc, filters);
+//            addDeleteEntries(imc, filters);
 
             String basename = FilenameUtils.getBaseName(imcFile.getAbsolutePath());
             File outImc = File.createTempFile(basename, ".xml", getTempDir());
@@ -190,17 +190,19 @@ public class ForecastCleanerAction
         return ret;
     }
 
-    private void addDeleteEntries(ImageMosaicCommand imc, Set<GranuleFilter> filters) {
-        DataStore granuleDataStore = openDataStore();
+    private void addDeleteEntries(ImageMosaicCommand imc, Set<GranuleFilter> filters) throws IOException {
+
+        File datastoreProps = new File(configuration.getMosaicPath(), configuration.getDatastoreFileName());
+        DataStore granuleDataStore = openDataStore(datastoreProps.toURI().toURL());
 
         if(imc.getDelFiles() == null)
             imc.setDelFiles(new ArrayList<File>());
 
-        for (GranuleFilter granuleFilter : filters) {
-            String cqlFilter = filter2cql(granuleFilter);
-            Set<File> oldFiles = selectOldForecast(granuleDataStore, cqlFilter);
-            imc.getDelFiles().addAll(oldFiles);
-        }
+//        for (GranuleFilter granuleFilter : filters) {
+//            String cqlFilter = filter2cql(granuleFilter);
+//            Set<File> oldFiles = selectOldForecast(granuleDataStore, cqlFilter);
+//            imc.getDelFiles().addAll(oldFiles);
+//        }
     }
 
     private DataStore openDataStore(final URL propsURL) throws IOException {

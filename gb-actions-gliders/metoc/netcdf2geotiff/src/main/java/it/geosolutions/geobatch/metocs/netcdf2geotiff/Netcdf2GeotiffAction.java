@@ -218,7 +218,7 @@ public class Netcdf2GeotiffAction
                      * VARIABLE (DIRECTORY) NAMING CONVENTION
                      * build the output layer directory using the getVarName implementation for
                      */
-                    final File layerOutputVarDir = new File(layerOutputBaseDir, checker.getVarName(var));
+                    final File layerOutputVarDir = new File(layerOutputBaseDir, checker.getDirName(var));
 
                     if (!layerOutputVarDir.exists()) {
                         if (!layerOutputVarDir.mkdirs()) {

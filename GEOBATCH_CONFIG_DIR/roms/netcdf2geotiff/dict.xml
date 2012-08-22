@@ -4,7 +4,7 @@
         <map>
             <entry>
                 <string>RUNTIME</string>
-                <string>base_time</string> <!-- yeah, probabily an error in the octave processing -->
+                <string>base_time</string> <!-- yeah, probably an error in the octave processing -->
             </entry>
             <entry>
                 <string>NODATA</string>

@@ -198,10 +198,6 @@ public abstract class NetcdfChecker<OutputType> extends Netcdf2GeotiffOutput<Out
 	 * The SUFFIX and the PREFIX variables can be defined into the dictionary as
 	 * root (global) or section (per variable) attributes.
 	 * 
-	 * @note you may override this method to change the VARIABLE (DIRECTORY)
-	 *       NAMING CONVENTION since this name is used to build the output
-	 *       variable directory name.
-	 * 
 	 * @param var
 	 *            the variable to use to getName
 	 * @return a string representing the name in the form described above
@@ -210,6 +206,13 @@ public abstract class NetcdfChecker<OutputType> extends Netcdf2GeotiffOutput<Out
 		return getPrefix(var.getName())
                 + var.getName()
 				+ getSuffix(var.getName());
+	}
+
+    /**
+	 * The output variable directory name.
+     */
+	public String getDirName(final Variable var) {
+		return var.getFullName();
 	}
 
 	/**

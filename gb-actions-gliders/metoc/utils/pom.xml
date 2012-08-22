@@ -91,7 +91,16 @@
 		</dependency>
 
 
-
+		<dependency>
+			<groupId>it.geosolutions.geobatch</groupId>
+			<artifactId>gb-action-imagemosaic</artifactId>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>it.geosolutions.geobatch</groupId>
+			<artifactId>gb-action-scripting</artifactId>
+			<scope>test</scope>
+		</dependency>
 
 	</dependencies>
 

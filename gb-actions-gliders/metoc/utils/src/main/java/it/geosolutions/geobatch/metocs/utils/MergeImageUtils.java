@@ -105,8 +105,9 @@ public class MergeImageUtils {
 		final Matcher matcher = pattern.matcher(name);
 		if (matcher != null && matcher.matches()) {
 			return nameVar + "_" + matcher.group(1);
-		} else
-			return nameVar + "_" + name;
+		} else {
+            return nameVar + "_" + name;
+        }
 	}
 
 	/**

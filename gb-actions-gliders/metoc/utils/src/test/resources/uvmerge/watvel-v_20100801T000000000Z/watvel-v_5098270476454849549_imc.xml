@@ -1,0 +1,11 @@
+<ImageMosaic>
+  <id>imageMosaicCommand_V</id>
+  <dirty>false</dirty>
+  <name>imageMosaicCommand</name>
+  <description>imageMosaicCommand config</description>
+  <listenerConfigurations/>
+  <failIgnored>false</failIgnored>
+  <ignoreGeoServer>false</ignoreGeoServer>
+  <base>just a placeholder, will be replaced during test</base>
+  <add>just a placeholder, will be replaced during test</add>
+</ImageMosaic>

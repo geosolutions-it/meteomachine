@@ -34,8 +34,8 @@
         <preserveInput>false</preserveInput>
 
 
-<!--
-            <OctaveFreeMarkerConfiguration>
+
+        <OctaveFreeMarkerConfiguration>
             <id>octave</id>
             <serviceID>OctaveFreeMarkerGeneratorService</serviceID>
 
@@ -50,7 +50,7 @@
                                 <command>source "/usr/share/octave/3.6.2/m/startup/octaverc";</command>
                             </OctaveCommand>
                             <OctaveCommand executed="false">
-                                <command>cd "/home/geosol/prj/nurc/meteomachine/GEOBATCH_CONFIG_DIR/models/octave";</command>
+                                <command>cd "/home/geosol/prj/nurc/meteomachine/GEOBATCH_CONFIG_DIR/roms/octave";</command>
                             </OctaveCommand>
                         </commands>
                         <definitions/>
@@ -70,7 +70,7 @@
             </octave>
 
         </OctaveFreeMarkerConfiguration>
--->
+
 
 
         <Netcdf2GeotiffConfiguration>
@@ -81,9 +81,9 @@
             <description>NURC ROMS: netcdf -> geotiff</description>
             
             <!--<overrideConfigDir>./</overrideConfigDir>-->
-			
+
+            <!-- if layerParentDirectory is not defined the dir hierarchy will be created inside the tempdir -->
             <!--<layerParentDirectory>/opt/data/models/arw_3km_run00/</layerParentDirectory>-->
-            <!--layerParentDirectory>/home/carlo/work/project/Lamma/trunk/lamma_2012/GEOBATCH_TEMP_DIR/arw_3km_run12/</layerParentDirectory-->
 			
             <crs>EPSG:4326</crs>
             <envelope/>
@@ -105,7 +105,7 @@
         <ScriptingConfiguration>
             <serviceID>ScriptingService</serviceID>
 
-            <id>uvMerge</id>
+            <id>uvmerge</id>
             <name>UV components merge</name>
             <description>preprocessing Groovy Script</description>
 
@@ -120,17 +120,6 @@
             <scriptFile>uvmerge.groovy</scriptFile>
 
             <properties>
-                <entry>
-                    <string>defaultStyle</string>
-                    <string>garrows</string>
-                </entry>
-                <!-- captured group is used int the output image name -->
-                <!-- output name will be namevar_captgrp  -->
-                <entry>
-                    <string>imageNameRegex</string>
-                    <!--<string>[/A-z0-9]+_(.*)\.tiff</string>-->
-                    <string>watvel..(.*).tiff</string>
-                </entry>
                 <!-- recognize the IMC to merge -->
                 <entry>
                     <string>imcRegex</string>
@@ -140,24 +129,56 @@
                 <!-- outdir = prefixcaptgrp+outdirname+suffixcaptgrp-->
                 <entry>
                     <string>outDirName</string>
-                    <string>WATVEL</string>
+                    <string>_</string>
                 </entry>
+                <entry>
+                    <string>suffixRegex</string>
+                    <string>.*_([0-9]+T[0-9]+Z)</string>
+                </entry>
+                <!-- captured group is used int the output image name -->
+                <!-- output name will be outFileBaseName_captgrp  -->
+                <entry>
+                    <string>imageNameRegex</string>
+                    <string>watvel.._(.*).tiff</string>
+                </entry>
+                <entry>
+                    <string>outFileBaseName</string>
+                    <string>watvel</string>
+                </entry>
+
                 <entry>
                     <string>prefixRegex</string>
                     <string>(watvel).*</string>
                 </entry>
                 <entry>
-                    <string>suffixRegex</string>
-                    <string>.*(_[0-9]+T[0-9]+Z)</string>
-                    <!--watvel-u_0002.000_0002.000_20100801T000000000Z_20100801T000000000Z_0_1.0E37.tiff-->
-                    <!-- VARNAME minZ maxZ runtime forecasttime tau nodata -->
-                    <!--<string>.*_.*_.*_([0-9]+T[0-9]+Z)_.*_.*_.*.tiff</string>-->
-                    <!--<string>.*_.*(_.*_[0-9]+T[0-9]+Z_.*)_.*_.*.tiff</string>-->
-                    <!--<string>.*_(.*)</string>-->
+                    <string>defaultStyle</string>
+                    <string>garrows</string>
                 </entry>
             </properties>
-
         </ScriptingConfiguration>
+
+        <ForecastCleanerConfiguration>
+            <serviceID>ForecastCleanerService</serviceID>
+
+            <id>forecastcleaner</id>
+            <name>Forecast cleaner</name>
+            <description>Add IMC commands for removing old forecast granules</description>
+
+            <listenerId>NURCModelsLogger</listenerId>
+            <listenerId>NURCModelsCumulator</listenerId>
+            <listenerId>NURCModelsStatus</listenerId>
+            
+            <mosaicPath></mosaicPath>
+            <datastoreFileName></datastoreFileName>
+            <imcRegEx>watvel.*xml</imcRegEx>
+            <imageRegEx>watvel_.*_.*_.*_.*_.*_.*.tiff</imageRegEx>
+
+            <!-- watvel_0002.000_0002.000_20100801T000000000Z_20100801T030000000Z_0_1.0E37.tiff -->
+            <forecastRegEx>watvel_.*_.*_.*_(.*)_.*_.*.tiff</forecastRegEx>
+            <runtimeRegEx>watvel_.*_.*_(.*)_.*_.*_.*.tiff</runtimeRegEx>
+            <elevationRegEx>watvel_(.*)_.*_.*_.*_.*_.*.tiff</elevationRegEx>
+            
+        </ForecastCleanerConfiguration>
 
         <ImageMosaicActionConfiguration>
             <serviceID>ImageMosaicGeneratorService</serviceID>
@@ -175,11 +196,10 @@
             <crs>EPSG:4326</crs>
 
             <envelope/>
+
             <dataTransferMethod>EXTERNAL</dataTransferMethod>
-            <geoserverUID>admin</geoserverUID>
-            <!--geoserverPWD>geoserver</geoserverPWD>
-         			<geoserverURL>http://localhost:8181/geoserver</geoserverURL-->
-            <geoserverPWD>j6Knno8r</geoserverPWD>
+            <geoserverUID>admin</geoserverUID>            
+            <geoserverPWD>geoserver</geoserverPWD>
             <geoserverURL>http://172.16.1.134:8080/geoserver</geoserverURL>
             <defaultNamespace>ARW_3KM_RUN00</defaultNamespace>
             <defaultStyle>raster</defaultStyle>

@@ -49,6 +49,11 @@ public class NetcdfIMChecker extends NetcdfCheckerImpl<EventObject> {
 
     @Override
     public String getVarName(final Variable var) {
+        return var.getFullName();
+    }
+
+    @Override
+    public String getDirName(final Variable var) {
         return super.getVarName(var) + "_" + super.getRunTime();
     }
 
