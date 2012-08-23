@@ -19,21 +19,32 @@
  *  You should have received a copy of the GNU General Public License
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package it.geosolutions.geobatch.metocs.netcdf2geotiff;
+package it.geosolutions.geobatch.metocs.netcdf2geotiff.output;
 
+import it.geosolutions.geobatch.metocs.netcdf2geotiff.checker.NetcdfChecker;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import ucar.nc2.Variable;
 
 /**
  * 
  * @author Carlo Cancellieri - carlo.cancellieri@geo-solutions.it
+ * @author ETj
  *
  * @param <Type> the type of the output
  */
-public abstract class Netcdf2GeotiffOutput <Type> {
+public abstract class OutputQueueHandler <Type> {
+
+    protected Map<String, Object> configuration;
+    protected NetcdfChecker checker;
+
+    public OutputQueueHandler(Map<String, Object> configuration, NetcdfChecker checker) {
+        this.configuration = configuration;
+        this.checker = checker;
+    }
 	
 	/**
 	 * contains the list of the output files for a given variable
