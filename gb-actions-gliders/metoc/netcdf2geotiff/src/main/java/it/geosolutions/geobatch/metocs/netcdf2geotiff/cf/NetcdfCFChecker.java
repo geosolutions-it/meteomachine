@@ -25,7 +25,6 @@ import it.geosolutions.geobatch.metocs.netcdf2geotiff.checker.NetcdfCheckerImpl;
 import it.geosolutions.geobatch.metocs.netcdf2geotiff.checker.NetcdfCheckerSPI;
 
 import java.io.File;
-import java.util.EventObject;
 
 import ucar.nc2.NetcdfFile;
 
@@ -34,7 +33,7 @@ import ucar.nc2.NetcdfFile;
  * @author Carlo Cancellieri - carlo.cancellieri@geo-solutions.it
  *
  */
-public class NetcdfCFChecker extends NetcdfCheckerImpl<EventObject> {
+public class NetcdfCFChecker extends NetcdfCheckerImpl {
 
     protected NetcdfCFChecker(final NetcdfFile ncFileIn, final File dictionaryFile, final NetcdfCheckerSPI spi) throws Exception {
         super(ncFileIn, dictionaryFile, spi);

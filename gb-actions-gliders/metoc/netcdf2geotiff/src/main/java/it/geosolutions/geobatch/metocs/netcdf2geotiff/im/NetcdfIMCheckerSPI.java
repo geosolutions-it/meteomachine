@@ -24,8 +24,11 @@ package it.geosolutions.geobatch.metocs.netcdf2geotiff.im;
 import it.geosolutions.geobatch.metocs.netcdf2geotiff.checker.AbsCheckerSPI;
 import it.geosolutions.geobatch.metocs.netcdf2geotiff.checker.MetocsBaseDictionary;
 import it.geosolutions.geobatch.metocs.netcdf2geotiff.checker.NetcdfChecker;
+import it.geosolutions.geobatch.metocs.netcdf2geotiff.output.IMCOutputHandler;
+import it.geosolutions.geobatch.metocs.netcdf2geotiff.output.OutputQueueHandler;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.EventObject;
 import java.util.HashMap;
 import java.util.Map;
@@ -34,6 +37,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import ucar.nc2.NetcdfFile;
+import ucar.nc2.Variable;
 
 /**
  * Provides ImageMosaicCommands as output.
@@ -63,10 +67,18 @@ public class NetcdfIMCheckerSPI extends AbsCheckerSPI {
         return type.contains("netcdf"); //TODO change with correct value!!!
     }
 
-	public NetcdfChecker<EventObject> getChecker(NetcdfFile ncFileIn,
-			File dictionary) throws Exception {
+	public NetcdfChecker buildChecker(NetcdfFile ncFileIn, File dictionary) throws Exception {
 		return new NetcdfIMChecker(ncFileIn, dictionary,this);
 	}
 
+    @Override
+    public OutputQueueHandler<EventObject> buildOutputQueueHandler(Map<String, Object> cfg, NetcdfChecker checker) {
+        return new IMCOutputHandler(cfg, checker) {
+            @Override
+            protected File buildOutputFile(Variable var, File outputDir) throws IOException {
+                return File.createTempFile(var.getFullName(), "_imc.xml", outputDir);
+            }
+        };
+    }
 
 }

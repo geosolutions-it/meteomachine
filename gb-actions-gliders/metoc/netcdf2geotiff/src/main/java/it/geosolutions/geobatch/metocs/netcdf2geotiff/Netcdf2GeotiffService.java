@@ -40,6 +40,13 @@ public class Netcdf2GeotiffService extends BaseService implements
     private final static Logger LOGGER = LoggerFactory
             .getLogger(Netcdf2GeotiffService.class);
 
+    public Netcdf2GeotiffService(String id) {
+        super(id);
+    }
+
+    /**
+     * @deprecated name and description are not used
+     */
     public Netcdf2GeotiffService(String id, String name, String description) {
         super(id, name, description);
     }

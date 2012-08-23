@@ -22,8 +22,10 @@
 package it.geosolutions.geobatch.metocs.netcdf2geotiff.checker;
 
 
+import it.geosolutions.geobatch.metocs.netcdf2geotiff.output.OutputQueueHandler;
 import java.io.File;
 import java.util.EventObject;
+import java.util.Map;
 
 import ucar.nc2.NetcdfFile;
 
@@ -33,8 +35,10 @@ import ucar.nc2.NetcdfFile;
  *
  */
 public interface  NetcdfCheckerSPI {
+
+    public OutputQueueHandler<EventObject> buildOutputQueueHandler(Map<String, Object> cfg, NetcdfChecker checker);
     
-    public NetcdfChecker<EventObject> getChecker(final NetcdfFile ncFileIn, final File dictionary) throws Exception;
+    public NetcdfChecker buildChecker(final NetcdfFile ncFileIn, final File dictionary) throws Exception;
     
     public MetocsBaseDictionary readDictionary(final File dictionaryFile);
     

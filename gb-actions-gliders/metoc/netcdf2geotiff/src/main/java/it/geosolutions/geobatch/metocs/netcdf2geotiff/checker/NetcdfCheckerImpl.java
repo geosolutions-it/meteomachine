@@ -41,18 +41,20 @@ import ucar.units.Converter;
  * @author Carlo Cancellieri - carlo.cancellieri@geo-solutions.it
  * 
  */
-public class NetcdfCheckerImpl<TYPE> extends NetcdfChecker<TYPE> {
+public class NetcdfCheckerImpl extends NetcdfChecker {
 
     protected final Logger LOGGER = LoggerFactory.getLogger(NetcdfCheckerImpl.class);
 
-    /**
-     * Define the ouptut of the Netcdf2geotiff action OVERRIDE ME!
-     * 
-     * @note default output is null!
-     */
-    public TYPE writeOutput(final File workingDir, final Variable var) {
-        return null;
-    }
+    // obsolete: the output handler is provided by the SPI.
+//    /**
+//     * Define the ouptut of the Netcdf2geotiff action OVERRIDE ME!
+//     *
+//     * @note default output is null!
+//     */
+//    @Override
+//    public TYPE writeOutput(final File workingDir, final Variable var) {
+//        return null;
+//    }
 
 
     public NetcdfCheckerImpl(final NetcdfFile ncFileIn, final File dictionaryFile, final NetcdfCheckerSPI spi)
@@ -227,11 +229,16 @@ public class NetcdfCheckerImpl<TYPE> extends NetcdfChecker<TYPE> {
         return converter;
     }
 
-    // varName
+    /**
+     * @deprecated confusing.
+     */
     private void setVarName(final Variable var) {
         varName = super.getVarName(var);
     }
 
+    /**
+     * @deprecated confusing. Use {@link #composeVarName(ucar.nc2.Variable)} where needed.
+     */
     @Override
     public String getVarName(final Variable var) {
         return varName;

@@ -36,6 +36,10 @@ import ucar.nc2.NetcdfFile;
 
 import com.thoughtworks.xstream.XStream;
 import it.geosolutions.geobatch.metocs.netcdf2geotiff.checker.AbsCheckerSPI;
+import it.geosolutions.geobatch.metocs.netcdf2geotiff.output.IMCOutputHandler;
+import it.geosolutions.geobatch.metocs.netcdf2geotiff.output.OutputQueueHandler;
+import java.io.IOException;
+import ucar.nc2.Variable;
 
 /**
  * 
@@ -45,7 +49,7 @@ import it.geosolutions.geobatch.metocs.netcdf2geotiff.checker.AbsCheckerSPI;
  */
 public class Grib1CheckerSPI extends AbsCheckerSPI {
     protected final static Logger LOGGER = LoggerFactory.getLogger(Grib1CheckerSPI.class);
-    private final static XStream xstream= new XStream();
+
 //    static{
 //        try {
 //            // NetcdfFile.class.getClassLoader().loadClass("ucar.grib.grib2.Grib2Input");
@@ -61,8 +65,6 @@ public class Grib1CheckerSPI extends AbsCheckerSPI {
 
     public Grib1CheckerSPI() {
         super();
-      
-            
     }
 
     public MetocsBaseDictionary readDictionary(final File dictionaryFile) {
@@ -96,9 +98,22 @@ public class Grib1CheckerSPI extends AbsCheckerSPI {
         return type.contains("grib"); // TODO change with a more formal value!!!
     }
 
-	public NetcdfChecker<EventObject> getChecker(NetcdfFile ncFileIn,
-			File dictionary) throws Exception{
+    @Override
+	public NetcdfChecker buildChecker(NetcdfFile ncFileIn, File dictionary) throws Exception {
 			return new Grib1Checker(ncFileIn, dictionary, this);
 	}
+
+    @Override
+    public OutputQueueHandler<EventObject> buildOutputQueueHandler(Map<String, Object> cfg, NetcdfChecker checker) {
+        return new IMCOutputHandler(cfg, checker) {
+            @Override
+            protected File buildOutputFile(Variable var, File outputDir) throws IOException {
+                String baseName =  checker.composeVarName(var) + "_" + checker.getRunTime();
+                return  File.createTempFile(baseName + "_", "_ImgMscCmd.xml", outputDir);
+            }
+        };
+    }
+
+
 
 }

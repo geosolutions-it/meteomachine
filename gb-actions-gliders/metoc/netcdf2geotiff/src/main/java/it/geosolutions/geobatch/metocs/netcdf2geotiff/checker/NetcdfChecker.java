@@ -21,7 +21,7 @@
  */
 package it.geosolutions.geobatch.metocs.netcdf2geotiff.checker;
 
-import it.geosolutions.geobatch.metocs.netcdf2geotiff.Netcdf2GeotiffOutput;
+import it.geosolutions.geobatch.metocs.netcdf2geotiff.output.OutputQueueHandler;
 import it.geosolutions.geobatch.metocs.utils.converter.ConverterManager;
 import it.geosolutions.geobatch.metocs.utils.io.METOCSActionsIOUtils;
 import it.geosolutions.tools.commons.time.TimeParser;
@@ -57,7 +57,7 @@ import ucar.units.UnitDBException;
  * @author Carlo Cancellieri - carlo.cancellieri@geo-solutions.it
  *
  */
-public abstract class NetcdfChecker<OutputType> extends Netcdf2GeotiffOutput<OutputType>{
+public abstract class NetcdfChecker { // <OutputType> { extends OutputQueueHandler<OutputType>{
 	
 	/**
 	 * method to override to initialize internal members
@@ -201,8 +201,19 @@ public abstract class NetcdfChecker<OutputType> extends Netcdf2GeotiffOutput<Out
 	 * @param var
 	 *            the variable to use to getName
 	 * @return a string representing the name in the form described above
+     *
+     * @deprecated really confusing. Use {@link #composeVarName(ucar.nc2.Variable) }
 	 */
 	public String getVarName(final Variable var) {
+		return getPrefix(var.getName())
+                + var.getName()
+				+ getSuffix(var.getName());
+	}
+
+    /**
+     * @return the var name composed with prefix and suffix
+     */
+	public String composeVarName(final Variable var) {
 		return getPrefix(var.getName())
                 + var.getName()
 				+ getSuffix(var.getName());

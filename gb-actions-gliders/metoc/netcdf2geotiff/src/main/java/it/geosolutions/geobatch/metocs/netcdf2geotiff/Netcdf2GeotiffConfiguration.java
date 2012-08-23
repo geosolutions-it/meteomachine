@@ -34,6 +34,12 @@ public class Netcdf2GeotiffConfiguration extends ActionConfiguration {
      */
     private String layerParentDirectory;
 
+    /**
+     * The mosaic Dir to be set in the ImageMosaicCommand.
+     * (probably this info is too specific if this action is going to put on the 
+     * output queue something different from the IMC.
+     */
+    private Map<String, Object> outputConfiguration;
 
     /**
      * Default logger
@@ -170,7 +176,7 @@ public class Netcdf2GeotiffConfiguration extends ActionConfiguration {
     @Override
     public String toString() {
         return getClass().getSimpleName() + "[" + "id:" + getId() + " name:" + getName()
-                + " srvId:" + getServiceID() + " overrideConfigDir:" + getOverrideConfigDir() + "]";
+                + " srvId:" + getServiceID() + "]";
     }
 
     /**
@@ -188,6 +194,14 @@ public class Netcdf2GeotiffConfiguration extends ActionConfiguration {
         this.layerParentDirectory = outputDirectory;
     }
 
+    public Map<String, Object> getOutputConfiguration() {
+        return outputConfiguration;
+    }
+
+    public void setOutputConfiguration(Map<String, Object> outputConfiguration) {
+        this.outputConfiguration = outputConfiguration;
+    }
+    
     /**
      * copy into returned object src
      * 

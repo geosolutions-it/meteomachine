@@ -22,7 +22,6 @@
 package it.geosolutions.geobatch.metocs.netcdf2geotiff.checker;
 
 import com.thoughtworks.xstream.XStream;
-import it.geosolutions.geobatch.metocs.netcdf2geotiff.checker.NetcdfCheckerSPI;
 
 import java.io.File;
 import java.io.FileInputStream;

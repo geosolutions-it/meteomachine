@@ -24,6 +24,8 @@ package it.geosolutions.geobatch.metocs.netcdf2geotiff.cf;
 import it.geosolutions.geobatch.metocs.netcdf2geotiff.checker.AbsCheckerSPI;
 import it.geosolutions.geobatch.metocs.netcdf2geotiff.checker.MetocsBaseDictionary;
 import it.geosolutions.geobatch.metocs.netcdf2geotiff.checker.NetcdfChecker;
+import it.geosolutions.geobatch.metocs.netcdf2geotiff.output.DefaultOutputQueueHandler;
+import it.geosolutions.geobatch.metocs.netcdf2geotiff.output.OutputQueueHandler;
 
 import java.io.File;
 import java.util.EventObject;
@@ -66,10 +68,14 @@ public class NetcdfCFCheckerSPI extends AbsCheckerSPI {
         return type.contains("netcdf"); //TODO change with correct value!!!
     }
 
-	public NetcdfChecker<EventObject> getChecker(NetcdfFile ncFileIn,
-			File dictionary) throws Exception {
+	public NetcdfChecker buildChecker(NetcdfFile ncFileIn, File dictionary) throws Exception {
 		return new NetcdfCFChecker(ncFileIn, dictionary,this);
 	}
+
+    @Override
+    public OutputQueueHandler<EventObject> buildOutputQueueHandler(Map<String, Object> cfg, NetcdfChecker checker) {
+        return new DefaultOutputQueueHandler(cfg, checker);
+    }
 
 
 }
