@@ -26,17 +26,22 @@ import it.geosolutions.filesystemmonitor.monitor.FileSystemEventType;
 import it.geosolutions.geobatch.flow.event.action.ActionException;
 import it.geosolutions.geobatch.flow.event.action.BaseAction;
 import it.geosolutions.geobatch.imagemosaic.ImageMosaicCommand;
+import it.geosolutions.tools.commons.time.TimeParser;
 
 import java.io.File;
 import java.io.IOException;
 import java.net.URL;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Collections;
+import java.util.Date;
 import java.util.HashSet;
 import java.util.LinkedList;
+import java.util.List;
 import java.util.Properties;
 import java.util.Queue;
 import java.util.Set;
+import java.util.TimeZone;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -46,10 +51,16 @@ import org.geotools.data.DataStoreFactorySpi;
 import org.geotools.data.shapefile.ShapefileDataStoreFactory;
 import org.geotools.data.simple.SimpleFeatureCollection;
 import org.geotools.data.simple.SimpleFeatureIterator;
+import org.geotools.factory.CommonFactoryFinder;
 import org.geotools.filter.text.cql2.CQLException;
 import org.geotools.filter.text.ecql.ECQL;
 import org.geotools.gce.imagemosaic.Utils;
+import org.geotools.temporal.object.DefaultInstant;
+import org.geotools.temporal.object.DefaultPosition;
 import org.opengis.feature.simple.SimpleFeature;
+import org.opengis.filter.Filter;
+import org.opengis.filter.FilterFactory2;
+import org.opengis.temporal.Instant;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -190,7 +201,7 @@ public class ForecastCleanerAction
         return ret;
     }
 
-    private void addDeleteEntries(ImageMosaicCommand imc, Set<GranuleFilter> filters) throws IOException {
+    protected void addDeleteEntries(ImageMosaicCommand imc, Set<GranuleFilter> filters) throws IOException {
         File datastoreProps = new File(imc.getBaseDir(), configuration.getDatastoreFileName());
         if(LOGGER.isDebugEnabled())
             LOGGER.debug("Looking for datastore property file " + datastoreProps);
@@ -210,11 +221,13 @@ public class ForecastCleanerAction
         if(imc.getDelFiles() == null)
             imc.setDelFiles(new ArrayList<File>());
 
-//        for (GranuleFilter granuleFilter : filters) {
-//            String cqlFilter = filter2cql(granuleFilter);
-//            Set<File> oldFiles = selectOldForecast(granuleDataStore, cqlFilter);
-//            imc.getDelFiles().addAll(oldFiles);
-//        }
+        for (GranuleFilter granuleFilter : filters) {
+            Filter cqlFilter = filter2cql(granuleFilter);
+            if(cqlFilter == null) // parsing error. should we bail out?
+                continue;
+            Set<File> oldFiles = selectOldForecast(granuleDataStore, configuration.getTypeName(), cqlFilter);
+            imc.getDelFiles().addAll(oldFiles);
+        }
     }
 
     private DataStore openDataStore(final URL propsURL) throws IOException {
@@ -245,12 +258,76 @@ public class ForecastCleanerAction
         return null;
     }
 
-    private String filter2cql(GranuleFilter filter) {
+    private final static SimpleDateFormat UTCFORMATTER = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssZ");
+    static {
+        UTCFORMATTER.setTimeZone(TimeZone.getTimeZone("UTC"));
+    }
+
+//    private final static String reformatDate(String dateS) {
+//        try {
+//            final TimeParser parser = new TimeParser();
+//            List<Date> dates = parser.parse(dateS);
+//            if(dates.isEmpty()) {
+//                return null;
+//            }
+//            String utcForecast = UTCFORMATTER.format(dates.get(0));
+//            // now we have somethig in the form 2010-08-02T05:00:00+0000
+//            // but we need                      2010-08-02T05:00:00+00:00
+//            // or                               2010-08-02T05:00:00Z
+////            String utc2 = utcForecast.substring(0,22)+":"+utcForecast.substring(22);
+//            String utc2 = utcForecast.substring(0,20)+"Z";
+//            return utc2;
+//        } catch (ParseException ex) {
+//            LOGGER.error("Error parsing " + dateS+ ": " + ex.getMessage(), ex);
+//            return null;
+//        }
+//    }
+
+    protected Filter forecast2Filter(GranuleFilter filter) {
+        try {
+            final TimeParser parser = new TimeParser();
+            List<Date> dates = parser.parse(filter.getForecasttime());
+            if(dates.isEmpty()) {
+                return null;
+            }
+
+            String utc = UTCFORMATTER.format(dates.get(0));
+
+            LOGGER.debug(" Date " + filter.getForecasttime() 
+                    + " parsed as " + utc +" -- "
+                    + dates.get(0));
+
+            FilterFactory2 ff = CommonFactoryFinder.getFilterFactory2();
+
+            // checkme: it seems there is not equal comparator for dates
+            // checkme2: we have to convert the date to UTC ourselves, bc filters suffer from timezone conversion
+            Filter out = ff.and(
+                    ff.greaterOrEqual(
+                        ff.property(configuration.getForecastAttribute()),
+//                        ff.literal(dates.get(0))),
+                        ff.literal(utc)),
+                    ff.lessOrEqual(
+                        ff.property(configuration.getForecastAttribute()),
+                        ff.literal(utc)) );
+//                        ff.literal(dates.get(0))) );
+
+            return out;
+        } catch (ParseException ex) {
+            LOGGER.error("Error parsing " + filter.getForecasttime()+ ": " + ex.getMessage(), ex);
+            return null;
+        }
+    }
+
+    private Filter filter2cql(GranuleFilter filter) {
+
         // TODO!!!
         // attribute names could be read from the regex prop files, but we could
         // redefine them in the config file in order to save some implementation time
-        LOGGER.error("NOT IMPLEMENTED YET");
-        return null;
+
+       Filter forecastFilter = forecast2Filter(filter);
+       // not filtering by elevation, since all ingestion always have the same set of elevations
+
+       return forecastFilter;
     }
 
     /**
@@ -261,34 +338,43 @@ public class ForecastCleanerAction
      * @return
      * @throws IOException
      */
-    private Set<File> selectOldForecast(DataStore granuleDataStore, String typeName, String cqlFilter) throws IOException {
-        // TODO!!!
-        
+    private Set<File> selectOldForecast(DataStore granuleDataStore, String typeName, Filter cqlFilter) throws IOException {
+
+        if(LOGGER.isDebugEnabled())
+            LOGGER.debug("Filtering " + typeName + " using filter \""+cqlFilter +"\"");
+
     	SimpleFeatureIterator iterator=null;
     	final Set<File> retValue= new HashSet<File>();
-    	try {
-			final SimpleFeatureCollection features = granuleDataStore.getFeatureSource(typeName).getFeatures(ECQL.toFilter(cqlFilter));
+    	try {            
+			final SimpleFeatureCollection features = granuleDataStore.getFeatureSource(typeName).getFeatures(cqlFilter);
 			iterator = features.features();
 			while(iterator.hasNext()){
 				
 				// get feature
 				SimpleFeature granule = iterator.next();
-				
+
 				// get attribute location
 				// TODO make the attribute parametric by inspecting the mosaic properties file
-				String location = (String) granule.getAttribute(Utils.Prop.LOCATION_ATTRIBUTE); // I am using the default name for the attribute.
+				String location = (String) granule.getAttribute("location"); // I am using the default name for the attribute.
+//				String location = (String) granule.getAttribute(Utils.Prop.LOCATION_ATTRIBUTE); // I am using the default name for the attribute.
 				
 				// TODO I am here assuming that the location is absolute, but it might be relative to the base dir!!!!
 				retValue.add(new File(location));
 			}
-		} catch (CQLException e) {
-			throw new IOException(e);
 		} finally {
 			// release resources
 			if(iterator!=null){
 				iterator.close();
 			}
 		}
+        if(LOGGER.isInfoEnabled())
+            LOGGER.info("Found " + retValue.size() + " old granules.");
+
+//        if(LOGGER.isDebugEnabled()) {
+//            for (File file : retValue) {
+//                LOGGER.debug("  granule " + file.getName());
+//            }
+//        }
         return retValue;
     }
 
@@ -367,8 +453,6 @@ public class ForecastCleanerAction
                     + ", forecasttime=" + forecasttime
                     + ", elevation=" + elevation + ']';
         }
-
-
 
     }
 

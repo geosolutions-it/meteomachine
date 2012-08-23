@@ -28,6 +28,7 @@ import it.geosolutions.geobatch.configuration.event.action.ActionConfiguration;
 public class ForecastCleanerConfiguration extends ActionConfiguration {
 
     private String datastoreFileName;
+    private String typeName;
 
     private String imcRegEx;
     private String imageRegEx;
@@ -35,6 +36,9 @@ public class ForecastCleanerConfiguration extends ActionConfiguration {
     private String forecastRegEx;
     private String runtimeRegEx;
     private String elevationRegEx;
+
+    /**       Forecast attribute name shll be extracted from the index prop files */
+    private String forecastAttribute;
 
     public ForecastCleanerConfiguration(String id, String name, String description) {
         super(id, name, description);
@@ -87,7 +91,23 @@ public class ForecastCleanerConfiguration extends ActionConfiguration {
     public void setElevationRegEx(String elevationRegEx) {
         this.elevationRegEx = elevationRegEx;
     }
-    
+
+    public String getForecastAttribute() {
+        return forecastAttribute;
+    }
+
+    public void setForecastAttribute(String forecastAttribute) {
+        this.forecastAttribute = forecastAttribute;
+    }
+
+    public String getTypeName() {
+        return typeName;
+    }
+
+    public void setTypeName(String typeName) {
+        this.typeName = typeName;
+    }
+   
     @Override
     public String toString() {
         return getClass().getSimpleName() + "{datastoreFileName=" + datastoreFileName + ", imcRegEx=" + imcRegEx + ", imageRegEx=" + imageRegEx + ", forecastRegEx=" + forecastRegEx + ", runtimeRegEx=" + runtimeRegEx + '}';

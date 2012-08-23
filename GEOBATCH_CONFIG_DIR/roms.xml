@@ -177,6 +177,11 @@
             <listenerId>NURCModelsStatus</listenerId>
 
             <datastoreFileName>datastore.properties</datastoreFileName>
+            <typeName>roms</typeName>
+
+            <!-- forecast attribute name shll be extracted from the index prop files -->
+            <forecastAttribute>forecast</forecastAttribute>
+
             <imcRegEx>watvel.*xml</imcRegEx>
             <imageRegEx>watvel_.*_.*_.*_.*_.*_.*.tiff</imageRegEx>
 
@@ -190,11 +195,11 @@
         <ImageMosaicActionConfiguration>
             <serviceID>ImageMosaicGeneratorService</serviceID>
 
-            <id>ImageMosaicService</id>
-            <name>ImageMosaicService</name>
+            <id>imagemosaic</id>
+            <name>Configure mosaic</name>
             <description>ImageMosaicService</description>
 
-            <overrideConfigDir>./</overrideConfigDir>
+            <!--<overrideConfigDir>./</overrideConfigDir>-->
 
             <listenerId>NURCModelsLogger</listenerId>
             <listenerId>NURCModelsCumulator</listenerId>
@@ -209,7 +214,11 @@
             <geoserverUID>admin</geoserverUID>
             <geoserverPWD>geoserver</geoserverPWD>
             <geoserverURL>http://localhost:8888/geoserver</geoserverURL>
+
             <defaultNamespace>nurc</defaultNamespace>
+            <storeName>roms_mosaic</storeName>
+            <layerName>roms</layerName>
+
             <defaultStyle>raster</defaultStyle>
 
             <wmsPath>/</wmsPath>
@@ -244,13 +253,18 @@
             <!--  <dirName>DIR</dirName>-->
             <styles/>
 
-            <!--<datastorePropertiesPath>config/datastore.properties</datastorePropertiesPath>-->
+            <timeAttribute>forecast</timeAttribute> <!-- ingestion by default -->
+            <elevationAttribute>depth</elevationAttribute> <!-- elevation by default -->
+
+            <!-- default file loaded from this actions' config dir -->
+            <datastorePropertiesPath>datastore.properties</datastorePropertiesPath>
             <!--<timeRegex>[0-9]{8}T[0-9]{9}Z(\?!.\*[0-9]{8}T[0-9]{9}Z.\*)</timeRegex>-->
-            <timeRegex>(?<=\d{8}T\d{9}Z_)\d{8}T\d{9}Z</timeRegex>
+            <timeRegex><![CDATA[(?<=\\d{8}T\\d{9}Z_)\\d{8}T\\d{9}Z]]></timeRegex> <!-- the forecast time -->
             <!--<elevationRegex><![CDATA[(?<=_)(\\d{4}\\.\\d{3})(?=_)]]></elevationRegex>-->
-            <elevationRegex>(?<=[^_]*_)[^_]*</elevationRegex>
+            <elevationRegex><![CDATA[(?<=[^_]*_)(\\d+\\.\\d+)(?=_\\d+\\.\\d+_\\d{8}T)]]></elevationRegex> <!-- the Z0 -->
 
         </ImageMosaicActionConfiguration>
+
 		
 <!--        <GeoServerReloadConfiguration>
             <serviceID>GeoServerReloadService</serviceID>
