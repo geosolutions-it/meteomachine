@@ -39,6 +39,13 @@ public class ForecastCleanerGeneratorService
 
     private final static Logger LOGGER = LoggerFactory.getLogger(ForecastCleanerGeneratorService.class);
 
+    public ForecastCleanerGeneratorService(String id) {
+        super(id);
+    }
+
+    /**
+     * @deprecated name and description are not used
+     */
     public ForecastCleanerGeneratorService(String id, String name, String description) {
         super(id, name, description);
     }

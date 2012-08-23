@@ -115,6 +115,11 @@
             <groupId>it.geosolutions.geobatch.gliders</groupId>
             <artifactId>gb-action-metocs-netcdf2geotiff</artifactId>
         </dependency>
+
+        <dependency>
+            <groupId>it.geosolutions.geobatch.gliders</groupId>
+            <artifactId>gb-action-metocs-forecastcleaner</artifactId>
+        </dependency>
 		
         <!--  log4j -->
         <dependency>

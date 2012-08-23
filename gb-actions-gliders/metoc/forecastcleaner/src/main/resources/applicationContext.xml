@@ -4,6 +4,7 @@
 <beans default-init-method="init" default-destroy-method="dispose">
 	
 	<bean id="ForecastCleanerService" class="it.geosolutions.geobatch.metocs.forecastcleaner.ForecastCleanerGeneratorService">
+        <constructor-arg value="ForecastCleanerService" />
 	</bean>
     
     <bean id="ForecastCleanerAliasRegistrar" class="it.geosolutions.geobatch.metocs.forecastcleaner.ForecastCleanerAliasRegistrar" lazy-init="false">

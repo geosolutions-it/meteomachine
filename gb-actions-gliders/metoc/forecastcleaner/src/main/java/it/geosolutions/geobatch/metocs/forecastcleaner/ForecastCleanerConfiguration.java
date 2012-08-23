@@ -27,7 +27,6 @@ import it.geosolutions.geobatch.configuration.event.action.ActionConfiguration;
 
 public class ForecastCleanerConfiguration extends ActionConfiguration {
 
-    private String mosaicPath;
     private String datastoreFileName;
 
     private String imcRegEx;
@@ -39,14 +38,6 @@ public class ForecastCleanerConfiguration extends ActionConfiguration {
 
     public ForecastCleanerConfiguration(String id, String name, String description) {
         super(id, name, description);
-    }
-
-    public String getMosaicPath() {
-        return mosaicPath;
-    }
-
-    public void setMosaicPath(String mosaicPath) {
-        this.mosaicPath = mosaicPath;
     }
 
     public String getDatastoreFileName() {
@@ -99,7 +90,7 @@ public class ForecastCleanerConfiguration extends ActionConfiguration {
     
     @Override
     public String toString() {
-        return getClass().getSimpleName() + "{" + "mosaicPath=" + mosaicPath + ", datastoreFileName=" + datastoreFileName + ", imcRegEx=" + imcRegEx + ", imageRegEx=" + imageRegEx + ", forecastRegEx=" + forecastRegEx + ", runtimeRegEx=" + runtimeRegEx + '}';
+        return getClass().getSimpleName() + "{datastoreFileName=" + datastoreFileName + ", imcRegEx=" + imcRegEx + ", imageRegEx=" + imageRegEx + ", forecastRegEx=" + forecastRegEx + ", runtimeRegEx=" + runtimeRegEx + '}';
     }
 
 }

@@ -117,7 +117,7 @@ public class ForecastCleanerAction
             }
 
             // Only imc matching a regex are processed,            
-            if(imcNamePattern.matcher(event.getSource().toString()).matches()) {
+            if(imcNamePattern.matcher(event.getSource().getName()).matches()) {
                 ret.add(enrichImc(event.getSource()));
             } else { // the others are passed to the output queue unchanged.
                 ret.add(event);
@@ -138,7 +138,7 @@ public class ForecastCleanerAction
             Set<File> fileset = extractMatchingFiles(imc);
             Set<GranuleFilter> filters = buildFilters(fileset);
 
-//            addDeleteEntries(imc, filters);
+            addDeleteEntries(imc, filters);
 
             String basename = FilenameUtils.getBaseName(imcFile.getAbsolutePath());
             File outImc = File.createTempFile(basename, ".xml", getTempDir());
@@ -155,7 +155,7 @@ public class ForecastCleanerAction
     protected Set<File> extractMatchingFiles(ImageMosaicCommand imc) {
         Set<File> fileset = new HashSet<File>();
         for (File file : imc.getAddFiles()) {
-            Matcher imgMatcher = imageNamePattern.matcher(file.getAbsolutePath());
+            Matcher imgMatcher = imageNamePattern.matcher(file.getName());
             if(imgMatcher.matches())
                 fileset.add(file);
         }
@@ -191,9 +191,21 @@ public class ForecastCleanerAction
     }
 
     private void addDeleteEntries(ImageMosaicCommand imc, Set<GranuleFilter> filters) throws IOException {
+        File datastoreProps = new File(imc.getBaseDir(), configuration.getDatastoreFileName());
+        if(LOGGER.isDebugEnabled())
+            LOGGER.debug("Looking for datastore property file " + datastoreProps);
 
-        File datastoreProps = new File(configuration.getMosaicPath(), configuration.getDatastoreFileName());
+        if( ! datastoreProps.exists()) {
+            if(LOGGER.isErrorEnabled()) {
+                LOGGER.error("Datastore file could not be found. The mosaic may be still not initialized. Skipping forecast cleanup.");
+                LOGGER.info("Datastore file: " + datastoreProps );
+            }
+            return;
+        }
+
         DataStore granuleDataStore = openDataStore(datastoreProps.toURI().toURL());
+        if(LOGGER.isDebugEnabled())
+            LOGGER.debug("Got datastore " + granuleDataStore);
 
         if(imc.getDelFiles() == null)
             imc.setDelFiles(new ArrayList<File>());
@@ -208,7 +220,8 @@ public class ForecastCleanerAction
     private DataStore openDataStore(final URL propsURL) throws IOException {
         // TODO!!!
         // datastore params should be read from the datastore file in the mosaic dir
-
+        if(propsURL == null)
+            throw new NullPointerException("Datastore URL is null");
         
         // load the datastore.properties file
         final Properties properties = Utils.loadPropertiesFromURL(propsURL);
