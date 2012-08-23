@@ -33,8 +33,6 @@
         <performBackup>false</performBackup>
         <preserveInput>false</preserveInput>
 
-
-
         <OctaveFreeMarkerConfiguration>
             <id>octave</id>
             <serviceID>OctaveFreeMarkerGeneratorService</serviceID>
@@ -71,8 +69,6 @@
 
         </OctaveFreeMarkerConfiguration>
 
-
-
         <Netcdf2GeotiffConfiguration>
             <id>netcdf2geotiff</id>
             <serviceID>Netcdf2GeotiffService</serviceID>
@@ -90,11 +86,19 @@
             <metocDictionaryPath>dict.xml</metocDictionaryPath>
 			
             <flipY>true</flipY>
-			
+
             <variables>
                 <string>watvel-u</string>
                 <string>watvel-v</string>
             </variables>
+
+            <outputConfiguration>
+                <!-- The mosaic Dir to be set in the ImageMosaicCommand. -->
+                <entry>
+                    <string>mosaicPath</string>
+                    <string>/var/mosaic/</string>
+                </entry>
+            </outputConfiguration>
 
             <listenerId>NURCModelsLogger</listenerId>
             <listenerId>NURCModelsCumulator</listenerId>
@@ -154,6 +158,10 @@
                     <string>defaultStyle</string>
                     <string>garrows</string>
                 </entry>
+                <entry>
+                    <string>mosaicPath</string>
+                    <string>/tmp/mosaic/uvmerge</string>
+                </entry>
             </properties>
         </ScriptingConfiguration>
 
@@ -167,9 +175,8 @@
             <listenerId>NURCModelsLogger</listenerId>
             <listenerId>NURCModelsCumulator</listenerId>
             <listenerId>NURCModelsStatus</listenerId>
-            
-            <mosaicPath></mosaicPath>
-            <datastoreFileName></datastoreFileName>
+
+            <datastoreFileName>datastore.properties</datastoreFileName>
             <imcRegEx>watvel.*xml</imcRegEx>
             <imageRegEx>watvel_.*_.*_.*_.*_.*_.*.tiff</imageRegEx>
 
@@ -177,7 +184,7 @@
             <forecastRegEx>watvel_.*_.*_.*_(.*)_.*_.*.tiff</forecastRegEx>
             <runtimeRegEx>watvel_.*_.*_(.*)_.*_.*_.*.tiff</runtimeRegEx>
             <elevationRegEx>watvel_(.*)_.*_.*_.*_.*_.*.tiff</elevationRegEx>
-            
+
         </ForecastCleanerConfiguration>
 
         <ImageMosaicActionConfiguration>
@@ -198,10 +205,11 @@
             <envelope/>
 
             <dataTransferMethod>EXTERNAL</dataTransferMethod>
-            <geoserverUID>admin</geoserverUID>            
+
+            <geoserverUID>admin</geoserverUID>
             <geoserverPWD>geoserver</geoserverPWD>
-            <geoserverURL>http://172.16.1.134:8080/geoserver</geoserverURL>
-            <defaultNamespace>ARW_3KM_RUN00</defaultNamespace>
+            <geoserverURL>http://localhost:8888/geoserver</geoserverURL>
+            <defaultNamespace>nurc</defaultNamespace>
             <defaultStyle>raster</defaultStyle>
 
             <wmsPath>/</wmsPath>
@@ -235,16 +243,16 @@
             <elevationPresentationMode>LIST</elevationPresentationMode>
             <!--  <dirName>DIR</dirName>-->
             <styles/>
-			
+
             <!--<datastorePropertiesPath>config/datastore.properties</datastorePropertiesPath>-->
-            <timeRegex>[0-9]{8}T[0-9]{9}Z(\?!.\*[0-9]{8}T[0-9]{9}Z.\*)</timeRegex>
-            <elevationRegex><![CDATA[(?<=_)(\\d{4}\\.\\d{3})(?=_)]]>
-            </elevationRegex>
+            <!--<timeRegex>[0-9]{8}T[0-9]{9}Z(\?!.\*[0-9]{8}T[0-9]{9}Z.\*)</timeRegex>-->
+            <timeRegex>(?<=\d{8}T\d{9}Z_)\d{8}T\d{9}Z</timeRegex>
+            <!--<elevationRegex><![CDATA[(?<=_)(\\d{4}\\.\\d{3})(?=_)]]></elevationRegex>-->
+            <elevationRegex>(?<=[^_]*_)[^_]*</elevationRegex>
 
         </ImageMosaicActionConfiguration>
-
 		
-        <GeoServerReloadConfiguration>
+<!--        <GeoServerReloadConfiguration>
             <serviceID>GeoServerReloadService</serviceID>
             <id>GeoServerReloadAction</id>
             <name>GeoServerReloadAction</name>
@@ -260,12 +268,12 @@
 
             <geoserverList>/opt/GEOBATCH_DATA_DIR/commons/GeoServerList.xml</geoserverList>
 			
-            <!--geoserverList>/home/carlo/work/project/Lamma/trunk/lamma_2012/GEOBATCH_CONFIG_DIR/commons/GeoServerList.xml</geoserverList-->
+            geoserverList>/home/carlo/work/project/Lamma/trunk/lamma_2012/GEOBATCH_CONFIG_DIR/commons/GeoServerList.xml</geoserverList
             <executorSize>10</executorSize>
 			
             <overrideConfigDir>./</overrideConfigDir>
 			
-        </GeoServerReloadConfiguration>
+        </GeoServerReloadConfiguration>-->
 
     </EventConsumerConfiguration>
     
