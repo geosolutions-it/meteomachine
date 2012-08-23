@@ -1,3 +1,16 @@
+/*
+ * !!!!! READ ME BEFORE EDITING THIS FILE !!!!!!
+ *
+ * There are 2 copies of this file:
+ *   1) meteomachine/gb-actions-gliders/metoc/utils/src/test/java/uvmerge.groovy
+ *   2) meteomachine/GEOBATCH_CONFIG_DIR/roms/uvmerge/uvmerge.groovy
+ *
+ * Editing should be made in 1) where you can also perform tests on it.
+ * Once 1) is ready and working, you should copy it into 2).
+ *
+ */
+
+
 import java.io.File;
 import java.io.IOException;
 import java.io.File;
@@ -82,6 +95,8 @@ public Map execute(Map argsMap) throws Exception {
     final String suffixRegex=props.get("suffixRegex");
     final String outDirBaseName=props.get("outDirName");
     final String outFileBaseName=props.get("outFileBaseName");
+
+    final String mosaicPath=props.get("mosaicPath");
 
     // regex to recognize the IMC name to merge
     final String imcRegex=props.get("imcRegex");
@@ -254,7 +269,14 @@ public Map execute(Map argsMap) throws Exception {
      * and call the merge function.
      * Append the resulting image to the return queue
      */
-    ImageMosaicCommand newCommand=new ImageMosaicCommand(outDir,new ArrayList(),null);
+    if(mosaicPath == null) {
+        if (LOGGER.isWarnEnabled()) {
+            LOGGER.warn("::UVMerge : mosaicPath not set, will be set to " + outDir);
+        }
+        mosaicPath = outDir.absolutePath;
+    }
+
+    ImageMosaicCommand newCommand=new ImageMosaicCommand((String)mosaicPath,new ArrayList<String>(),null);
     newCommand.setDefaultStyle(props.get("defaultStyle"));
     List addFilesList=newCommand.getAddFiles();
     int i=0;

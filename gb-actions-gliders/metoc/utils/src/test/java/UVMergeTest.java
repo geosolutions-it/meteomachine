@@ -74,6 +74,7 @@ public class UVMergeTest extends BaseTest {
         cfg.getProperties().put("prefixRegex", "(watvel).*");
         cfg.getProperties().put("suffixRegex", ".*_([0-9]+T[0-9]+Z)");
         cfg.getProperties().put("defaultStyle", "garrows");
+        cfg.getProperties().put("mosaicPath", "/tmp/mosaic");
 
         XStream xstream = new XStream();
         xstream.toXML(cfg, System.out);
