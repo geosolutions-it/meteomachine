@@ -16,9 +16,10 @@
         <serviceID>fsEventGeneratorService</serviceID>
 
         <wildCard>*_his.nc</wildCard>
-        <!--<watchDirectory>/opt/ingestion/</watchDirectory>-->
+
+        <!-- CUSTOMIZABLE : netcdf input directory -->
         <watchDirectory>/opt/homeext/geosol/prj/nurc/models/in</watchDirectory>
-        <!--watchDirectory>arw_3km_run00/in/</watchDirectory-->
+
         <osType>OS_UNDEFINED</osType>
         <eventType>FILE_ADDED</eventType>
         <interval>2</interval> <!-- every 2 seconds -->
@@ -45,9 +46,11 @@
                     <sheet name="sheet01">
                         <commands>
                             <OctaveCommand executed="false">
+                                <!-- CUSTOMIZABLE : see your octave installation-->
                                 <command>source "/usr/share/octave/3.6.2/m/startup/octaverc";</command>
                             </OctaveCommand>
                             <OctaveCommand executed="false">
+                                <!-- CUSTOMIZABLE : should match your geobatch config dir -->
                                 <command>cd "/home/geosol/prj/nurc/meteomachine/GEOBATCH_CONFIG_DIR/roms/octave";</command>
                             </OctaveCommand>
                         </commands>
@@ -76,8 +79,6 @@
             <name>NetCDF to GeoTIFF</name>
             <description>NURC ROMS: netcdf -> geotiff</description>
             
-            <!--<overrideConfigDir>./</overrideConfigDir>-->
-
             <!-- if layerParentDirectory is not defined the dir hierarchy will be created inside the tempdir -->
             <!--<layerParentDirectory>/opt/data/models/arw_3km_run00/</layerParentDirectory>-->
 			
@@ -96,6 +97,7 @@
                 <!-- The mosaic Dir to be set in the ImageMosaicCommand. -->
                 <entry>
                     <string>mosaicPath</string>
+                    <!-- CUSTOMIZABLE : mosaic dir -->
                     <string>/var/mosaic/</string>
                 </entry>
             </outputConfiguration>
@@ -116,9 +118,6 @@
             <listenerId>NURCModelsLogger</listenerId>
             <listenerId>NURCModelsCumulator</listenerId>
             <listenerId>NURCModelsStatus</listenerId>
-
-
-            <!--<overrideConfigDir>../</overrideConfigDir>-->
 
             <language>groovy</language>
             <scriptFile>uvmerge.groovy</scriptFile>
@@ -160,6 +159,7 @@
                 </entry>
                 <entry>
                     <string>mosaicPath</string>
+                    <!-- CUSTOMIZABLE : mosaic dir -->
                     <string>/tmp/mosaic/uvmerge</string>
                 </entry>
             </properties>
@@ -177,7 +177,8 @@
             <listenerId>NURCModelsStatus</listenerId>
 
             <datastoreFileName>datastore.properties</datastoreFileName>
-            <typeName>uvmerge</typeName> <!-- the name is taken equals to the mosaic dir -->
+            <!-- CUSTOMIZABLE : the name is the last part of the mosaic dir name -->
+            <typeName>uvmerge</typeName> 
 
             <!-- forecast attribute name shll be extracted from the index prop files -->
             <forecastAttribute>forecast</forecastAttribute>
@@ -199,8 +200,6 @@
             <name>Configure mosaic</name>
             <description>ImageMosaicService</description>
 
-            <!--<overrideConfigDir>./</overrideConfigDir>-->
-
             <listenerId>NURCModelsLogger</listenerId>
             <listenerId>NURCModelsCumulator</listenerId>
             <listenerId>NURCModelsStatus</listenerId>
@@ -211,13 +210,15 @@
 
             <dataTransferMethod>EXTERNAL</dataTransferMethod>
 
+            <!-- CUSTOMIZABLE : geoserver credentials -->
             <geoserverUID>admin</geoserverUID>
             <geoserverPWD>geoserver</geoserverPWD>
             <geoserverURL>http://localhost:8888/geoserver</geoserverURL>
 
+            <!-- CUSTOMIZABLE -->
             <defaultNamespace>nurc</defaultNamespace>
-            <storeName>roms_mosaic</storeName>
-            <layerName>roms</layerName>
+            <storeName>roms_mosaic</storeName> <!-- will be created if not exists -->
+            <layerName>roms</layerName> <!-- will be created if not exists -->
 
             <defaultStyle>raster</defaultStyle>
 
@@ -253,10 +254,10 @@
             <!--  <dirName>DIR</dirName>-->
             <styles/>
 
-            <timeAttribute>forecast</timeAttribute> <!-- ingestion by default -->
-            <elevationAttribute>depth</elevationAttribute> <!-- elevation by default -->
+            <timeAttribute>forecast</timeAttribute> <!-- defaults to "ingestion" if not defined -->
+            <elevationAttribute>depth</elevationAttribute> <!-- defaults to "elevation" if not defined -->
 
-            <!-- default file loaded from this actions' config dir -->
+            <!-- default file loaded from this actions' config dir - only used when creating the mosaic -->
             <datastorePropertiesPath>datastore.properties</datastorePropertiesPath>
             <!--<timeRegex>[0-9]{8}T[0-9]{9}Z(\?!.\*[0-9]{8}T[0-9]{9}Z.\*)</timeRegex>-->
             <timeRegex><![CDATA[(?<=\\d{8}T\\d{9}Z_)\\d{8}T\\d{9}Z]]></timeRegex> <!-- the forecast time -->
