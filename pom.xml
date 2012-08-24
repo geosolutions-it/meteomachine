@@ -145,7 +145,7 @@
 		
 		<gs.manager>1.4.3</gs.manager>
 		<gb.version>1.3-SNAPSHOT</gb.version>
-		<geotools.version>8.0</geotools.version>
+		<geotools.version>8-SNAPSHOT</geotools.version>
 		<geoserver.version>2.2-RC1</geoserver.version>
 		<tools.version>1.1-SNAPSHOT</tools.version>
 		<app.version>1.0-SNAPSHOT</app.version>
