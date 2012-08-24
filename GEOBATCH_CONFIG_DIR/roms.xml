@@ -177,7 +177,7 @@
             <listenerId>NURCModelsStatus</listenerId>
 
             <datastoreFileName>datastore.properties</datastoreFileName>
-            <typeName>roms</typeName>
+            <typeName>uvmerge</typeName> <!-- the name is taken equals to the mosaic dir -->
 
             <!-- forecast attribute name shll be extracted from the index prop files -->
             <forecastAttribute>forecast</forecastAttribute>

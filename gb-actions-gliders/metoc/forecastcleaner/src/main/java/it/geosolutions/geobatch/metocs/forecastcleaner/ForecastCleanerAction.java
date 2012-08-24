@@ -221,13 +221,23 @@ public class ForecastCleanerAction
         if(imc.getDelFiles() == null)
             imc.setDelFiles(new ArrayList<File>());
 
+        Set<File> filesToRemove = new HashSet<File>();
+        Set<Filter> cqlExamined = new HashSet<Filter>();
+
         for (GranuleFilter granuleFilter : filters) {
             Filter cqlFilter = filter2cql(granuleFilter);
             if(cqlFilter == null) // parsing error. should we bail out?
                 continue;
-            Set<File> oldFiles = selectOldForecast(granuleDataStore, configuration.getTypeName(), cqlFilter);
-            imc.getDelFiles().addAll(oldFiles);
+
+            if(cqlExamined.contains(cqlFilter))
+                continue;
+            else
+                cqlExamined.add(cqlFilter);
+
+            Set<File> oldFiles = selectOldForecast(granuleDataStore, imc.getBaseDir(), configuration.getTypeName(), cqlFilter);
+            filesToRemove.addAll(oldFiles);
         }
+        imc.getDelFiles().addAll(filesToRemove);
     }
 
     private DataStore openDataStore(final URL propsURL) throws IOException {
@@ -338,7 +348,7 @@ public class ForecastCleanerAction
      * @return
      * @throws IOException
      */
-    private Set<File> selectOldForecast(DataStore granuleDataStore, String typeName, Filter cqlFilter) throws IOException {
+    private Set<File> selectOldForecast(DataStore granuleDataStore, File mosaicDir, String typeName, Filter cqlFilter) throws IOException {
 
         if(LOGGER.isDebugEnabled())
             LOGGER.debug("Filtering " + typeName + " using filter \""+cqlFilter +"\"");
@@ -358,8 +368,11 @@ public class ForecastCleanerAction
 				String location = (String) granule.getAttribute("location"); // I am using the default name for the attribute.
 //				String location = (String) granule.getAttribute(Utils.Prop.LOCATION_ATTRIBUTE); // I am using the default name for the attribute.
 				
-				// TODO I am here assuming that the location is absolute, but it might be relative to the base dir!!!!
-				retValue.add(new File(location));
+                File file = new File(location);
+                if(file.isAbsolute())
+                    retValue.add(file);
+                else
+                    retValue.add(new File(mosaicDir, location));
 			}
 		} finally {
 			// release resources
