@@ -39,21 +39,21 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * @author Fabiani
- * 
+ * @author Alessio Fabiani, GeoSolutions SAS
+ * @autor Simone Giannecchini, GeoSolutions SAS
  */
 public final class PublishingRestletGlobalConfig {
 
     private static final Logger LOGGER = LoggerFactory
             .getLogger(PublishingRestletGlobalConfig.class.toString());
 
-    private static String rootDirectory;
+    String rootDirectory;
 
     public PublishingRestletGlobalConfig(String rootDirectory) {
         this.rootDirectory = rootDirectory;
     }
 
-    public static String getRootDirectory() {
+    public String getRootDirectory() {
         return rootDirectory;
     }
 
@@ -65,7 +65,7 @@ public final class PublishingRestletGlobalConfig {
         File workingDir = null;
 
         workingDir = Path.findLocation(rootDirectory,
-                ((FileBaseCatalog) CatalogHolder.getCatalog()).getBaseDirectory());
+                ((FileBaseCatalog) CatalogHolder.getCatalog()).getConfigDirectory());
         if (workingDir == null || !workingDir.exists() || !workingDir.canRead()
                 || !workingDir.isDirectory()) {
             final String message = "Unable to work with the provided working directory:"
