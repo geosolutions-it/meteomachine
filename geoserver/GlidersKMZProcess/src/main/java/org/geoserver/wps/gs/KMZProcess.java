@@ -1,5 +1,6 @@
 package org.geoserver.wps.gs;
 
+import java.math.BigDecimal;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -214,7 +215,8 @@ public class KMZProcess {
 			timeDimension.setEnabled(true);
 			timeDimension.setAttribute(KMZProcess.TIME_BEGIN);
 			timeDimension.setEndAttribute(KMZProcess.TIME_END);
-			timeDimension.setPresentation(DimensionPresentation.LIST);
+			timeDimension.setPresentation(DimensionPresentation.DISCRETE_INTERVAL);
+			timeDimension.setResolution(BigDecimal.valueOf(1000)); //1s
 			typeInfo.getMetadata().put("time", timeDimension);
 		}//if::hasTimeDimension
 		
