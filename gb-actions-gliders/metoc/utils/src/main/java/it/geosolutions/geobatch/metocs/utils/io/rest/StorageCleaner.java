@@ -45,10 +45,6 @@ public class StorageCleaner extends TimerTask {
 
     private PublishingRestletGlobalConfig config;
 
-    public PublishingRestletGlobalConfig getConfig() {
-        return config;
-    }
-
     public void setConfig(PublishingRestletGlobalConfig config) {
         this.config = config;
     }
@@ -61,18 +57,7 @@ public class StorageCleaner extends TimerTask {
             // getting base directory
             //
             final File workingDir = new File(config.getRootDirectory());
-            // final File workingDir =
-            // Path.findLocation(config.getRootDirectory(),new
-            // File(((FileBaseCatalog)
-            // CatalogHolder.getCatalog()).getBaseDirectory()));
-            // if (workingDir == null ||
-            // !workingDir.exists()||!workingDir.canRead()||!workingDir.isDirectory())
-            // {
-            // if (LOGGER.isErrorEnabled())
-            // LOGGER.error("Unable to work with the provided working directory:"+(workingDir!=null?workingDir:""));
-            // return;
-            // }
-
+            
             // ok, now scan for existing files there and clean up those
             // that are too old
             long now = System.currentTimeMillis();
