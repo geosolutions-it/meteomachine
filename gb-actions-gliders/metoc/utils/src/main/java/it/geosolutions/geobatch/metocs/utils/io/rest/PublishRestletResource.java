@@ -20,7 +20,7 @@ import org.slf4j.LoggerFactory;
 
 /**
  * 
- * @author Fabiani
+ * @author Alessio Fabiani, GeoSolutions SAS
  * 
  */
 public class PublishRestletResource extends Resource {

@@ -8,7 +8,7 @@ import org.restlet.Router;
 
 /**
  * 
- * @author Fabiani
+ * @author Alessio Fabiani, GeoSolutions SAS
  * 
  */
 public class RESTDispatcher {
