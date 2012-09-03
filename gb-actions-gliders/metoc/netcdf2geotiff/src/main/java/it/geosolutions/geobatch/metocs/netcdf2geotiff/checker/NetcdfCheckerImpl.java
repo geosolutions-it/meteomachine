@@ -69,7 +69,7 @@ public class NetcdfCheckerImpl extends NetcdfChecker {
     // global attributes cache
     private String noData;
     private String runTime;
-    private String tau;
+    private Number tau;
 
     private void initGlobalCache() {
         setNoData();
@@ -93,7 +93,7 @@ public class NetcdfCheckerImpl extends NetcdfChecker {
     }
 
     @Override
-    public String getTAU() {
+    public Number getTAU() {
         return tau;
     }
 
@@ -306,9 +306,13 @@ public class NetcdfCheckerImpl extends NetcdfChecker {
         // base time
         if (timeDimExists) {
             baseTime = super.getBaseTime(timeVar);
+            
         }
 
         if (baseTime != -1) {
+//            if (timeConversion != null) {
+//                baseTime *= timeConversion;
+//            }
             // local base time is set to global base time
             localBaseTime = baseTime;
             if (LOGGER.isWarnEnabled())
@@ -445,7 +449,7 @@ public class NetcdfCheckerImpl extends NetcdfChecker {
         if (tau != null) {
             synchronized (sdf) {
                 coverageName
-                    .append(Integer.parseInt(tau) == 0 ?
+                    .append(tau.intValue() == 0 ?
                             runTime :
                             timeDimExists ?
                                 sdf.format(super.getTimeInstant(localBaseTime, time, coords[0], timeConversion)) :
