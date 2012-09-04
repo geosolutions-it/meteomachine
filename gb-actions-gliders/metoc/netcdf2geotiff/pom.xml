@@ -42,6 +42,12 @@
 			<groupId>it.geosolutions.geobatch</groupId>
 			<artifactId>gb-action-imagemosaic</artifactId>
 		</dependency>
+
+        <dependency>
+			<groupId>it.geosolutions.tools</groupId>
+			<artifactId>tools-dyntokens</artifactId>
+            <version>1.1-SNAPSHOT</version>
+		</dependency>
 		
 		<!-- Utils Actions -->
 		<dependency>

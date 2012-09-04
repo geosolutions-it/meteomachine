@@ -32,6 +32,8 @@ import it.geosolutions.geobatch.metocs.netcdf2geotiff.output.OutputQueueHandler;
 import it.geosolutions.geobatch.metocs.utils.io.METOCSActionsIOUtils;
 import it.geosolutions.geobatch.metocs.utils.io.Utilities;
 import it.geosolutions.tools.commons.file.Path;
+import it.geosolutions.tools.dyntokens.DynTokenResolver;
+import it.geosolutions.tools.dyntokens.model.DynTokenList;
 
 import java.awt.image.Raster;
 import java.awt.image.SampleModel;
@@ -154,6 +156,12 @@ public class Netcdf2GeotiffAction
                 }
                 final File layerOutputBaseDir = new File(outputBaseDir, new Date().getTime() + "_" + inputFileBaseName);
 
+
+                DynTokenList tokenList = configuration.getDynamicTokens();
+                DynTokenResolver tokenResolver = new DynTokenResolver(tokenList);
+                tokenResolver.setBaseToken("FILENAME", inputFileBaseName);
+                tokenResolver.resolve();
+                String tokenRuntime = tokenResolver.getResolvedTokens().get("runtime");
 
                 // ----------------------------------------------------------------------------------
 

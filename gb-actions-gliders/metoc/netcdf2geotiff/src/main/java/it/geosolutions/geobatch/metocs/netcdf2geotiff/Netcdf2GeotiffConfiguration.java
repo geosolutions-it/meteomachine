@@ -1,6 +1,7 @@
 package it.geosolutions.geobatch.metocs.netcdf2geotiff;
 
 import it.geosolutions.geobatch.configuration.event.action.ActionConfiguration;
+import it.geosolutions.tools.dyntokens.model.DynTokenList;
 
 import java.text.SimpleDateFormat;
 import java.util.GregorianCalendar;
@@ -28,6 +29,8 @@ public class Netcdf2GeotiffConfiguration extends ActionConfiguration {
     private List<String> variables;
 
     private String metocHarvesterXMLTemplatePath;
+
+    private DynTokenList dynamicTokens;
     
     /**
      * This represents the base directory where to public layers
@@ -201,6 +204,15 @@ public class Netcdf2GeotiffConfiguration extends ActionConfiguration {
     public void setOutputConfiguration(Map<String, Object> outputConfiguration) {
         this.outputConfiguration = outputConfiguration;
     }
+
+    public DynTokenList getDynamicTokens() {
+        return dynamicTokens;
+    }
+
+    public void setDynamicTokens(DynTokenList dynamicTokens) {
+        this.dynamicTokens = dynamicTokens;
+    }
+    
     
     /**
      * copy into returned object src
