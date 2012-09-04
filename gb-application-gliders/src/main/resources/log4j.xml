@@ -22,7 +22,7 @@
 
 
     <logger name="it.geosolutions">
-		<level value="debug" />
+		<level value="info" />
 	</logger>
 
 <!--	<logger name="org.quartz" additivity="false">

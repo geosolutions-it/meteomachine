@@ -193,5 +193,4 @@ public class PublishRestletResource extends Resource {
             response.setStatus(Status.SERVER_ERROR_NOT_IMPLEMENTED);
         }
     }
-
 }

@@ -169,10 +169,10 @@ public abstract class NetcdfChecker { // <OutputType> { extends OutputQueueHandl
 	 * 
 	 * @return
 	 */
-	public String getTAU() {
+	public Number getTAU() {
 		final Attribute attr = getGlobalAttrByKey(MetocsBaseDictionary.TAU_KEY);
 		if (attr != null)
-			return attr.getStringValue();
+			return attr.getNumericValue();
 		else
 			return null;
 	}
