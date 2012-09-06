@@ -1,4 +1,4 @@
-<it.geosolutions.geobatch.metocs.netcdf2geotiff.spi.MetocsBaseDictionary>
+<it.geosolutions.geobatch.metocs.netcdf2geotiff.spi.dict.MetocsBaseDictionary>
   <dictionary>
     <entry>
       <string>VAR_1</string>
@@ -26,4 +26,4 @@
       </map>
     </entry>
   </dictionary>
-</it.geosolutions.geobatch.metocs.netcdf2geotiff.spi.MetocsBaseDictionary>
+</it.geosolutions.geobatch.metocs.netcdf2geotiff.spi.dict.MetocsBaseDictionary>

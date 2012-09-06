@@ -21,7 +21,7 @@
  */
 package it.geosolutions.geobatch.metocs.netcdf2geotiff.impl.grib1;
 
-import it.geosolutions.geobatch.metocs.netcdf2geotiff.spi.MetocsBaseDictionary;
+import it.geosolutions.geobatch.metocs.netcdf2geotiff.spi.dict.MetocsBaseDictionary;
 import it.geosolutions.geobatch.metocs.netcdf2geotiff.spi.NetcdfLoader;
 
 import java.io.File;
@@ -34,7 +34,7 @@ import org.slf4j.LoggerFactory;
 
 import ucar.nc2.NetcdfFile;
 
-import it.geosolutions.geobatch.metocs.netcdf2geotiff.spi.DefaultDictionaryLoader;
+import it.geosolutions.geobatch.metocs.netcdf2geotiff.spi.dict.DefaultDictionaryLoader;
 import it.geosolutions.geobatch.metocs.netcdf2geotiff.spi.DefaultSPI;
 import it.geosolutions.geobatch.metocs.netcdf2geotiff.spi.NetcdfVariable;
 import it.geosolutions.geobatch.metocs.netcdf2geotiff.spi.geotiff.DefaultGeoTiffNameBuilder;

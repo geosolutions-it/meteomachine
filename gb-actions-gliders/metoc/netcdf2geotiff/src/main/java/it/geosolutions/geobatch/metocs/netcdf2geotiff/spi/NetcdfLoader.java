@@ -21,6 +21,7 @@
  */
 package it.geosolutions.geobatch.metocs.netcdf2geotiff.spi;
 
+import it.geosolutions.geobatch.metocs.netcdf2geotiff.spi.dict.MetocsBaseDictionary;
 import it.geosolutions.geobatch.metocs.utils.converter.ConverterManager;
 import it.geosolutions.geobatch.metocs.utils.io.METOCSActionsIOUtils;
 import it.geosolutions.tools.commons.time.TimeParser;

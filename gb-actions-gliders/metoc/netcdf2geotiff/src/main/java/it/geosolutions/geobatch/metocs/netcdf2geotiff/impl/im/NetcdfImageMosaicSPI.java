@@ -21,9 +21,9 @@
  */
 package it.geosolutions.geobatch.metocs.netcdf2geotiff.impl.im;
 
-import it.geosolutions.geobatch.metocs.netcdf2geotiff.spi.DefaultDictionaryLoader;
+import it.geosolutions.geobatch.metocs.netcdf2geotiff.spi.dict.DefaultDictionaryLoader;
 import it.geosolutions.geobatch.metocs.netcdf2geotiff.spi.DefaultSPI;
-import it.geosolutions.geobatch.metocs.netcdf2geotiff.spi.MetocsBaseDictionary;
+import it.geosolutions.geobatch.metocs.netcdf2geotiff.spi.dict.MetocsBaseDictionary;
 import it.geosolutions.geobatch.metocs.netcdf2geotiff.spi.NetcdfLoader;
 import it.geosolutions.geobatch.metocs.netcdf2geotiff.spi.NetcdfVariable;
 import it.geosolutions.geobatch.metocs.netcdf2geotiff.spi.output.IMCOutputHandler;

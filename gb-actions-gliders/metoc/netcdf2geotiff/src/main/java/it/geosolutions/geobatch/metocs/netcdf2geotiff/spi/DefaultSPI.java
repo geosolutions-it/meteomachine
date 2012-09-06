@@ -21,6 +21,8 @@
  */
 package it.geosolutions.geobatch.metocs.netcdf2geotiff.spi;
 
+import it.geosolutions.geobatch.metocs.netcdf2geotiff.spi.dict.MetocsBaseDictionary;
+import it.geosolutions.geobatch.metocs.netcdf2geotiff.spi.dict.DefaultDictionaryLoader;
 import it.geosolutions.geobatch.metocs.netcdf2geotiff.spi.geotiff.DefaultGeoTiffNameBuilder;
 import it.geosolutions.geobatch.metocs.netcdf2geotiff.spi.geotiff.GeoTiffNameBuilder;
 import it.geosolutions.geobatch.metocs.netcdf2geotiff.spi.output.DefaultOutputQueueHandler;

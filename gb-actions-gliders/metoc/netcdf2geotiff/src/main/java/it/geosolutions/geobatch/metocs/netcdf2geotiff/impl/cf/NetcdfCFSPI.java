@@ -21,9 +21,9 @@
  */
 package it.geosolutions.geobatch.metocs.netcdf2geotiff.impl.cf;
 
-import it.geosolutions.geobatch.metocs.netcdf2geotiff.spi.DefaultDictionaryLoader;
+import it.geosolutions.geobatch.metocs.netcdf2geotiff.spi.dict.DefaultDictionaryLoader;
 import it.geosolutions.geobatch.metocs.netcdf2geotiff.spi.DefaultSPI;
-import it.geosolutions.geobatch.metocs.netcdf2geotiff.spi.MetocsBaseDictionary;
+import it.geosolutions.geobatch.metocs.netcdf2geotiff.spi.dict.MetocsBaseDictionary;
 
 import java.io.File;
 import java.util.HashMap;

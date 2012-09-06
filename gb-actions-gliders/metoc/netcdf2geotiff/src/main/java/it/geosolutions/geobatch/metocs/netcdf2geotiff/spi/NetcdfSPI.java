@@ -22,6 +22,7 @@
 package it.geosolutions.geobatch.metocs.netcdf2geotiff.spi;
 
 
+import it.geosolutions.geobatch.metocs.netcdf2geotiff.spi.dict.MetocsBaseDictionary;
 import it.geosolutions.geobatch.metocs.netcdf2geotiff.spi.geotiff.GeoTiffNameBuilder;
 import it.geosolutions.geobatch.metocs.netcdf2geotiff.spi.output.OutputQueueHandler;
 import java.io.File;

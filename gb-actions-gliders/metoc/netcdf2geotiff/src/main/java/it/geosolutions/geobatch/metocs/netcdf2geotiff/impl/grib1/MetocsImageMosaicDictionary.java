@@ -24,7 +24,7 @@ package it.geosolutions.geobatch.metocs.netcdf2geotiff.impl.grib1;
 
 import java.util.Map;
 
-import it.geosolutions.geobatch.metocs.netcdf2geotiff.spi.MetocsBaseDictionary;
+import it.geosolutions.geobatch.metocs.netcdf2geotiff.spi.dict.MetocsBaseDictionary;
 
 /**
  * 
