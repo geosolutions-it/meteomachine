@@ -48,16 +48,16 @@ public class NetcdfSPILoader implements ApplicationContextAware , InitializingBe
     public NetcdfSPILoader(){
     }        
     
-    public static NetcdfSPI getCheckerLoader(final String type){
+    public static NetcdfSPI getSPI(final String type){
         if (singleton== null) {
             if (LOGGER.isErrorEnabled())
                 LOGGER.error("Underlying loader is null!");
             return null;
         }
-        return singleton.getCheckerSPI(type);
+        return singleton.getSPIInternal(type);
     }
     
-    private NetcdfSPI getCheckerSPI(final String type){
+    private NetcdfSPI getSPIInternal(final String type){
         if (applicationContext == null) {
             if (LOGGER.isErrorEnabled())
                 LOGGER.error("Underlying applicationContext is null!");
@@ -97,16 +97,16 @@ public class NetcdfSPILoader implements ApplicationContextAware , InitializingBe
         return null;
     }
 
-    public static <T extends NetcdfSPI> T getSPIClass(final Class<T> clazz) {
+    public static <T extends NetcdfSPI> T getSPI(final Class<T> clazz) {
         if(singleton == null)
             if (LOGGER.isErrorEnabled())
                 LOGGER.error("No singleton instance");
 
-        return singleton.getSPI(clazz);
+        return singleton.getSPIInternal(clazz);
 
     }
 
-    protected <T extends NetcdfSPI> T getSPI(final Class<T> clazz){
+    protected <T extends NetcdfSPI> T getSPIInternal(final Class<T> clazz){
 
         if (applicationContext == null) {
             if (LOGGER.isErrorEnabled())

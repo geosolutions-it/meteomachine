@@ -507,16 +507,22 @@ public class Netcdf2GeotiffAction
         return outputBaseDir;
     }
 
+    /**
+     * A container to create only once SPI objects.
+     */
     private static class SPIObjects {
         NetcdfLoader loader;
         OutputQueueHandler<EventObject> outputHandler;
         GeoTiffNameBuilder nameBuilder;
     }
 
+    /**
+     * Load the proper SPI and build related objects.
+     */
     private SPIObjects loadSPI(NetcdfFile ncFileIn) throws ActionException {
 
-        String spiClassName = ncFileIn.getIosp().getClass().toString();
-        NetcdfSPI spi = NetcdfSPILoader.getCheckerLoader(spiClassName);//getFileTypeId()
+        String ncType = ncFileIn.getIosp().getClass().toString();
+        NetcdfSPI spi = NetcdfSPILoader.getSPI(ncType);//getFileTypeId()
         if (spi != null) {
             if (LOGGER.isInfoEnabled()) {
                 LOGGER.info("Creating an instance of: " + spi.getClass());
@@ -547,7 +553,7 @@ public class Netcdf2GeotiffAction
                 }
             }
         } else {
-            final String message = "Unable to get spi for " + spiClassName;
+            final String message = "Unable to get spi for " + ncType;
             if (LOGGER.isWarnEnabled()) {
                 LOGGER.warn(message);
             }

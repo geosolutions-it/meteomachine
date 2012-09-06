@@ -49,7 +49,7 @@ public class NCTest extends BaseTest {
     public void testStandard()  {
 
         try{
-            NetcdfImageMosaicSPI spiClass = NetcdfSPILoader.getSPIClass(NetcdfImageMosaicSPI.class);
+            NetcdfImageMosaicSPI spiClass = NetcdfSPILoader.getSPI(NetcdfImageMosaicSPI.class);
             spiClass.setPriority(1000);
 
             Netcdf2GeotiffConfiguration cfg = new Netcdf2GeotiffConfiguration("testid", "testname", "testdescr");
