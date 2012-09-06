@@ -1,7 +1,7 @@
 /*
  *  GeoBatch - Open Source geospatial batch processing system
  *  http://geobatch.codehaus.org/
- *  Copyright (C) 2007-2008-2009 GeoSolutions S.A.S.
+ *  Copyright (C) 2007-2012 GeoSolutions S.A.S.
  *  http://www.geo-solutions.it
  *
  *  GPLv3 + Classpath exception
@@ -19,10 +19,10 @@
  *  You should have received a copy of the GNU General Public License
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package it.geosolutions.geobatch.metocs.netcdf2geotiff.grib1;
+package it.geosolutions.geobatch.metocs.netcdf2geotiff.impl.grib1;
 
-import it.geosolutions.geobatch.metocs.netcdf2geotiff.checker.NetcdfCheckerImpl;
-import it.geosolutions.geobatch.metocs.netcdf2geotiff.checker.NetcdfCheckerSPI;
+import it.geosolutions.geobatch.metocs.netcdf2geotiff.spi.NetcdfLoader;
+import it.geosolutions.geobatch.metocs.netcdf2geotiff.spi.NetcdfSPI;
 import it.geosolutions.geobatch.metocs.utils.converter.ConverterManager;
 
 import java.io.File;
@@ -35,11 +35,12 @@ import ucar.units.UnitName;
 /**
  * 
  * @author Carlo Cancellieri - carlo.cancellieri@geo-solutions.it
+ * @author ETj
  * 
  */
-public class Grib1Checker extends NetcdfCheckerImpl {
+public class Grib1Loader extends NetcdfLoader {
 
-    public Grib1Checker(final NetcdfFile ncFileIn, final File dictionaryFile, final NetcdfCheckerSPI spi)
+    public Grib1Loader(final NetcdfFile ncFileIn, final File dictionaryFile, final NetcdfSPI spi)
         throws Exception {
         super(ncFileIn, dictionaryFile, spi);
 
@@ -47,15 +48,6 @@ public class Grib1Checker extends NetcdfCheckerImpl {
 
         // Carlo on 25Jul2011: added for LaMMa project
         manager.addUnit(new ScaledUnit(100, manager.get("Pa"), UnitName.newUnitName("hPa")));
-    }
-
-    /**
-     * override the parent method appending the runtime to the variable name
-     */
-    @Override
-    public String getVarName(final Variable var) {
-//        return super.getVarName(var) + "_" + super.getRunTime();
-        return super.composeVarName(var) + "_" + super.getRunTime();
     }
 
 }

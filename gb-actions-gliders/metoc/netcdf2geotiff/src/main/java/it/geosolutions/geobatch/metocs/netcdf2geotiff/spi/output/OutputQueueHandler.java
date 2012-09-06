@@ -19,9 +19,10 @@
  *  You should have received a copy of the GNU General Public License
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package it.geosolutions.geobatch.metocs.netcdf2geotiff.output;
+package it.geosolutions.geobatch.metocs.netcdf2geotiff.spi.output;
 
-import it.geosolutions.geobatch.metocs.netcdf2geotiff.checker.NetcdfChecker;
+import it.geosolutions.geobatch.metocs.netcdf2geotiff.spi.NetcdfLoader;
+import it.geosolutions.geobatch.metocs.netcdf2geotiff.spi.NetcdfVariable;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
@@ -39,11 +40,11 @@ import ucar.nc2.Variable;
 public abstract class OutputQueueHandler <Type> {
 
     protected Map<String, Object> configuration;
-    protected NetcdfChecker checker;
+    protected NetcdfLoader loader;
 
-    public OutputQueueHandler(Map<String, Object> configuration, NetcdfChecker checker) {
+    public OutputQueueHandler(Map<String, Object> configuration, NetcdfLoader checker) {
         this.configuration = configuration;
-        this.checker = checker;
+        this.loader = checker;
     }
 	
 	/**
@@ -70,5 +71,5 @@ public abstract class OutputQueueHandler <Type> {
 	 * @note this method will be called for each variable found (and selected 
 	 * from configuration) into the netcdf.
 	 */
-	public abstract Type writeOutput(final File workingDir, final Variable var);
+	public abstract Type writeOutput(final File workingDir, final NetcdfVariable var);
 }

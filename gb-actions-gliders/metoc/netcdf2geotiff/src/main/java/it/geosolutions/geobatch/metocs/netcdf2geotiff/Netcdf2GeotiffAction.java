@@ -25,10 +25,12 @@ import it.geosolutions.filesystemmonitor.monitor.FileSystemEvent;
 import it.geosolutions.geobatch.actions.tools.adapter.EventAdapter;
 import it.geosolutions.geobatch.flow.event.action.ActionException;
 import it.geosolutions.geobatch.flow.event.action.BaseAction;
-import it.geosolutions.geobatch.metocs.netcdf2geotiff.checker.NetcdfChecker;
-import it.geosolutions.geobatch.metocs.netcdf2geotiff.checker.NetcdfCheckerLoader;
-import it.geosolutions.geobatch.metocs.netcdf2geotiff.checker.NetcdfCheckerSPI;
-import it.geosolutions.geobatch.metocs.netcdf2geotiff.output.OutputQueueHandler;
+import it.geosolutions.geobatch.metocs.netcdf2geotiff.spi.NetcdfLoader;
+import it.geosolutions.geobatch.metocs.netcdf2geotiff.spi.NetcdfSPILoader;
+import it.geosolutions.geobatch.metocs.netcdf2geotiff.spi.NetcdfSPI;
+import it.geosolutions.geobatch.metocs.netcdf2geotiff.spi.NetcdfVariable;
+import it.geosolutions.geobatch.metocs.netcdf2geotiff.spi.geotiff.GeoTiffNameBuilder;
+import it.geosolutions.geobatch.metocs.netcdf2geotiff.spi.output.OutputQueueHandler;
 import it.geosolutions.geobatch.metocs.utils.io.METOCSActionsIOUtils;
 import it.geosolutions.geobatch.metocs.utils.io.Utilities;
 import it.geosolutions.tools.commons.file.Path;
@@ -224,7 +226,9 @@ public class Netcdf2GeotiffAction
                     listenerForwarder.setTask(task);
 
                     // INITIALIZE checker variables
-                    if (spi.checker.initVar(var) != true) {
+                    NetcdfVariable nvar = new NetcdfVariable(spi.loader, var);
+
+                    if ( ! nvar.getStatus() ) {
                         if (LOGGER.isErrorEnabled()) {
                             LOGGER.error("Failed to initialize cache for this variable.");
                         }
@@ -235,7 +239,7 @@ public class Netcdf2GeotiffAction
                      * VARIABLE (DIRECTORY) NAMING CONVENTION
                      * build the output layer directory using the getVarName implementation for
                      */
-                    final File layerOutputVarDir = new File(layerOutputBaseDir, spi.checker.getDirName(var));
+                    final File layerOutputVarDir = new File(layerOutputBaseDir, spi.nameBuilder.getDirName(nvar, tokens));
 
                     if (!layerOutputVarDir.exists()) {
                         if (!layerOutputVarDir.mkdirs()) {
@@ -248,7 +252,7 @@ public class Netcdf2GeotiffAction
                     }
 
                     // building Envelope
-                    final GeneralEnvelope envelope = spi.checker.getEnvelope();
+                    final GeneralEnvelope envelope = nvar.getEnvelope();
                     if (envelope == null) {
                         if (LOGGER.isWarnEnabled()) {
                             LOGGER.warn("No envelope found, skipping var " + var.getFullName());
@@ -261,12 +265,12 @@ public class Netcdf2GeotiffAction
                     // //
                     if(LOGGER.isDebugEnabled())
                         LOGGER.debug("Creating sample model "
-                                + "type:"+ var.getDataType()
-                                + " lon:"+spi.checker.getLonSize()
-                                + " lat:"+spi.checker.getLatSize());
+                                + "type:" + var.getDataType()
+                                + " lon:" + nvar.getLonSize()
+                                + " lat:" + nvar.getLatSize());
                     
                     final SampleModel outSampleModel = Utilities.getSampleModel(
-                            var.getDataType(), spi.checker.getLonSize(), spi.checker.getLatSize(), 1);
+                            var.getDataType(), nvar.getLonSize(), nvar.getLatSize(), 1);
 
 //    /*
 //     * Creating a new ImageMosaicCommand to add a layer using this geotiff
@@ -307,26 +311,26 @@ public class Netcdf2GeotiffAction
                         }
                         continue;//TODO log
                     }
-                    final Number fillValue = spi.checker.getFillValue();
+                    final Number fillValue = nvar.getFillValue();
 
                     if (LOGGER.isInfoEnabled()) {
                         LOGGER.info("Missing value is \'" + fillValue.toString() + "\'");
                     }
 
-                    final Converter converter = spi.checker.getConverter();
+                    final Converter converter = nvar.getConverter();
 
                     if (LOGGER.isInfoEnabled()) {
                         LOGGER.info("Loading converter for this variable is \'" + converter + "\'");
                     }
 
 
-                    for (int z = 0; z < spi.checker.getZetaSize(); z++) {
+                    for (int z = 0; z < nvar.getZetaSize(); z++) {
 
                         if (rank == 4) {
                             section2d.setRange(1, new Range(z, z));
                         }
 
-                        for (int t = 0; t < spi.checker.getTimeSize(); t++) {
+                        for (int t = 0; t < nvar.getTimeSize(); t++) {
 
                             if (rank >= 3) {
                                 section2d.setRange(0, new Range(t, t));
@@ -347,7 +351,7 @@ public class Netcdf2GeotiffAction
                             // ////
                             tokens.put("zeta", z);
                             tokens.put("time", t);
-                            final String coverageName = spi.checker.buildName(var, tokens);
+                            final String coverageName = spi.nameBuilder.buildName(nvar, tokens);
 
                             if (LOGGER.isDebugEnabled()) {
                                 LOGGER.debug("Writing GeoTiff named \'" + coverageName + "\'");
@@ -355,7 +359,7 @@ public class Netcdf2GeotiffAction
 
                             // Storing variables Variables as GeoTIFFs
                             final File gtiffFile = Utilities.storeCoverageAsGeoTIFF(layerOutputVarDir,
-                                    coverageName, spi.checker.getVarName(var), userRaster, Double.NaN, //Double.parseDouble(checker.getFillValue(var).toString()),
+                                    coverageName, nvar.getFullName(), userRaster, Double.NaN, //Double.parseDouble(checker.getFillValue(var).toString()),
                                     envelope, DEFAULT_COMPRESSION_TYPE,
                                     DEFAULT_COMPRESSION_RATIO, DEFAULT_TILE_SIZE);
 
@@ -364,7 +368,7 @@ public class Netcdf2GeotiffAction
                     }     // FOR
 
                     //set ouptut
-                    final EventObject ev = spi.outputHandler.writeOutput(layerOutputVarDir, var);
+                    final EventObject ev = spi.outputHandler.writeOutput(layerOutputVarDir, nvar);
                     if (ev != null) {
                         if(LOGGER.isDebugEnabled())
                             LOGGER.debug("Adding output event " + ev);
@@ -504,14 +508,15 @@ public class Netcdf2GeotiffAction
     }
 
     private static class SPIObjects {
-        NetcdfChecker checker;
+        NetcdfLoader loader;
         OutputQueueHandler<EventObject> outputHandler;
+        GeoTiffNameBuilder nameBuilder;
     }
 
     private SPIObjects loadSPI(NetcdfFile ncFileIn) throws ActionException {
 
         String spiClassName = ncFileIn.getIosp().getClass().toString();
-        NetcdfCheckerSPI spi = NetcdfCheckerLoader.getCheckerLoader(spiClassName);//getFileTypeId()
+        NetcdfSPI spi = NetcdfSPILoader.getCheckerLoader(spiClassName);//getFileTypeId()
         if (spi != null) {
             if (LOGGER.isInfoEnabled()) {
                 LOGGER.info("Creating an instance of: " + spi.getClass());
@@ -523,8 +528,9 @@ public class Netcdf2GeotiffAction
 
             try {
                 SPIObjects ret = new SPIObjects();
-                ret.checker = spi.buildChecker(ncFileIn, dictionaryFile);
-                ret.outputHandler = spi.buildOutputQueueHandler(configuration.getOutputConfiguration(), ret.checker);
+                ret.loader = spi.buildLoader(ncFileIn, dictionaryFile);
+                ret.outputHandler = spi.buildOutputQueueHandler(configuration.getOutputConfiguration(), ret.loader);
+                ret.nameBuilder = spi.buildGeoTiffNameBuilder(ret.loader);
                 return ret;
 
             } catch (Exception ex) {

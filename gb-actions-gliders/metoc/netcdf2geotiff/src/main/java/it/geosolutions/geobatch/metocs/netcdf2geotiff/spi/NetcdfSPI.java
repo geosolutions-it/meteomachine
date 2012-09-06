@@ -19,12 +19,14 @@
  *  You should have received a copy of the GNU General Public License
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package it.geosolutions.geobatch.metocs.netcdf2geotiff.cf;
+package it.geosolutions.geobatch.metocs.netcdf2geotiff.spi;
 
-import it.geosolutions.geobatch.metocs.netcdf2geotiff.checker.NetcdfCheckerImpl;
-import it.geosolutions.geobatch.metocs.netcdf2geotiff.checker.NetcdfCheckerSPI;
 
+import it.geosolutions.geobatch.metocs.netcdf2geotiff.spi.geotiff.GeoTiffNameBuilder;
+import it.geosolutions.geobatch.metocs.netcdf2geotiff.spi.output.OutputQueueHandler;
 import java.io.File;
+import java.util.EventObject;
+import java.util.Map;
 
 import ucar.nc2.NetcdfFile;
 
@@ -33,9 +35,17 @@ import ucar.nc2.NetcdfFile;
  * @author Carlo Cancellieri - carlo.cancellieri@geo-solutions.it
  *
  */
-public class NetcdfCFChecker extends NetcdfCheckerImpl {
+public interface  NetcdfSPI {
 
-    protected NetcdfCFChecker(final NetcdfFile ncFileIn, final File dictionaryFile, final NetcdfCheckerSPI spi) throws Exception {
-        super(ncFileIn, dictionaryFile, spi);
-    }
+    public OutputQueueHandler<EventObject> buildOutputQueueHandler(Map<String, Object> cfg, NetcdfLoader checker);
+
+    public GeoTiffNameBuilder buildGeoTiffNameBuilder(NetcdfLoader checker);
+    
+    public NetcdfLoader buildLoader(final NetcdfFile ncFileIn, final File dictionary) throws Exception;
+    
+    public MetocsBaseDictionary buildDictionary(final File dictionaryFile);
+    
+    public boolean canRead(final String type);
+
+    public int getPriority();
 }

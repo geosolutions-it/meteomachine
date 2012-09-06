@@ -19,7 +19,7 @@
  *  You should have received a copy of the GNU General Public License
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package it.geosolutions.geobatch.metocs.netcdf2geotiff.checker;
+package it.geosolutions.geobatch.metocs.netcdf2geotiff.spi;
 
 import java.util.Map.Entry;
 
@@ -36,19 +36,19 @@ import org.springframework.context.ApplicationContextAware;
  * @author ETj
  *
  */
-public class NetcdfCheckerLoader implements ApplicationContextAware , InitializingBean {
+public class NetcdfSPILoader implements ApplicationContextAware , InitializingBean {
 
-    protected final static Logger LOGGER = LoggerFactory.getLogger(NetcdfCheckerLoader.class);
+    protected final static Logger LOGGER = LoggerFactory.getLogger(NetcdfSPILoader.class);
 
     private ApplicationContext applicationContext = null;
 
-    private static NetcdfCheckerLoader singleton;
+    private static NetcdfSPILoader singleton;
 
     
-    public NetcdfCheckerLoader(){
+    public NetcdfSPILoader(){
     }        
     
-    public static NetcdfCheckerSPI getCheckerLoader(final String type){
+    public static NetcdfSPI getCheckerLoader(final String type){
         if (singleton== null) {
             if (LOGGER.isErrorEnabled())
                 LOGGER.error("Underlying loader is null!");
@@ -57,18 +57,18 @@ public class NetcdfCheckerLoader implements ApplicationContextAware , Initializi
         return singleton.getCheckerSPI(type);
     }
     
-    private NetcdfCheckerSPI getCheckerSPI(final String type){
+    private NetcdfSPI getCheckerSPI(final String type){
         if (applicationContext == null) {
             if (LOGGER.isErrorEnabled())
                 LOGGER.error("Underlying applicationContext is null!");
             return null;
         }
         
-        NetcdfCheckerSPI highestSpi = null;
-        NetcdfCheckerSPI currentSpi = null;
+        NetcdfSPI highestSpi = null;
+        NetcdfSPI currentSpi = null;
 
-        for (Entry<String, NetcdfCheckerSPI> entry : applicationContext.getBeansOfType(NetcdfCheckerSPI.class).entrySet()) {
-            currentSpi = (NetcdfCheckerSPI) entry.getValue();
+        for (Entry<String, NetcdfSPI> entry : applicationContext.getBeansOfType(NetcdfSPI.class).entrySet()) {
+            currentSpi = (NetcdfSPI) entry.getValue();
             if (currentSpi != null){
                 if (currentSpi.canRead(type)){
                     if (LOGGER.isInfoEnabled())
@@ -94,6 +94,38 @@ public class NetcdfCheckerLoader implements ApplicationContextAware , Initializi
         if (LOGGER.isWarnEnabled())
             LOGGER.warn("Unable to find the needed SPI for type: "+type);
         
+        return null;
+    }
+
+    public static <T extends NetcdfSPI> T getSPIClass(final Class<T> clazz) {
+        if(singleton == null)
+            if (LOGGER.isErrorEnabled())
+                LOGGER.error("No singleton instance");
+
+        return singleton.getSPI(clazz);
+
+    }
+
+    protected <T extends NetcdfSPI> T getSPI(final Class<T> clazz){
+
+        if (applicationContext == null) {
+            if (LOGGER.isErrorEnabled())
+                LOGGER.error("Underlying applicationContext is null!");
+            return null;
+        }
+
+        for (Entry<String, NetcdfSPI> entry : applicationContext.getBeansOfType(NetcdfSPI.class).entrySet()) {
+            NetcdfSPI currentSpi = (NetcdfSPI) entry.getValue();
+            if (currentSpi.getClass() == clazz) {
+                if (LOGGER.isInfoEnabled())
+                    LOGGER.info("Found SPI instance "+currentSpi.getClass() + " priority " + currentSpi.getPriority());
+                return (T)currentSpi;
+            }
+        }
+
+        if (LOGGER.isWarnEnabled())
+            LOGGER.warn("Unable to find the requested SPI "+ clazz.getName());
+
         return null;
     }
 

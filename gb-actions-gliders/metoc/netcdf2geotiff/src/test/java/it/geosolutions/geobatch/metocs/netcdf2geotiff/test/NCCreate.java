@@ -50,7 +50,11 @@ public class NCCreate {
         String filename = "/tmp/test.nc";
         create(filename);
     }
-    
+
+    /**
+     * Netcdf2geotiff utils <B>rely on the dimension order time, dept, lat, lon</B>.
+     *
+     */
 
     public static void create(String filename) throws IOException {
 
@@ -139,7 +143,7 @@ public class NCCreate {
             ncfile.create();
 
             ncfile.write("time", Array.factory(new double[] {965088000, 965098800, 965109600, 965120400}));
-            ncfile.write("depth", Array.factory(new float[] {10, 100, 1000}));
+            ncfile.write("depth", Array.factory(new float[] {10, 200, 3000}));
             ncfile.write("lat", Array.factory(new float[] {40.0f, 41.0f}));
             ncfile.write("lon", Array.factory(new float[] {-109.0f, -107.0f}));
 

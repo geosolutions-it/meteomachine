@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2007 - 2011 GeoSolutions S.A.S.
+ *  Copyright (C) 2007 - 2012 GeoSolutions S.A.S.
  *  http://www.geo-solutions.it
  * 
  *  GPLv3 + Classpath exception
@@ -17,15 +17,15 @@
  *  You should have received a copy of the GNU General Public License
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package it.geosolutions.geobatch.metocs.netcdf2geotiff.output;
+package it.geosolutions.geobatch.metocs.netcdf2geotiff.spi.output;
 
-import it.geosolutions.geobatch.metocs.netcdf2geotiff.checker.NetcdfChecker;
+import it.geosolutions.geobatch.metocs.netcdf2geotiff.spi.NetcdfLoader;
+import it.geosolutions.geobatch.metocs.netcdf2geotiff.spi.NetcdfVariable;
 import java.io.File;
 import java.util.EventObject;
 import java.util.Map;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import ucar.nc2.Variable;
 
 /**
  *
@@ -35,12 +35,12 @@ public class DefaultOutputQueueHandler extends OutputQueueHandler<EventObject> {
 
     private final static Logger LOGGER = LoggerFactory.getLogger(DefaultOutputQueueHandler.class);
 
-    public DefaultOutputQueueHandler(Map<String, Object> configuration, NetcdfChecker checker) {
-        super(configuration, checker);
+    public DefaultOutputQueueHandler(Map<String, Object> configuration, NetcdfLoader loader) {
+        super(configuration, loader);
     }
 
     @Override
-    public EventObject writeOutput(File workingDir, Variable var) {
+    public EventObject writeOutput(File workingDir, NetcdfVariable var) {
         if(LOGGER.isInfoEnabled())
             LOGGER.info("Not generating output for variable " + var.getFullName());
         return null;

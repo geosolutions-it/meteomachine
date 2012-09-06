@@ -19,13 +19,14 @@
  *  You should have received a copy of the GNU General Public License
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package it.geosolutions.geobatch.metocs.netcdf2geotiff.checker;
+package it.geosolutions.geobatch.metocs.netcdf2geotiff.spi;
 
 import com.thoughtworks.xstream.XStream;
 
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.Map;
 import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
@@ -34,12 +35,18 @@ import org.slf4j.LoggerFactory;
 /**
  * @author etj
  */
-public abstract class AbsCheckerSPI implements NetcdfCheckerSPI {
+public class DefaultDictionaryLoader {
 
-    private final static Logger LOGGER = LoggerFactory.getLogger(AbsCheckerSPI.class);
+    private final static Logger LOGGER = LoggerFactory.getLogger(DefaultDictionaryLoader.class);
 
     private final static XStream xstream= new XStream();
     
+    public MetocsBaseDictionary loadDictionary(final File dictionaryFile) {    
+        Map<String, Map<String, String>> dictionary = getDefaultDictionary();
+        loadDictionary(dictionaryFile, dictionary);
+        return new MetocsBaseDictionary(dictionary);        
+    }
+
     protected void loadDictionary(final File dictionaryFile, Map<String, Map<String, String>> dictionary) {
         if (dictionaryFile != null) {
             if(LOGGER.isInfoEnabled()) {
@@ -87,28 +94,8 @@ public abstract class AbsCheckerSPI implements NetcdfCheckerSPI {
         }
     }
 
-    /**
-     * Implementation priority.
-     * When looking for a SPI implementation, the implementation with the highest
-     * priority will be choosen.
-     * <br/>
-     * The priority may be set using an OverrideProperty in the custom webapp.
-     */
-    public int priority = -1;
-
-    /**
-     * Implementation priority.
-     * When looking for a SPI implementation, the implementation with the highest
-     * priority will be choosen.
-     * <br/>
-     * The priority may be set using an OverrideProperty in the custom webapp.
-     */
-    public int getPriority() {
-        return priority;
-    }
-
-    public void setPriority(int priority) {
-        this.priority = priority;
+    protected Map<String, Map<String, String>> getDefaultDictionary() {
+        return new HashMap<String, Map<String, String>>();
     }
 
 }

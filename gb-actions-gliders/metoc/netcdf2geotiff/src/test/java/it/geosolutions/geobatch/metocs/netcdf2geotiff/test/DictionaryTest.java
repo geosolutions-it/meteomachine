@@ -1,7 +1,7 @@
 package it.geosolutions.geobatch.metocs.netcdf2geotiff.test;
 
 
-import it.geosolutions.geobatch.metocs.netcdf2geotiff.checker.MetocsBaseDictionary;
+import it.geosolutions.geobatch.metocs.netcdf2geotiff.spi.MetocsBaseDictionary;
 
 import java.io.File;
 import java.io.FileInputStream;

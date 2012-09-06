@@ -1,7 +1,7 @@
 /*
  *  GeoBatch - Open Source geospatial batch processing system
  *  http://geobatch.codehaus.org/
- *  Copyright (C) 2007-2008-2009 GeoSolutions S.A.S.
+ *  Copyright (C) 2007-2012 GeoSolutions S.A.S.
  *  http://www.geo-solutions.it
  *
  *  GPLv3 + Classpath exception
@@ -19,7 +19,7 @@
  *  You should have received a copy of the GNU General Public License
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package it.geosolutions.geobatch.metocs.netcdf2geotiff.checker;
+package it.geosolutions.geobatch.metocs.netcdf2geotiff.spi;
 
 import it.geosolutions.geobatch.metocs.utils.converter.ConverterManager;
 import it.geosolutions.geobatch.metocs.utils.io.METOCSActionsIOUtils;
@@ -53,37 +53,48 @@ import ucar.units.Converter;
 import ucar.units.UnitDBException;
 
 /**
+ * Load information from a netcdf file.
+ * A dictionary is used to map names and behaviour to nc variables.
  *
  * @author Carlo Cancellieri - carlo.cancellieri@geo-solutions.it
+ * @author ETj
  *
  */
-public abstract class NetcdfChecker { // <OutputType> { extends OutputQueueHandler<OutputType>{
+public class NetcdfLoader { // <OutputType> { extends OutputQueueHandler<OutputType>{
+
+	private final static Logger LOGGER = LoggerFactory.getLogger(NetcdfLoader.class);
+
+	private final NetcdfFile ncFileIn;
+
+	private final MetocsBaseDictionary dictionary;
+
+	private final ConverterManager converterManager;
+
+	private final SimpleDateFormat sdf;
+
+	private static final TimeZone UTC_TZ = TimeZone.getTimeZone("UTC");
+
+	private static final String TIME_FORMAT = "yyyyMMdd'T'HHmmssSSS'Z'"; // TODO move into the dictionary
 
 	/**
 	 * method to override to initialize internal members
 	 * @return
 	 */
-	public abstract boolean initVar(final Variable var);
-	public abstract Converter getConverter();
-	public abstract Number getFillValue();
-
-    /**
-     * @deprecated should be moved to another class
-     */
-	public abstract String buildName(final Variable var, final Map<String, Object> tokens);// TODO change this...
-
-	public abstract int getLonSize();
-	public abstract int getLatSize();
-    public abstract int getTimeSize();
-	public abstract int getZetaSize();
-	public abstract GeneralEnvelope getEnvelope();
+//	public abstract boolean initVar(final Variable var);
+//	public abstract Converter getConverter();
+//	public abstract Number getFillValue();
+//
+//	public abstract int getLonSize();
+//	public abstract int getLatSize();
+//    public abstract int getTimeSize();
+//	public abstract int getZetaSize();
+//	public abstract GeneralEnvelope getEnvelope();
 
 
 	// hide empty constructors
-	private NetcdfChecker() {
+	private NetcdfLoader() {
 		ncFileIn = null;
 		converterManager=null;
-		LOGGER = null;
 		dictionary = null;
 		sdf = null;
 	};
@@ -94,11 +105,11 @@ public abstract class NetcdfChecker { // <OutputType> { extends OutputQueueHandl
 	 * @param ncFileIn
 	 * @throws UnitDBException
 	 */
-	protected NetcdfChecker(final NetcdfFile ncFileIn,
-			final File dictionaryFile, final NetcdfCheckerSPI spi) throws Exception {
-		LOGGER = LoggerFactory.getLogger(spi.getClass());
+	public NetcdfLoader(final NetcdfFile ncFileIn,
+			final File dictionaryFile, final NetcdfSPI spi) throws Exception {
+//        LOGGER = LoggerFactory.getLogger(spi.getClass());
 
-		dictionary = spi.readDictionary(dictionaryFile);
+		dictionary = spi.buildDictionary(dictionaryFile);
 		sdf = new SimpleDateFormat(getTimeFormat());
 		sdf.setTimeZone(getTimeZone());
 
@@ -232,7 +243,7 @@ public abstract class NetcdfChecker { // <OutputType> { extends OutputQueueHandl
     }
 
 	/**
-	 * Search into the dictionary the NOTADA value for the ROOT node
+	 * Search into the dictionary the NODATA value for the ROOT node
 	 *
 	 * @return
 	 */
@@ -242,35 +253,6 @@ public abstract class NetcdfChecker { // <OutputType> { extends OutputQueueHandl
 			return attr.getStringValue();
 		else
 			return null;
-	}
-
-	/**
-	 * return the variable name with prefix and suffix in the form:<br>
-	 *
-	 * PREFIXVariableNameSUFFIX<br>
-	 * <br>
-	 * The SUFFIX and the PREFIX variables can be defined into the dictionary as
-	 * root (global) or section (per variable) attributes.
-	 *
-	 * @param var
-	 *            the variable to use to getName
-	 * @return a string representing the name in the form described above
-     *
-     * @deprecated really confusing. Use {@link #composeVarName(ucar.nc2.Variable) }
-	 */
-	public String getVarName(final Variable var) {
-		return getPrefix(var.getName())
-                + var.getName()
-				+ getSuffix(var.getName());
-	}
-
-    /**
-     * @return the var name composed with prefix and suffix
-     */
-	public String composeVarName(final Variable var) {
-		return getPrefix(var.getName())
-                + var.getName()
-				+ getSuffix(var.getName());
 	}
 
 
@@ -307,7 +289,7 @@ public abstract class NetcdfChecker { // <OutputType> { extends OutputQueueHandl
 	 * used name for the latitude dimension will be read from the dictionary.
 	 * Return null if no latitude dimension is assigned.
 	 *
-	 * @see NetcdfChecker.getDimVar()
+	 * @see NetcdfLoader.getDimVar()
 	 * @param var
 	 *            the variable to query for the latitude variable
 	 * @return the variable representing the latitude dimension or null
@@ -321,7 +303,7 @@ public abstract class NetcdfChecker { // <OutputType> { extends OutputQueueHandl
 	 * used name for the longitude dimension will be read from the dictionary.
 	 * Return null if no longitude dimension is assigned.
 	 *
-	 * @see NetcdfChecker.getDimVar()
+	 * @see NetcdfLoader.getDimVar()
 	 * @param var
 	 *            the variable to query for the longitude variable
 	 * @return the variable representing the longitude dimension or null
@@ -336,7 +318,7 @@ public abstract class NetcdfChecker { // <OutputType> { extends OutputQueueHandl
 	 * read from the dictionary. Return null if no elevation/depth ('Z')
 	 * dimension is assigned.
 	 *
-	 * @see NetcdfChecker.getDimVar()
+	 * @see NetcdfLoader.getDimVar()
 	 * @param var
 	 *            the variable to query for the elevation/depth ('Z') variable
 	 * @return the variable representing the elevation/depth ('Z') dimension or
@@ -351,7 +333,7 @@ public abstract class NetcdfChecker { // <OutputType> { extends OutputQueueHandl
 	 * name for the time dimension will be read from the dictionary. Return null
 	 * if no time dimension is assigned.
 	 *
-	 * @see NetcdfChecker.getDimVar()
+	 * @see NetcdfLoader.getDimVar()
 	 * @param var
 	 *            the variable to query for the time variable
 	 * @return the variable representing the time dimension or null
@@ -398,36 +380,7 @@ public abstract class NetcdfChecker { // <OutputType> { extends OutputQueueHandl
 
 	}
 
-	/**
-	 * Return the t^th time in millisecs
-	 *
-	 * @note you may override this method if the time array is of String type
-	 *
-	 * @param startDate
-	 *            the BaseTime in milliseconds
-	 * @param timeVar
-	 *            the variable representing the time vector
-	 * @param t
-	 *            the t^th time to calculate
-	 * @return
-	 */
-	public long getTimeInstant(final long startDate, final Array time,
-			final int t, final Long conversion) {
 
-		long timeValue = time.getLong(t);
-		if (timeValue < 0) {
-			if (LOGGER.isWarnEnabled())
-				LOGGER.warn("The time TAU is: " + timeValue);
-		} else {
-			timeValue =  startDate+getDeltaTime(time, t, conversion);
-		}
-
-		final Calendar roundedTimeInstant = new GregorianCalendar();//UTC_TZ);
-		roundedTimeInstant.setTimeInMillis(timeValue);
-
-		return roundedTimeInstant.getTimeInMillis();
-
-	}
 
 	/**
 	 * Try to parse the dictionary to get the value of the time unit conversion
@@ -572,26 +525,7 @@ public abstract class NetcdfChecker { // <OutputType> { extends OutputQueueHandl
 	// Protected
 	// //////////////////////////////
 
-	private final long DELTA = 3600000;
-
-	protected final Logger LOGGER;
-
-	private final NetcdfFile ncFileIn;
-
-	private final MetocsBaseDictionary dictionary;
-
-	private final ConverterManager converterManager;
-
-	private final SimpleDateFormat sdf;
-
-	private static final TimeZone UTC_TZ = TimeZone.getTimeZone("UTC");
-
-	private static final String TIME_FORMAT = "yyyyMMdd'T'HHmmssSSS'Z'"; // TODO
-																			// move
-																			// into
-																			// the
-																			// dictionary
-	protected final SimpleDateFormat getSimpleDateFormat(){
+	public final SimpleDateFormat getSimpleDateFormat(){
 		return sdf;
 	}
 
@@ -691,30 +625,6 @@ public abstract class NetcdfChecker { // <OutputType> { extends OutputQueueHandl
 	// PRIVATE
 	// /////////////////////////
 
-	/**
-	 * Return the DELTA (TAU) in milliseconds for the specified time variable at
-	 * the specified index
-	 *
-	 * @param time
-	 * @param t
-	 *
-	 * @return
-	 */
-	private long getDeltaTime(final Array time, final int t,
-			final Long conversion) {
-		final long deltaValue;
-//		if (t > 0) {
-//			deltaValue = Math.abs(time.getLong(t - 1) - time.getLong(t));
-//		} else
-			deltaValue = time.getLong(t);
-
-		if (conversion == null) {
-			// apply standard conversion from hour
-			return DELTA * deltaValue;
-		} else {
-			return conversion * deltaValue; // from hour to millisec(s)
-		}
-	}
 
 
 	private Attribute getVarAttr(final Variable var, final String name) {
@@ -793,15 +703,6 @@ public abstract class NetcdfChecker { // <OutputType> { extends OutputQueueHandl
 						+ "\' variable into the dataset.");
 			return null;
 		}
-	}
-
-    /**
-	 * The output variable directory name.
-     *
-     * @deprecated should be moved to another class
-     */
-	public String getDirName(final Variable var) {
-		return var.getFullName();
 	}
 
 }

@@ -17,14 +17,14 @@
  *  You should have received a copy of the GNU General Public License
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package it.geosolutions.geobatch.metocs.netcdf2geotiff.output;
+package it.geosolutions.geobatch.metocs.netcdf2geotiff.spi.output;
 
-import it.geosolutions.geobatch.metocs.netcdf2geotiff.im.*;
 import it.geosolutions.filesystemmonitor.monitor.FileSystemEvent;
 import it.geosolutions.filesystemmonitor.monitor.FileSystemEventType;
 import it.geosolutions.geobatch.imagemosaic.ImageMosaicCommand;
-import it.geosolutions.geobatch.metocs.netcdf2geotiff.checker.NetcdfChecker;
-import it.geosolutions.geobatch.metocs.netcdf2geotiff.grib1.MetocsImageMosaicDictionary;
+import it.geosolutions.geobatch.metocs.netcdf2geotiff.spi.NetcdfLoader;
+import it.geosolutions.geobatch.metocs.netcdf2geotiff.impl.grib1.MetocsImageMosaicDictionary;
+import it.geosolutions.geobatch.metocs.netcdf2geotiff.spi.NetcdfVariable;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -44,12 +44,12 @@ public class IMCOutputHandler extends OutputQueueHandler<EventObject> {
 
     private final static Logger LOGGER = LoggerFactory.getLogger(IMCOutputHandler.class);
 
-    public IMCOutputHandler(Map<String, Object> configuration, NetcdfChecker checker) {
+    public IMCOutputHandler(Map<String, Object> configuration, NetcdfLoader checker) {
         super(configuration, checker);
     }
 
     @Override
-    public EventObject writeOutput(final File tempDir, final Variable var) {
+    public EventObject writeOutput(final File tempDir, final NetcdfVariable var) {
 
         final String mosaicPath = (String)configuration.get("mosaicPath");
         File mosaicPathFile;
@@ -68,8 +68,8 @@ public class IMCOutputHandler extends OutputQueueHandler<EventObject> {
         final ImageMosaicCommand cmd = new ImageMosaicCommand(mosaicPathFile, getOutList(), null);
 
         // STYLES_KYE
-        final String styles = checker.getDictionary()
-                .getValueFromDictionary(var.getName(),MetocsImageMosaicDictionary.STYLES_KEY);
+        final String styles = loader.getDictionary()
+                .getValueFromDictionary(var.getFullName(), MetocsImageMosaicDictionary.STYLES_KEY);
         if (styles != null) {
             final String[] stylesList = styles.split(",");
             if (stylesList != null) {
@@ -82,7 +82,7 @@ public class IMCOutputHandler extends OutputQueueHandler<EventObject> {
         }
 
         // DEFAULT_STYLE_KEY
-        final String defaultStyle = checker.getDictionary()
+        final String defaultStyle = loader.getDictionary()
                 .getValueFromDictionary(var.getFullName(), MetocsImageMosaicDictionary.DEFAULT_STYLE_KEY);
         cmd.setDefaultStyle(defaultStyle);
 
@@ -115,7 +115,7 @@ public class IMCOutputHandler extends OutputQueueHandler<EventObject> {
      * Creates the output file name.
      * You can override this method if you need a different name.
      */
-    protected File buildOutputFile(Variable var, File outputDir) throws IOException {
+    protected File buildOutputFile(NetcdfVariable var, File outputDir) throws IOException {
         return File.createTempFile(var.getFullName(), "_imc.xml", outputDir);
     }
 

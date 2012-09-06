@@ -12,6 +12,8 @@ import it.geosolutions.filesystemmonitor.monitor.FileSystemEvent;
 import it.geosolutions.filesystemmonitor.monitor.FileSystemEventType;
 import it.geosolutions.geobatch.metocs.netcdf2geotiff.Netcdf2GeotiffAction;
 import it.geosolutions.geobatch.metocs.netcdf2geotiff.Netcdf2GeotiffConfiguration;
+import it.geosolutions.geobatch.metocs.netcdf2geotiff.spi.NetcdfSPILoader;
+import it.geosolutions.geobatch.metocs.netcdf2geotiff.impl.im.NetcdfImageMosaicSPI;
 import java.io.File;
 import java.util.Arrays;
 import java.util.EventObject;
@@ -47,6 +49,8 @@ public class NCTest extends BaseTest {
     public void testStandard()  {
 
         try{
+            NetcdfImageMosaicSPI spiClass = NetcdfSPILoader.getSPIClass(NetcdfImageMosaicSPI.class);
+            spiClass.setPriority(1000);
 
             Netcdf2GeotiffConfiguration cfg = new Netcdf2GeotiffConfiguration("testid", "testname", "testdescr");
             cfg.setCrs("EPSG:4326");

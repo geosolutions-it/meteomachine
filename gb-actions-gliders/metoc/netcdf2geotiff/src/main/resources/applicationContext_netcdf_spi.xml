@@ -3,16 +3,16 @@
 
 <beans default-init-method="init" default-destroy-method="dispose">
     
-    <bean id="NetcdfCFCheckerSPI" class="it.geosolutions.geobatch.metocs.netcdf2geotiff.cf.NetcdfCFCheckerSPI" lazy-init="false">
+    <bean id="NetcdfCFSPI" class="it.geosolutions.geobatch.metocs.netcdf2geotiff.impl.cf.NetcdfCFSPI" lazy-init="false">
     </bean>
 
-    <bean id="NetcdfIMCheckerSPI" class="it.geosolutions.geobatch.metocs.netcdf2geotiff.im.NetcdfIMCheckerSPI" lazy-init="false">
+    <bean id="NetcdfIMSPI" class="it.geosolutions.geobatch.metocs.netcdf2geotiff.impl.im.NetcdfImageMosaicSPI" lazy-init="false">
     </bean>
     
-    <bean id="Grib1CheckerSPI" class="it.geosolutions.geobatch.metocs.netcdf2geotiff.grib1.Grib1CheckerSPI" lazy-init="false">
+    <bean id="Grib1SPI" class="it.geosolutions.geobatch.metocs.netcdf2geotiff.impl.grib1.Grib1SPI" lazy-init="false">
     </bean>
     
-    <bean id="NetcdfCheckerLoader" class="it.geosolutions.geobatch.metocs.netcdf2geotiff.checker.NetcdfCheckerLoader"  lazy-init="false">
+    <bean id="NetcdfSPILoader" class="it.geosolutions.geobatch.metocs.netcdf2geotiff.spi.NetcdfSPILoader"  lazy-init="false">
     </bean>
 
 </beans>

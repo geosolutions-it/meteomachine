@@ -19,7 +19,7 @@
  *  You should have received a copy of the GNU General Public License
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package it.geosolutions.geobatch.metocs.netcdf2geotiff.checker;
+package it.geosolutions.geobatch.metocs.netcdf2geotiff.spi;
 
 import it.geosolutions.geobatch.metocs.netcdf2geotiff.MetocsDictionary;
 

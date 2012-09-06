@@ -19,30 +19,55 @@
  *  You should have received a copy of the GNU General Public License
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package it.geosolutions.geobatch.metocs.netcdf2geotiff.checker;
 
+package it.geosolutions.geobatch.metocs.netcdf2geotiff.impl.grib1;
 
-import it.geosolutions.geobatch.metocs.netcdf2geotiff.output.OutputQueueHandler;
-import java.io.File;
-import java.util.EventObject;
 import java.util.Map;
 
-import ucar.nc2.NetcdfFile;
+import it.geosolutions.geobatch.metocs.netcdf2geotiff.spi.MetocsBaseDictionary;
 
 /**
  * 
  * @author Carlo Cancellieri - carlo.cancellieri@geo-solutions.it
  *
  */
-public interface  NetcdfCheckerSPI {
+public class MetocsImageMosaicDictionary extends MetocsBaseDictionary {
 
-    public OutputQueueHandler<EventObject> buildOutputQueueHandler(Map<String, Object> cfg, NetcdfChecker checker);
-    
-    public NetcdfChecker buildChecker(final NetcdfFile ncFileIn, final File dictionary) throws Exception;
-    
-    public MetocsBaseDictionary readDictionary(final File dictionaryFile);
-    
-    public boolean canRead(final String type);
+	public MetocsImageMosaicDictionary(
+			Map<String, Map<String, String>> dictionary) {
+		super(dictionary);
+	}
+	
+	//a list of styles comma separated
+	public final static String STYLES_KEY="styles";
+	
+	// the default style
+	public final static String DEFAULT_STYLE_KEY="defaultStyle";
 
-    public int getPriority();
+	// TODO
+//	backgroundValue
+//	outputTransparentColor
+//	inputTransparentColor
+//	allowMultithreading
+//	useJaiImageRead
+//	tileSizeH
+//	tileSizeW
+//	
+////	<!--NONE, REPROJECT_TO_DECLARED, FORCE_DECLARED-->
+//	projectionPolicy
+////	<!-- METADATA -->
+//	timeRegex
+//	timeDimEnabled
+////	<!-- LIST, CONTINUOUS_INTERVAL, DISCRETE_INTERVAL -->
+//	timePresentationMode
+//	
+//	elevationRegex
+//	elevDimEnabled
+//	elevationPresentationMode
+//
+//	datastorePropertiesPath
+	
+	
+	
+
 }
