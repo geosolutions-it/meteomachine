@@ -1,0 +1,122 @@
+<map>
+    <entry>
+        <string>ROOT</string>
+        <map>
+            <entry>
+                <string>RUNTIME</string>
+                <string>base_time</string> <!-- yeah, probably an error in the octave processing -->
+            </entry>
+            <entry>
+                <string>NODATA</string>
+                <string>nodata</string>
+            </entry>
+            <entry>
+                <string>TAU</string>
+                <string>tau</string>
+            </entry>
+            <entry>
+                <string>FILLVALUE</string>
+                <string>_FillValue</string>
+            </entry>
+        </map>
+    </entry>
+
+
+
+    <!-- please use netcdf UI tool
+       (http://www.unidata.ucar.edu/downloads/netcdf/netcdf-java-4/index.jsp)
+       to find out which "name"s are bound to which "dimensions" -->
+
+    <entry>
+        <!-- this is a variabile name -->
+        <string>watvel-u</string>
+        <!-- in the map there are the dimensions name, bound to their tokens
+             used inside the GeoBatch action (LAT, LON, Z, ...)
+             The map binds dimensions (lat, lon, depth,...) to token names (LAT, LON, Z, ...)
+        -->
+        <map>
+            <entry>
+                <string>LAT</string>
+                <string>lat</string>
+            </entry>
+            <entry>
+                <string>LON</string>
+                <string>lon</string>
+            </entry>
+            <entry>
+                <string>Z</string>
+                <string>depth</string>
+            </entry>
+            <entry>
+                <string>TIME</string>
+                <string>time</string>
+            </entry>
+            <!-- TIME also needs some more info: llok into the "time" entry
+            -->
+            <entry>
+                <string>NODATA</string>
+                <string>missing_value</string>
+            </entry>
+            <entry>
+                <string>FILLVALUE</string>
+                <string>_FillValue</string>
+            </entry>
+
+        </map>
+    </entry>
+
+    <entry>
+        <string>watvel-v</string>
+        <map>
+            <entry>
+                <string>LAT</string>
+                <string>lat</string>
+            </entry>
+            <entry>
+                <string>LON</string>
+                <string>lon</string>
+            </entry>
+            <entry>
+                <string>Z</string>
+                <string>depth</string>
+            </entry>
+            <entry>
+                <string>TIME</string>
+                <string>time</string>
+            </entry>
+
+            <entry>
+                <string>NODATA</string>
+                <string>missing_value</string>
+            </entry>
+            <entry>
+                <string>FILLVALUE</string>
+                <string>_FillValue</string>
+            </entry>
+        </map>
+    </entry>
+
+    <entry>
+            <!-- TIME also needs some more info
+                 Our nc file reports as description in the "time" name:
+                 "seconds since 1980-1-1 0:0:0"
+            -->
+        <string>time</string>
+        <map>
+            <entry>
+                <!-- a Long representing the conversion constant to convert the time
+	                 of the passed timeVarName variable into milliseconds -->
+                <string>TIME_CONVERSION</string>
+                <string>1000</string>
+            </entry>
+            <entry>
+                <!--seconds since 1980-1-1 0:0:0 -->
+                <string>FIXEDBASETIME</string>
+                <string>1980-01-01T00:00:00</string>
+<!--                <string>BASETIME</string>
+                <string>time_origin</string>-->
+            </entry>
+        </map>
+    </entry>
+
+</map>
