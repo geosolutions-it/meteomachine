@@ -22,8 +22,8 @@ package it.geosolutions.geobatch.metocs.netcdf2geotiff.spi.output;
 import it.geosolutions.filesystemmonitor.monitor.FileSystemEvent;
 import it.geosolutions.filesystemmonitor.monitor.FileSystemEventType;
 import it.geosolutions.geobatch.imagemosaic.ImageMosaicCommand;
-import it.geosolutions.geobatch.metocs.netcdf2geotiff.spi.NetcdfLoader;
 import it.geosolutions.geobatch.metocs.netcdf2geotiff.impl.grib1.MetocsImageMosaicDictionary;
+import it.geosolutions.geobatch.metocs.netcdf2geotiff.spi.NetcdfLoader;
 import it.geosolutions.geobatch.metocs.netcdf2geotiff.spi.NetcdfVariable;
 import java.io.File;
 import java.io.IOException;
@@ -33,11 +33,23 @@ import java.util.List;
 import java.util.Map;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import ucar.nc2.Variable;
-
 
 /**
+ * ImageMosaicCommand OutputQueueHandler.
  *
+ * <br/>An ImageMosaicCommand will be put on the output queue,
+ * containing <code>add</code> entries for each generated geotiff file.
+ * <P/>
+ *
+ * This handler needs a <code>mosaicPath</code> entry in the <code>outputConfiguration</code> .
+ * <br/>This info is needed to create the IMC.basedir field.
+ * <br/>If the info is not provided, the tempdir will be used.
+ *
+ * <P/>
+ * If needed, you may override the method
+ * {@link #buildOutputFile(it.geosolutions.geobatch.metocs.netcdf2geotiff.spi.NetcdfVariable, java.io.File) buildOutputFile}
+ * to set the IMC destination file
+ * 
  * @author ETj (etj at geo-solutions.it)
  */
 public class IMCOutputHandler extends OutputQueueHandler<EventObject> {

@@ -40,6 +40,8 @@ import ucar.units.Converter;
  *
  * Caches variable information.
  *
+ * Information are loaded at construction time.
+ *
  * @author ETj
  */
 public class NetcdfVariable {
@@ -77,7 +79,7 @@ public class NetcdfVariable {
     // envelope
     private GeneralEnvelope envelope;
 
-    private final NetcdfLoader loader;
+//    private final NetcdfLoader loader;
     private final Variable var;
 
     private final CachedGlobal cachedGlobal;
@@ -85,13 +87,14 @@ public class NetcdfVariable {
 
     private String prefix;
     private String suffix;
+    private SimpleDateFormat sdf;
 
-    public NetcdfVariable(NetcdfLoader checker, Variable var) {
-        this.loader = checker;
+    public NetcdfVariable(NetcdfLoader loader, Variable var) {
+//        this.loader = loader;
         this.var = var;
 
-        cachedGlobal = initGlobalCache();
-        status = initVar(var);
+        cachedGlobal = initGlobalCache(loader);
+        status = initVar(var, loader);
     }
 
     // global attributes cache
@@ -114,7 +117,7 @@ public class NetcdfVariable {
     }
 
 
-    private CachedGlobal initGlobalCache() {
+    private CachedGlobal initGlobalCache(NetcdfLoader loader) {
         CachedGlobal ret = new CachedGlobal();
         ret.noData = loader.getNoData();
         ret.runtime = loader.getRunTime();
@@ -130,15 +133,15 @@ public class NetcdfVariable {
         return cachedGlobal;
     }
 
-    private boolean initVar(final Variable var) {
+    private boolean initVar(final Variable var, final NetcdfLoader loader) {
         boolean status = true;
-        initFillValue(var);
+        initFillValue(var, loader);
 
-        status = (initLat(var) && initLon(var));
+        status = (initLat(var, loader) && initLon(var, loader));
         if (!status)
             return status;
 
-        initEnvelope(lat, lon);
+        initEnvelope(lat, lon, loader);
 
         final int[] shape = var.getShape();
         final Section section = new Section(shape);
@@ -146,19 +149,19 @@ public class NetcdfVariable {
 
         if (rank == 4) {
             // TIME
-            initTime(var);
+            initTime(var, loader);
             // ZETA
-            initZeta(var);
+            initZeta(var, loader);
         } else if (rank == 3) {
             // TIME
-            initTime(var);
+            initTime(var, loader);
             // ZETA
-            initZeta(null);
+            initZeta(null, loader);
         } else if (rank == 2) {
             // ZETA
-            initZeta(null);
+            initZeta(null, loader);
             // TIME
-            initTime(null);
+            initTime(null, loader);
         } else {
             if (LOGGER.isErrorEnabled())
                 LOGGER.error("SKIPPING variable: \'" + varName + "\' -> Wrong shape rank: "
@@ -167,7 +170,8 @@ public class NetcdfVariable {
         }
 
 //        setVarName(var);
-        initConverter(var);
+        initConverter(var, loader);
+        initSimpleDateFormat(loader);
 
         prefix = loader.getPrefix(var.getFullName());
         suffix = loader.getSuffix(var.getFullName());
@@ -183,7 +187,7 @@ public class NetcdfVariable {
     }
 
     // fillValue
-    private void initFillValue(final Variable var) {
+    private void initFillValue(final Variable var, final NetcdfLoader loader) {
         fillValue = (loader.getNoData() != null) ? Double.parseDouble(cachedGlobal.getNoData()) : Double.NaN;
         /*
          * try to get local missing value (no data)
@@ -208,7 +212,7 @@ public class NetcdfVariable {
     }
 
     // set the converter for this var
-    private void initConverter(final Variable var) {
+    private void initConverter(final Variable var, final NetcdfLoader loader ) {
         this.converter = loader.getVarConversion(var);
     }
 
@@ -220,7 +224,7 @@ public class NetcdfVariable {
     }
 
     // Zeta
-    private void initZeta(final Variable var) {
+    private void initZeta(final Variable var, final NetcdfLoader loader) {
         if(var == null) {
             zDimDefined = false;
             zetaArray = null;
@@ -257,7 +261,7 @@ public class NetcdfVariable {
     }
 
     // Time
-    private void initTime(final Variable var) {
+    private void initTime(final Variable var, final NetcdfLoader loader) {
         if(var == null) {
             timeDimDefined = false;
             timeArray = null;
@@ -343,7 +347,7 @@ public class NetcdfVariable {
     }
 
     // lat
-    private boolean initLat(final Variable var) {
+    private boolean initLat(final Variable var, final NetcdfLoader loader) {
         final Variable latVar = loader.getLat(var);
         latDimDefined = true;
         if (latVar == null) {
@@ -371,7 +375,7 @@ public class NetcdfVariable {
     }
 
     // lon
-    private boolean initLon(final Variable var) {
+    private boolean initLon(final Variable var, final NetcdfLoader loader) {
         lonDimDefined = true;
         final Variable lonVar = loader.getLon(var);
         if (lonVar == null) {
@@ -399,7 +403,7 @@ public class NetcdfVariable {
     }
 
     // envelope
-    private void initEnvelope(final Array lat, final Array lon) {
+    private void initEnvelope(final Array lat, final Array lon, final NetcdfLoader loader) {
         envelope = loader.getVarEnvelope(lat, lon);
     }
 
@@ -431,10 +435,16 @@ public class NetcdfVariable {
         return timeConversion;
     }
 
+    public void initSimpleDateFormat(final NetcdfLoader loader) {
+        // at the moment it's static in NetcdfLoader, but may be moved at variable level
+        sdf = loader.getSimpleDateFormat();
+    }
+
     public SimpleDateFormat getSimpleDateFormat() {
         // at the moment it's static in NetcdfLoader, but may be moved at variable level
-        return loader.getSimpleDateFormat();
+        return sdf;
     }
+
 
     public boolean getStatus() {
         return status;

@@ -31,8 +31,8 @@ import java.util.Map;
 import ucar.nc2.Variable;
 
 /**
- * 
- * @author Carlo Cancellieri - carlo.cancellieri@geo-solutions.it
+ * Handles the Action output queue.
+ *
  * @author ETj
  *
  * @param <Type> the type of the output

@@ -47,7 +47,13 @@ public class NetcdfSPILoader implements ApplicationContextAware , InitializingBe
     
     public NetcdfSPILoader(){
     }        
-    
+
+    /**
+     * Load the requested SPI with the highest priority.
+     *
+     * @param type the type as returned by the iosp (e.g. "netcdf", "grib" )
+     * @return the selected SPI, or null if none was found.
+     */
     public static NetcdfSPI getSPI(final String type){
         if (singleton== null) {
             if (LOGGER.isErrorEnabled())
@@ -57,6 +63,12 @@ public class NetcdfSPILoader implements ApplicationContextAware , InitializingBe
         return singleton.getSPIInternal(type);
     }
     
+    /**
+     * Load the requested SPI with the highest priority.
+     *
+     * @param type the type as returned by the iosp (e.g. "netcdf", "grib" )
+     * @return the selected SPI, or null if none was found.
+     */
     private NetcdfSPI getSPIInternal(final String type){
         if (applicationContext == null) {
             if (LOGGER.isErrorEnabled())
@@ -97,6 +109,10 @@ public class NetcdfSPILoader implements ApplicationContextAware , InitializingBe
         return null;
     }
 
+    /**
+     * Get a SPI class directly.
+     * Mostly intended for testing.
+     */
     public static <T extends NetcdfSPI> T getSPI(final Class<T> clazz) {
         if(singleton == null)
             if (LOGGER.isErrorEnabled())
@@ -129,12 +145,14 @@ public class NetcdfSPILoader implements ApplicationContextAware , InitializingBe
         return null;
     }
 
+    @Override
     public void afterPropertiesSet() throws Exception {
         if (applicationContext == null)
             throw new IllegalStateException("The provided applicationContext is null!");
         this.singleton=this;
     }
 
+    @Override
     public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
         this.applicationContext=applicationContext;
     }

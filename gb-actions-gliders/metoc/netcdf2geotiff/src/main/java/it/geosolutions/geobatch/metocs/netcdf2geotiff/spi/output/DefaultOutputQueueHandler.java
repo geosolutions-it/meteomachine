@@ -28,6 +28,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
+ * Default OutputQueueHandler:
+ * No object will be put in the output queue.
  *
  * @author ETj (etj at geo-solutions.it)
  */

@@ -1,7 +1,7 @@
 /*
  *  GeoBatch - Open Source geospatial batch processing system
  *  http://geobatch.codehaus.org/
- *  Copyright (C) 2007-2008-2009 GeoSolutions S.A.S.
+ *  Copyright (C) 2007-2012 GeoSolutions S.A.S.
  *  http://www.geo-solutions.it
  *
  *  GPLv3 + Classpath exception
@@ -28,25 +28,42 @@ import it.geosolutions.geobatch.metocs.netcdf2geotiff.spi.output.OutputQueueHand
 import java.io.File;
 import java.util.EventObject;
 import java.util.Map;
-
 import ucar.nc2.NetcdfFile;
 
 /**
- * 
- * @author Carlo Cancellieri - carlo.cancellieri@geo-solutions.it
+ * Basic SPI for Netcdf handlers.
  *
+ * @author ETj
+ * @author Carlo Cancellieri - carlo.cancellieri@geo-solutions.it
  */
 public interface  NetcdfSPI {
 
-    public OutputQueueHandler<EventObject> buildOutputQueueHandler(Map<String, Object> cfg, NetcdfLoader checker);
+    /**
+     * Provide methods to create Action output queue.
+     */
+    public OutputQueueHandler<EventObject> buildOutputQueueHandler(Map<String, Object> cfg, NetcdfLoader loader);
 
-    public GeoTiffNameBuilder buildGeoTiffNameBuilder(NetcdfLoader checker);
-    
+    /**
+     * Provide methods to create the filename for each geotiff file.
+     */
+    public GeoTiffNameBuilder buildGeoTiffNameBuilder(NetcdfLoader loader);
+
+    /**
+     * Build a loader for the given file.
+     * It provides access to netcdf file info.
+     */
     public NetcdfLoader buildLoader(final NetcdfFile ncFileIn, final File dictionary) throws Exception;
-    
+
+    /**
+     * Builds the dictionary to be used in the loader.
+     */
     public MetocsBaseDictionary buildDictionary(final File dictionaryFile);
     
     public boolean canRead(final String type);
 
+    /**
+     * When more than one SPI can read a given type, the one with higher priority will be used.
+     * It's intended to be set in ovr files.
+     */
     public int getPriority();
 }

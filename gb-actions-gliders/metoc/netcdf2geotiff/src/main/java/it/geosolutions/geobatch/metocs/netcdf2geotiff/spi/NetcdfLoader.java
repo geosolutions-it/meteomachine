@@ -72,33 +72,8 @@ public class NetcdfLoader { // <OutputType> { extends OutputQueueHandler<OutputT
 	private final ConverterManager converterManager;
 
 	private final SimpleDateFormat sdf;
-
 	private static final TimeZone UTC_TZ = TimeZone.getTimeZone("UTC");
-
 	private static final String TIME_FORMAT = "yyyyMMdd'T'HHmmssSSS'Z'"; // TODO move into the dictionary
-
-	/**
-	 * method to override to initialize internal members
-	 * @return
-	 */
-//	public abstract boolean initVar(final Variable var);
-//	public abstract Converter getConverter();
-//	public abstract Number getFillValue();
-//
-//	public abstract int getLonSize();
-//	public abstract int getLatSize();
-//    public abstract int getTimeSize();
-//	public abstract int getZetaSize();
-//	public abstract GeneralEnvelope getEnvelope();
-
-
-	// hide empty constructors
-	private NetcdfLoader() {
-		ncFileIn = null;
-		converterManager=null;
-		dictionary = null;
-		sdf = null;
-	};
 
 	/**
 	 * Constructor
