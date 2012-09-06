@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
+
+<beans default-init-method="init" default-destroy-method="dispose">
+    
+    <bean id="NetcdfCFCheckerSPI" class="it.geosolutions.geobatch.metocs.netcdf2geotiff.cf.NetcdfCFCheckerSPI" lazy-init="false">
+    </bean>
+
+    <bean id="NetcdfIMCheckerSPI" class="it.geosolutions.geobatch.metocs.netcdf2geotiff.im.NetcdfIMCheckerSPI" lazy-init="false">
+    </bean>
+    
+    <bean id="Grib1CheckerSPI" class="it.geosolutions.geobatch.metocs.netcdf2geotiff.grib1.Grib1CheckerSPI" lazy-init="false">
+    </bean>
+    
+    <bean id="NetcdfCheckerLoader" class="it.geosolutions.geobatch.metocs.netcdf2geotiff.checker.NetcdfCheckerLoader"  lazy-init="false">
+    </bean>
+
+</beans>

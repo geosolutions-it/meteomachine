@@ -4,6 +4,8 @@
 <beans default-init-method="init" default-destroy-method="dispose">
 
 	<!-- Environment Initialization -->
+
+    <import resource="applicationContext_netcdf_spi.xml"/>
 	
 	<bean id="Netcdf2GeotiffService" class="it.geosolutions.geobatch.metocs.netcdf2geotiff.Netcdf2GeotiffService">
 		<constructor-arg type="String"><value>Netcdf2GeotiffService</value></constructor-arg>
@@ -15,7 +17,7 @@
         <constructor-arg ref="aliasRegistry" />
     </bean>
     
-    <bean id="NetcdfCFCheckerSPI" class="it.geosolutions.geobatch.metocs.netcdf2geotiff.cf.NetcdfCFCheckerSPI" lazy-init="false">
+<!--    <bean id="NetcdfCFCheckerSPI" class="it.geosolutions.geobatch.metocs.netcdf2geotiff.cf.NetcdfCFCheckerSPI" lazy-init="false">
     </bean>
 
     <bean id="NetcdfIMCheckerSPI" class="it.geosolutions.geobatch.metocs.netcdf2geotiff.im.NetcdfIMCheckerSPI" lazy-init="false">
@@ -25,6 +27,6 @@
     </bean>
     
     <bean id="NetcdfCheckerLoader" class="it.geosolutions.geobatch.metocs.netcdf2geotiff.checker.NetcdfCheckerLoader"  lazy-init="false">
-    </bean>
+    </bean>-->
 
 </beans>

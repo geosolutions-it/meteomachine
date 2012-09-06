@@ -60,7 +60,7 @@ public class Netcdf2GeotiffConfiguration extends ActionConfiguration {
         startTime = calendar.getTimeInMillis();
     }
 
-    protected Netcdf2GeotiffConfiguration(final String id, final String name,
+    public Netcdf2GeotiffConfiguration(final String id, final String name,
             final String description) {
         super(id, name, description);
 

@@ -21,10 +21,10 @@
  */
 package it.geosolutions.geobatch.metocs.netcdf2geotiff.checker;
 
-import it.geosolutions.geobatch.metocs.netcdf2geotiff.output.OutputQueueHandler;
 import it.geosolutions.geobatch.metocs.utils.converter.ConverterManager;
 import it.geosolutions.geobatch.metocs.utils.io.METOCSActionsIOUtils;
 import it.geosolutions.tools.commons.time.TimeParser;
+import it.geosolutions.tools.netcdf.UnitsParser;
 
 import java.io.File;
 import java.io.IOException;
@@ -53,28 +53,73 @@ import ucar.units.Converter;
 import ucar.units.UnitDBException;
 
 /**
- * 
+ *
  * @author Carlo Cancellieri - carlo.cancellieri@geo-solutions.it
  *
  */
 public abstract class NetcdfChecker { // <OutputType> { extends OutputQueueHandler<OutputType>{
-	
+
 	/**
 	 * method to override to initialize internal members
 	 * @return
 	 */
 	public abstract boolean initVar(final Variable var);
 	public abstract Converter getConverter();
-	public abstract Number getFillValue(); 
-	public abstract String buildName(final Variable var, final int ... coords);// TODO change this...
+	public abstract Number getFillValue();
+
+    /**
+     * @deprecated should be moved to another class
+     */
+	public abstract String buildName(final Variable var, final Map<String, Object> tokens);// TODO change this...
 
 	public abstract int getLonSize();
 	public abstract int getLatSize();
     public abstract int getTimeSize();
 	public abstract int getZetaSize();
 	public abstract GeneralEnvelope getEnvelope();
-	
-	
+
+
+	// hide empty constructors
+	private NetcdfChecker() {
+		ncFileIn = null;
+		converterManager=null;
+		LOGGER = null;
+		dictionary = null;
+		sdf = null;
+	};
+
+	/**
+	 * Constructor
+	 *
+	 * @param ncFileIn
+	 * @throws UnitDBException
+	 */
+	protected NetcdfChecker(final NetcdfFile ncFileIn,
+			final File dictionaryFile, final NetcdfCheckerSPI spi) throws Exception {
+		LOGGER = LoggerFactory.getLogger(spi.getClass());
+
+		dictionary = spi.readDictionary(dictionaryFile);
+		sdf = new SimpleDateFormat(getTimeFormat());
+		sdf.setTimeZone(getTimeZone());
+
+		converterManager=new ConverterManager();
+		if (LOGGER.isTraceEnabled()){
+			LOGGER.trace(converterManager.toString());
+		}
+
+		// load global conversion alias
+		final Map<String, String> alias_section=dictionary.getVal(MetocsBaseDictionary.CONVERSION_SECTION_KEY);
+		if (alias_section!=null){
+			converterManager.addAlias(alias_section);
+		}
+
+		if (ncFileIn != null)
+			this.ncFileIn = ncFileIn;
+		else
+			throw new NullPointerException(
+					"Unable to initialize a checker using a null NetcdfFile as input.");
+	}
+
 	/**
 	 * calculate general envelop
 	 * @param lat
@@ -85,7 +130,7 @@ public abstract class NetcdfChecker { // <OutputType> { extends OutputQueueHandl
         final double[] bbox = METOCSActionsIOUtils.computeExtrema(lat,lon);
         // building Envelope
         final GeneralEnvelope envelope = new GeneralEnvelope(METOCSActionsIOUtils.WGS_84);
-        
+
         envelope.setRange(0, bbox[0], bbox[2]);
         envelope.setRange(1, bbox[1], bbox[3]);
         return envelope;
@@ -98,7 +143,7 @@ public abstract class NetcdfChecker { // <OutputType> { extends OutputQueueHandl
 	public MetocsBaseDictionary getDictionary() {
 		return dictionary;
 	}
-	
+
 	/**
      * @return the converterManager
      * @note the converterManager may never be null!
@@ -136,7 +181,7 @@ public abstract class NetcdfChecker { // <OutputType> { extends OutputQueueHandl
 	 * - The attribute is parsed using the gb-tools TimeParser to get the date
 	 * from the String<br>
 	 * - If success the date is returned (else null is returned)<br>
-	 * 
+	 *
 	 * @see TimeParser
 	 * @see MetocsBaseDictionary.RUNTIME_KEY
 	 * @note you may override this method if the runtime attribute is not an
@@ -166,20 +211,29 @@ public abstract class NetcdfChecker { // <OutputType> { extends OutputQueueHandl
 
 	/**
 	 * Search into the dictionary the TAU value for the ROOT node
-	 * 
+	 *
 	 * @return
 	 */
-	public Number getTAU() {
-		final Attribute attr = getGlobalAttrByKey(MetocsBaseDictionary.TAU_KEY);
-		if (attr != null)
-			return attr.getNumericValue();
-		else
-			return null;
-	}
+    public Number getTAU() {
+        final Attribute attr = getGlobalAttrByKey(MetocsBaseDictionary.TAU_KEY);
+        if (attr != null) {
+            return attr.getNumericValue();
+        } else {
+            final String fixedTau = getDictionary().getValueFromRootDictionary(
+                    MetocsBaseDictionary.FIXEDTAU_KEY);
+            if (fixedTau != null) {
+                if (LOGGER.isDebugEnabled()) {
+                    LOGGER.debug("Found FixedTau: " + fixedTau);
+                }
+                return Integer.parseInt(fixedTau);
+            }
+        }
+        return null;
+    }
 
 	/**
 	 * Search into the dictionary the NOTADA value for the ROOT node
-	 * 
+	 *
 	 * @return
 	 */
 	public String getNoData() {
@@ -192,12 +246,12 @@ public abstract class NetcdfChecker { // <OutputType> { extends OutputQueueHandl
 
 	/**
 	 * return the variable name with prefix and suffix in the form:<br>
-	 * 
+	 *
 	 * PREFIXVariableNameSUFFIX<br>
 	 * <br>
 	 * The SUFFIX and the PREFIX variables can be defined into the dictionary as
 	 * root (global) or section (per variable) attributes.
-	 * 
+	 *
 	 * @param var
 	 *            the variable to use to getName
 	 * @return a string representing the name in the form described above
@@ -219,15 +273,9 @@ public abstract class NetcdfChecker { // <OutputType> { extends OutputQueueHandl
 				+ getSuffix(var.getName());
 	}
 
-    /**
-	 * The output variable directory name.
-     */
-	public String getDirName(final Variable var) {
-		return var.getFullName();
-	}
 
 	/**
-	 * 
+	 *
 	 * @param varName
 	 * @return
 	 */
@@ -241,7 +289,7 @@ public abstract class NetcdfChecker { // <OutputType> { extends OutputQueueHandl
 	}
 
 	/**
-	 * 
+	 *
 	 * @param varName
 	 * @return
 	 */
@@ -258,7 +306,7 @@ public abstract class NetcdfChecker { // <OutputType> { extends OutputQueueHandl
 	 * Try to search for the latitude dimension for the passed variable. The
 	 * used name for the latitude dimension will be read from the dictionary.
 	 * Return null if no latitude dimension is assigned.
-	 * 
+	 *
 	 * @see NetcdfChecker.getDimVar()
 	 * @param var
 	 *            the variable to query for the latitude variable
@@ -272,7 +320,7 @@ public abstract class NetcdfChecker { // <OutputType> { extends OutputQueueHandl
 	 * Try to search for the longitude dimension for the passed variable. The
 	 * used name for the longitude dimension will be read from the dictionary.
 	 * Return null if no longitude dimension is assigned.
-	 * 
+	 *
 	 * @see NetcdfChecker.getDimVar()
 	 * @param var
 	 *            the variable to query for the longitude variable
@@ -287,7 +335,7 @@ public abstract class NetcdfChecker { // <OutputType> { extends OutputQueueHandl
 	 * variable. The used name for the elevation/depth ('Z') dimension will be
 	 * read from the dictionary. Return null if no elevation/depth ('Z')
 	 * dimension is assigned.
-	 * 
+	 *
 	 * @see NetcdfChecker.getDimVar()
 	 * @param var
 	 *            the variable to query for the elevation/depth ('Z') variable
@@ -302,7 +350,7 @@ public abstract class NetcdfChecker { // <OutputType> { extends OutputQueueHandl
 	 * Try to search for the time dimension for the passed variable. The used
 	 * name for the time dimension will be read from the dictionary. Return null
 	 * if no time dimension is assigned.
-	 * 
+	 *
 	 * @see NetcdfChecker.getDimVar()
 	 * @param var
 	 *            the variable to query for the time variable
@@ -314,7 +362,7 @@ public abstract class NetcdfChecker { // <OutputType> { extends OutputQueueHandl
 
 	/**
 	 * Return the _fillValue attribute (as Number) for the specified variable
-	 * 
+	 *
 	 * @param time
 	 * @return the _fillValue attribute (as Number), can return null.
 	 */
@@ -326,13 +374,13 @@ public abstract class NetcdfChecker { // <OutputType> { extends OutputQueueHandl
 		else
 			return null;
 	}
-	
+
 	/**
-	 * 
+	 *
 	 * Try to parse the dictionary to get the specified alias for a unit to convert to
 	 * if it is found try to get the converter from the UnitDB using the variable unit
-	 * as starting unit and the alias found into the dictionary as unit to convert to. 
-	 * 
+	 * as starting unit and the alias found into the dictionary as unit to convert to.
+	 *
 	 * @param var the variable to try to convert
 	 * @return the converter or null (if no converter is found)
 	 */
@@ -347,14 +395,14 @@ public abstract class NetcdfChecker { // <OutputType> { extends OutputQueueHandl
 				LOGGER.info("No converter specified for this variable");
 			return null;
 		}
-		
+
 	}
 
 	/**
 	 * Return the t^th time in millisecs
-	 * 
+	 *
 	 * @note you may override this method if the time array is of String type
-	 * 
+	 *
 	 * @param startDate
 	 *            the BaseTime in milliseconds
 	 * @param timeVar
@@ -365,7 +413,7 @@ public abstract class NetcdfChecker { // <OutputType> { extends OutputQueueHandl
 	 */
 	public long getTimeInstant(final long startDate, final Array time,
 			final int t, final Long conversion) {
-		
+
 		long timeValue = time.getLong(t);
 		if (timeValue < 0) {
 			if (LOGGER.isWarnEnabled())
@@ -373,7 +421,7 @@ public abstract class NetcdfChecker { // <OutputType> { extends OutputQueueHandl
 		} else {
 			timeValue =  startDate+getDeltaTime(time, t, conversion);
 		}
-		
+
 		final Calendar roundedTimeInstant = new GregorianCalendar();//UTC_TZ);
 		roundedTimeInstant.setTimeInMillis(timeValue);
 
@@ -384,7 +432,7 @@ public abstract class NetcdfChecker { // <OutputType> { extends OutputQueueHandl
 	/**
 	 * Try to parse the dictionary to get the value of the time unit conversion
 	 * (from unknown milliseconds) can return null.
-	 * 
+	 *
 	 * @param timeVarName
 	 * @return a Long representing the conversion constant to convert the time
 	 *         of the passed timeVarName variable into milliseconds
@@ -408,7 +456,7 @@ public abstract class NetcdfChecker { // <OutputType> { extends OutputQueueHandl
 	/**
 	 * Dim return a long representing the time in milliseconds from the BaseTime
 	 * for the specified variable
-	 * 
+	 *
 	 * @param ncFileIn
 	 * @param time
 	 * @param index
@@ -426,7 +474,7 @@ public abstract class NetcdfChecker { // <OutputType> { extends OutputQueueHandl
 	/**
 	 * return a long representing the BaseTime in milliseconds for the specified
 	 * variable
-	 * 
+	 *
 	 * @param ncFileIn
 	 * @param time
 	 * @param index
@@ -492,6 +540,34 @@ public abstract class NetcdfChecker { // <OutputType> { extends OutputQueueHandl
 		return -1;
 	}
 
+	public UnitsParser getTimeOriginParser (final Variable time) {
+            final Attribute attr = getVarAttrByKey(time, MetocsBaseDictionary.TIMEUNITS_KEY);
+            if (attr != null) {
+                if(LOGGER.isDebugEnabled())
+                    LOGGER.debug("Found timeUnits");
+                    // try to get the value as a string
+                final String sval = attr.getStringValue();
+                if (sval != null) {
+                    UnitsParser unitsParser = new UnitsParser();
+                    boolean parsed = unitsParser.parse(sval);
+                    if (parsed) {
+                        return unitsParser;
+                    }
+                    else {
+                        if(LOGGER.isWarnEnabled()) {
+                          LOGGER.warn("Unable to parse the timeUnits attribute.");
+                        }
+                    }
+                }
+//                else if(attr.getNumericValue() != null) { // try to get the value as a numeric value
+//                    if(LOGGER.isDebugEnabled())
+//                        LOGGER.debug("Numeric value from "+time.getFullName()+"."+attr.getName() +": " + attr.getNumericValue());
+//                    return null;
+//                }
+            }
+            return null;
+    }
+
 	// //////////////////////////////
 	// Protected
 	// //////////////////////////////
@@ -505,7 +581,7 @@ public abstract class NetcdfChecker { // <OutputType> { extends OutputQueueHandl
 	private final MetocsBaseDictionary dictionary;
 
 	private final ConverterManager converterManager;
-	
+
 	private final SimpleDateFormat sdf;
 
 	private static final TimeZone UTC_TZ = TimeZone.getTimeZone("UTC");
@@ -518,51 +594,20 @@ public abstract class NetcdfChecker { // <OutputType> { extends OutputQueueHandl
 	protected final SimpleDateFormat getSimpleDateFormat(){
 		return sdf;
 	}
-	
+
 	protected String getTimeFormat(){
 		return TIME_FORMAT;
 	}
-	
+
 	protected TimeZone getTimeZone(){
 		return UTC_TZ;
 	}
 
-	/**
-	 * Constructor
-	 * 
-	 * @param ncFileIn
-	 * @throws UnitDBException 
-	 */
-	protected NetcdfChecker(final NetcdfFile ncFileIn,
-			final File dictionaryFile, final NetcdfCheckerSPI spi) throws Exception {
-		LOGGER = LoggerFactory.getLogger(spi.getClass());
-		
-		dictionary = spi.readDictionary(dictionaryFile);
-		sdf = new SimpleDateFormat(getTimeFormat());
-		sdf.setTimeZone(getTimeZone());
-		
-		converterManager=new ConverterManager();
-		if (LOGGER.isDebugEnabled()){
-			LOGGER.debug(converterManager.toString());
-		}
-		
-		// load global conversion alias
-		final Map<String, String> alias_section=dictionary.getVal(MetocsBaseDictionary.CONVERSION_SECTION_KEY);
-		if (alias_section!=null){
-			converterManager.addAlias(alias_section);
-		}
-		
-		if (ncFileIn != null)
-			this.ncFileIn = ncFileIn;
-		else
-			throw new NullPointerException(
-					"Unable to initialize a checker using a null NetcdfFile as input.");
-	}
 
 	/**
 	 * return the global attribute matching the attrKey into the dictionary or
 	 * null.
-	 * 
+	 *
 	 * @param var
 	 * @param attrKey
 	 * @return
@@ -578,7 +623,7 @@ public abstract class NetcdfChecker { // <OutputType> { extends OutputQueueHandl
 	/**
 	 * return the attribute associated to the passed variable and matching the
 	 * attrKey into the dictionary or null.
-	 * 
+	 *
 	 * @param var
 	 * @param attrKey
 	 * @return
@@ -600,7 +645,7 @@ public abstract class NetcdfChecker { // <OutputType> { extends OutputQueueHandl
 	 * Search is performed first at var level, if no result is found a ROOT
 	 * (dictionary) level search is performed. If no result is found (into
 	 * dictionary or into the dataset) null is returned.
-	 * 
+	 *
 	 * @param var
 	 * @param VarNameKey
 	 * @return
@@ -627,7 +672,7 @@ public abstract class NetcdfChecker { // <OutputType> { extends OutputQueueHandl
 	/**
 	 * Search a Variable (by name) into the dataset using the name found into
 	 * the ROOT node of the dictionary.
-	 * 
+	 *
 	 * @param dimName
 	 * @return
 	 */
@@ -649,10 +694,10 @@ public abstract class NetcdfChecker { // <OutputType> { extends OutputQueueHandl
 	/**
 	 * Return the DELTA (TAU) in milliseconds for the specified time variable at
 	 * the specified index
-	 * 
+	 *
 	 * @param time
 	 * @param t
-	 * 
+	 *
 	 * @return
 	 */
 	private long getDeltaTime(final Array time, final int t,
@@ -671,14 +716,6 @@ public abstract class NetcdfChecker { // <OutputType> { extends OutputQueueHandl
 		}
 	}
 
-	// hide empty constructors
-	private NetcdfChecker() {
-		ncFileIn = null;
-		converterManager=null;
-		LOGGER = null;
-		dictionary = null;
-		sdf = null;
-	};
 
 	private Attribute getVarAttr(final Variable var, final String name) {
 		final Attribute attr = var.findAttribute(name);
@@ -697,7 +734,7 @@ public abstract class NetcdfChecker { // <OutputType> { extends OutputQueueHandl
 	 * search into the passed (opened and !null) netcdf file the attribute name
 	 * string (not null) as global attribute and return the found Attribute
 	 * object (or null if not found)
-	 * 
+	 *
 	 * @param ncFileIn
 	 *            (must be not null and opened) the netcdf object representing
 	 *            the reading dataset
@@ -732,7 +769,7 @@ public abstract class NetcdfChecker { // <OutputType> { extends OutputQueueHandl
 
 	/**
 	 * look into the dataset for a 'name' named variable
-	 * 
+	 *
 	 * @param name
 	 * @return
 	 */
@@ -757,4 +794,14 @@ public abstract class NetcdfChecker { // <OutputType> { extends OutputQueueHandl
 			return null;
 		}
 	}
+
+    /**
+	 * The output variable directory name.
+     *
+     * @deprecated should be moved to another class
+     */
+	public String getDirName(final Variable var) {
+		return var.getFullName();
+	}
+
 }

@@ -43,8 +43,10 @@ import java.io.IOException;
 import java.util.Collections;
 import java.util.Date;
 import java.util.EventObject;
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 import java.util.Queue;
 import java.util.Set;
 import java.util.TreeSet;
@@ -95,7 +97,7 @@ public class Netcdf2GeotiffAction
      */
 //    private final SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMdd'T'HHmmssSSS'Z'");
 
-    protected Netcdf2GeotiffAction(Netcdf2GeotiffConfiguration configuration) throws IOException {
+    public Netcdf2GeotiffAction(Netcdf2GeotiffConfiguration configuration) throws IOException {
         super(configuration);
         this.configuration = configuration;
 //        sdf.setTimeZone(TimeZone.getTimeZone("GMT+0"));
@@ -139,8 +141,12 @@ public class Netcdf2GeotiffAction
                 ncFileIn = netcdfEvent.getSource();
 
                 final String inputFileBaseName;
+                final String originalInputFileBaseName;
+
                 if (ncFileIn != null) {
-                    inputFileBaseName = FilenameUtils.getBaseName(ncFileIn.getLocation()).replaceAll("_", "");
+//                    inputFileBaseName = FilenameUtils.getBaseName(ncFileIn.getLocation()).replaceAll("_", "");
+                    originalInputFileBaseName = FilenameUtils.getBaseName(ncFileIn.getLocation());
+                    inputFileBaseName = originalInputFileBaseName.replaceAll("_", "");
                 } else {
                     final String message = "Unable to locate event file sources for event: " + netcdfEvent.getPath();
                     if (LOGGER.isWarnEnabled()) {
@@ -156,12 +162,14 @@ public class Netcdf2GeotiffAction
                 }
                 final File layerOutputBaseDir = new File(outputBaseDir, new Date().getTime() + "_" + inputFileBaseName);
 
-
                 DynTokenList tokenList = configuration.getDynamicTokens();
-                DynTokenResolver tokenResolver = new DynTokenResolver(tokenList);
-                tokenResolver.setBaseToken("FILENAME", inputFileBaseName);
-                tokenResolver.resolve();
-                String tokenRuntime = tokenResolver.getResolvedTokens().get("runtime");
+                Map<String, Object> tokens = new HashMap<String, Object>();
+                if (tokenList != null && !tokenList.isEmpty()) {
+                    DynTokenResolver tokenResolver = new DynTokenResolver(tokenList);
+                    tokenResolver.setBaseToken("FILENAME", originalInputFileBaseName);
+                    tokenResolver.resolve();
+                    tokens.putAll(tokenResolver.getResolvedTokens());
+                }
 
                 // ----------------------------------------------------------------------------------
 
@@ -251,8 +259,14 @@ public class Netcdf2GeotiffAction
                     ////
                     // defining the SampleModel data type
                     // //
-                    final SampleModel outSampleModel = it.geosolutions.geobatch.metocs.utils.io.Utilities
-                            .getSampleModel(var.getDataType(), spi.checker.getLonSize(), spi.checker.getLatSize(), 1);
+                    if(LOGGER.isDebugEnabled())
+                        LOGGER.debug("Creating sample model "
+                                + "type:"+ var.getDataType()
+                                + " lon:"+spi.checker.getLonSize()
+                                + " lat:"+spi.checker.getLatSize());
+                    
+                    final SampleModel outSampleModel = Utilities.getSampleModel(
+                            var.getDataType(), spi.checker.getLonSize(), spi.checker.getLatSize(), 1);
 
 //    /*
 //     * Creating a new ImageMosaicCommand to add a layer using this geotiff
@@ -266,6 +280,10 @@ public class Netcdf2GeotiffAction
                     final int[] shape = var.getShape();
                     final Section section = new Section(shape);
                     final int rank = section.getRank();
+
+                    if(LOGGER.isDebugEnabled())
+                        LOGGER.debug("Var '"+var.getFullName()+"', shape dim is " + shape.length + ", rank is " + rank);
+
                     //TODO
                     final Section section2d = new Section();
                     if (rank == 4) {
@@ -327,7 +345,9 @@ public class Netcdf2GeotiffAction
                             // ////
                             // producing the Coverage here...
                             // ////
-                            final String coverageName = spi.checker.buildName(var, t, z);
+                            tokens.put("zeta", z);
+                            tokens.put("time", t);
+                            final String coverageName = spi.checker.buildName(var, tokens);
 
                             if (LOGGER.isDebugEnabled()) {
                                 LOGGER.debug("Writing GeoTiff named \'" + coverageName + "\'");

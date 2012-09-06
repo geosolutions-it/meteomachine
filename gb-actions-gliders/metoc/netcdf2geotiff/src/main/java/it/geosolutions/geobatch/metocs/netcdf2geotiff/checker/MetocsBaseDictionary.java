@@ -69,7 +69,11 @@ public class MetocsBaseDictionary extends
 
 	public static final String BASETIME_KEY = "BASETIME";
     
-	public static final String FIXEDBASETIME_KEY = "FIXEDBASETIME";
+	public static final String TIMEUNITS_KEY = "TIMEUNITS";
+
+ 	public static final String FIXEDBASETIME_KEY = "FIXEDBASETIME";
+
+	public static final String FIXEDTAU_KEY = "FIXEDTAU";
 
 	/**
 	 * Specify the conversion VALUE (as parsable Long) from the specified value

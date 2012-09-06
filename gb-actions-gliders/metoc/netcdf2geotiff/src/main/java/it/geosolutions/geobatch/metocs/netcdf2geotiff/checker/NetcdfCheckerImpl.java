@@ -21,10 +21,12 @@
  */
 package it.geosolutions.geobatch.metocs.netcdf2geotiff.checker;
 
+import it.geosolutions.tools.netcdf.UnitsParser;
 import java.io.File;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.Map;
 
 import org.geotools.geometry.GeneralEnvelope;
 import org.slf4j.Logger;
@@ -44,18 +46,6 @@ import ucar.units.Converter;
 public class NetcdfCheckerImpl extends NetcdfChecker {
 
     protected final Logger LOGGER = LoggerFactory.getLogger(NetcdfCheckerImpl.class);
-
-    // obsolete: the output handler is provided by the SPI.
-//    /**
-//     * Define the ouptut of the Netcdf2geotiff action OVERRIDE ME!
-//     *
-//     * @note default output is null!
-//     */
-//    @Override
-//    public TYPE writeOutput(final File workingDir, final Variable var) {
-//        return null;
-//    }
-
 
     public NetcdfCheckerImpl(final NetcdfFile ncFileIn, final File dictionaryFile, final NetcdfCheckerSPI spi)
         throws Exception {
@@ -124,6 +114,8 @@ public class NetcdfCheckerImpl extends NetcdfChecker {
     private int timeSize = 1;
     private Long timeConversion = null;
     private long localBaseTime;
+    private long timeOrigin = -1;
+
     private boolean timeDimExists = false;
     // fillValue
     private double fillValue;
@@ -306,7 +298,12 @@ public class NetcdfCheckerImpl extends NetcdfChecker {
         // base time
         if (timeDimExists) {
             baseTime = super.getBaseTime(timeVar);
-            
+
+            UnitsParser parser = super.getTimeOriginParser(timeVar);
+            if (parser != null) {
+                timeOrigin = parser.getDate().getTime();
+                timeConversion = parser.getSecondsMultiplier() * 1000;
+            }
         }
 
         if (baseTime != -1) {
@@ -434,25 +431,42 @@ public class NetcdfCheckerImpl extends NetcdfChecker {
      * @param var
      * @param coords
      * @return
+     *
+     * @deprecated should be moved to another class
      */
-    public String buildName(final Variable var, final int... coords) {
+    @Override
+    public String buildName(final Variable var, Map<String, Object> tokens) {
 
-        int size = coords.length; // TODO checks
+        Integer zetaIndex = 0;
+        Object zetaO = tokens.get("zeta");
+        if (zetaO != null && zetaO instanceof Integer) {
+            zetaIndex = (Integer) zetaO;
+        }
+        Integer timeIndex = 0;
+        Object timeO = tokens.get("time");
+        if (timeO != null && timeO instanceof Integer) {
+            timeIndex = (Integer) timeO;
+        }
+        Object runTimeString = tokens.get("runtime");
+        String rt = runTime;
+        if (runTimeString != null && runTimeString instanceof String) {
+            rt = (String) runTimeString;
+        }
         final StringBuilder coverageName = new StringBuilder(getVarName(var).replaceAll("_", "")).append("_")
             // same Z since the raster is 2D
-            .append(zDimExists ? elevLevelFormat(zeta.getDouble(coords[size - 1])) : "0000.000").append("_")
+            .append(zDimExists ? elevLevelFormat(zeta.getDouble(zetaIndex)) : "0000.000").append("_")
             // same Z since the raster is 2D
-            .append(zDimExists ? elevLevelFormat(zeta.getDouble(coords[size - 1])) : "0000.000").append("_")
-            .append(runTime).append("_");
+            .append(zDimExists ? elevLevelFormat(zeta.getDouble(zetaIndex)) : "0000.000").append("_")
+            .append(rt).append("_");
 
         SimpleDateFormat sdf = super.getSimpleDateFormat();
         if (tau != null) {
             synchronized (sdf) {
                 coverageName
                     .append(tau.intValue() == 0 ?
-                            runTime :
+                            rt :
                             timeDimExists ?
-                                sdf.format(super.getTimeInstant(localBaseTime, time, coords[0], timeConversion)) :
+                                sdf.format(super.getTimeInstant(timeOrigin, time, timeIndex, timeConversion)) :
                                 "00000000T000000000Z")
                     .append("_").append(tau).append("_").append(fillValue);
             }
@@ -460,7 +474,7 @@ public class NetcdfCheckerImpl extends NetcdfChecker {
             synchronized (sdf) {
                 coverageName
                     .append(timeDimExists ?
-                        sdf.format(super.getTimeInstant(localBaseTime, time, coords[0], timeConversion)) :
+                        sdf.format(super.getTimeInstant(timeOrigin, time, timeIndex, timeConversion)) :
                         "00000000T000000000Z")
                     .append("_").append("0").append("_").append(fillValue);
             }
