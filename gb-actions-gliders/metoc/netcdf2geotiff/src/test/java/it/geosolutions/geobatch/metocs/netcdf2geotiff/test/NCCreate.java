@@ -56,17 +56,10 @@ public class NCCreate {
 
         NetcdfFileWriteable ncfile = NetcdfFileWriteable.createNew(filename, false);
         // add dimensions
-        Dimension latDim = ncfile.addDimension("lat", 2);
-        Dimension lonDim = ncfile.addDimension("lon", 2);
         Dimension timDim = ncfile.addDimension("time", 4);
         Dimension depDim = ncfile.addDimension("depth", 3);
-
-        // define Variable
-        ArrayList dims = new ArrayList();
-        dims.add(latDim);
-        dims.add(lonDim);
-        dims.add(timDim);
-        dims.add(depDim);
+        Dimension latDim = ncfile.addDimension("lat", 2);
+        Dimension lonDim = ncfile.addDimension("lon", 2);
 
         ncfile.addVariable("time", DataType.DOUBLE, new Dimension[]{timDim});
         ncfile.addVariableAttribute("time", "long_name", "time");
@@ -90,19 +83,19 @@ public class NCCreate {
         ncfile.addVariableAttribute("lon", "units", "degrees_east");
 
         
-        ncfile.addVariable("watvel-u", DataType.FLOAT, new Dimension[]{latDim, lonDim, timDim, depDim});
+        ncfile.addVariable("watvel-u", DataType.FLOAT, new Dimension[]{timDim, depDim, latDim, lonDim});
         ncfile.addVariableAttribute("watvel-u", "long_name", "water velocity u comp");
         ncfile.addVariableAttribute("watvel-u", "units", "m/s");
         ncfile.addVariableAttribute("watvel-u", "missing_value", 1e+37);
         ncfile.addVariableAttribute("watvel-u", "_FillValue", 1e+37);
 
-        ncfile.addVariable("watvel-v", DataType.FLOAT, new Dimension[]{latDim, lonDim, timDim, depDim});
+        ncfile.addVariable("watvel-v", DataType.FLOAT, new Dimension[]{timDim, depDim, latDim, lonDim});
         ncfile.addVariableAttribute("watvel-v", "long_name", "water velocity v comp");
         ncfile.addVariableAttribute("watvel-v", "units", "m/s");
         ncfile.addVariableAttribute("watvel-v", "missing_value", 1e+37);
         ncfile.addVariableAttribute("watvel-v", "_FillValue", 1e+37);
 
-        ncfile.addVariable("wattemp", DataType.FLOAT, new Dimension[]{latDim, lonDim, timDim, depDim});
+        ncfile.addVariable("wattemp", DataType.FLOAT, new Dimension[]{timDim, depDim, latDim, lonDim});
         ncfile.addVariableAttribute("wattemp", "long_name", "water temperature");
         ncfile.addVariableAttribute("wattemp", "units", "m/s");
         ncfile.addVariableAttribute("wattemp", "missing_value", 1e+37);
@@ -145,19 +138,19 @@ public class NCCreate {
         try {
             ncfile.create();
 
-            ncfile.write("lat", Array.factory(new float[] {40.0f, 41.0f}));
-            ncfile.write("lon", Array.factory(new float[] {-109.0f, -107.0f}));
             ncfile.write("time", Array.factory(new double[] {965088000, 965098800, 965109600, 965120400}));
             ncfile.write("depth", Array.factory(new float[] {10, 100, 1000}));
+            ncfile.write("lat", Array.factory(new float[] {40.0f, 41.0f}));
+            ncfile.write("lon", Array.factory(new float[] {-109.0f, -107.0f}));
 
 
-            ArrayFloat wvu = new ArrayFloat.D4(latDim.getLength(), lonDim.getLength(), timDim.getLength(), depDim.getLength());
+            ArrayFloat wvu = new ArrayFloat.D4(timDim.getLength(), depDim.getLength(), latDim.getLength(), lonDim.getLength());
 
                Index ima = wvu.getIndex();
-               for (int i=0; i<latDim.getLength(); i++) {
-                 for (int j=0; j<lonDim.getLength(); j++) {
-                     for (int h = 0; h < timDim.getLength(); h++) {
-                         for (int k = 0; k < depDim.getLength(); k++) {
+               for (int i=0; i<timDim.getLength(); i++) {
+                 for (int j=0; j<depDim.getLength(); j++) {
+                     for (int h = 0; h < latDim.getLength(); h++) {
+                         for (int k = 0; k < lonDim.getLength(); k++) {
                             wvu.setFloat(ima.set(i,j,h,k), (float) ((i+1)*100f+(j+1)*10f+(h+1)+k/10f));
                          }
                      }
