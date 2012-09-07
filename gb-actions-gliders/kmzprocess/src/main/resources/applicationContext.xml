@@ -5,7 +5,7 @@
 
 	<bean id="simpleWPSHTTPClient" class="org.geotools.data.ows.SimpleHttpClient">
 		<property name="user" value="admin" /> <!-- HTTP BASIC Authentication user name -->
-		<property name="password" value="geoserver" /> <!-- HTTP BASIC Authentication password -->
+		<property name="password" value="1nurc2" /> <!-- HTTP BASIC Authentication password -->
 		<property name="connectTimeout" value="300" /> <!-- tcp/ip connect timeout in seconds -->
 		<property name="readTimeout" value="300" /> <!-- socket read timeout in seconds -->
 	</bean>

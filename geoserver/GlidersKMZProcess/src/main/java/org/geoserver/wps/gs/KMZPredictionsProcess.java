@@ -268,7 +268,7 @@ public class KMZPredictionsProcess extends KMZProcess implements GSProcess {
 						SimpleFeatureBuilder fb = new SimpleFeatureBuilder(targetSchema);
 						for(Folder folder : predictions)
 						{
-							if(folder.getName().equals(kmlType))
+							if(folder.getName().equals(kmlType) || folder.getName().startsWith(kmlType))
 							{
 								for(Object feature : folder.getFeature())
 								{
