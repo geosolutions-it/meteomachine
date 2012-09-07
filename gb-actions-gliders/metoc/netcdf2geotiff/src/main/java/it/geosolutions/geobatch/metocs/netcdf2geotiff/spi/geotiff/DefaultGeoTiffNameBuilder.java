@@ -38,7 +38,7 @@ public class DefaultGeoTiffNameBuilder implements GeoTiffNameBuilder {
     private final static Logger LOGGER = LoggerFactory.getLogger(DefaultGeoTiffNameBuilder.class);
 
     private final NetcdfLoader loader;
-    private final long DELTA = 3600000;
+    private final long DEFAULT_TIME_MULTIPLIER = 3600000;
 
 
 
@@ -87,6 +87,7 @@ public class DefaultGeoTiffNameBuilder implements GeoTiffNameBuilder {
         String timeApp = "00000000T000000000Z";
         if(var.isTimeDimDefined())
             synchronized (sdf) {
+                LOGGER.debug("Formatting time origin:" + var.getTimeOrigin() + " idx:"+timeIndex + " tconv:" + var.getTimeConversion());
                 timeApp = sdf.format(getTimeInstant(var.getTimeOrigin(), var.getTimeArray(), timeIndex, var.getTimeConversion()));
             }
 
@@ -121,23 +122,25 @@ public class DefaultGeoTiffNameBuilder implements GeoTiffNameBuilder {
 	 *
 	 * @note you may override this method if the time array is of String type
 	 *
-	 * @param startDate
+	 * @param timeOrigin
 	 *            the BaseTime in milliseconds
 	 * @param timeVar
 	 *            the variable representing the time vector
-	 * @param t
+	 * @param timeIndex
 	 *            the t^th time to calculate
 	 * @return
 	 */
-	public long getTimeInstant(final long startDate, final Array time,
-			final int t, final Long conversion) {
+	public long getTimeInstant(final long timeOrigin, final Array timeArr,
+			final int timeIndex, final Long conversion) {
 
-		long timeValue = time.getLong(t);
+		long timeValue = timeArr.getLong(timeIndex);
 		if (timeValue < 0) {
 			if (LOGGER.isWarnEnabled())
 				LOGGER.warn("The time TAU is: " + timeValue);
 		} else {
-			timeValue =  startDate+getDeltaTime(time, t, conversion);
+            long mult = conversion == null? DEFAULT_TIME_MULTIPLIER : conversion;
+
+			timeValue =  timeOrigin + timeValue * mult;
 		}
 
 		final Calendar roundedTimeInstant = new GregorianCalendar();//UTC_TZ);
@@ -146,30 +149,30 @@ public class DefaultGeoTiffNameBuilder implements GeoTiffNameBuilder {
 		return roundedTimeInstant.getTimeInMillis();
 	}
 
-	/**
-	 * Return the DELTA (TAU) in milliseconds for the specified time variable at
-	 * the specified index
-	 *
-	 * @param time
-	 * @param t
-	 *
-	 * @return
-	 */
-	private long getDeltaTime(final Array time, final int t,
-			final Long conversion) {
-		final long deltaValue;
-//		if (t > 0) {
-//			deltaValue = Math.abs(time.getLong(t - 1) - time.getLong(t));
-//		} else
-			deltaValue = time.getLong(t);
-
-		if (conversion == null) {
-			// apply standard conversion from hour
-			return DELTA * deltaValue;
-		} else {
-			return conversion * deltaValue; // from hour to millisec(s)
-		}
-	}
+//	/**
+//	 * Return the DELTA (TAU) in milliseconds for the specified time variable at
+//	 * the specified index
+//	 *
+//	 * @param time
+//	 * @param t
+//	 *
+//	 * @return
+//	 */
+//	private long getDeltaTime(final Array time, final int t, final Long conversion) {
+//
+//		final long deltaValue;
+////		if (t > 0) {
+////			deltaValue = Math.abs(time.getLong(t - 1) - time.getLong(t));
+////		} else
+//			deltaValue = time.getLong(t);
+//
+//		if (conversion == null) {
+//			// apply standard conversion from hour
+//			return DELTA * deltaValue;
+//		} else {
+//			return conversion * deltaValue; // from hour to millisec(s)
+//		}
+//	}
 
     private static String elevLevelFormat(double d) {
         String[] parts = String.valueOf(d).split("\\.");

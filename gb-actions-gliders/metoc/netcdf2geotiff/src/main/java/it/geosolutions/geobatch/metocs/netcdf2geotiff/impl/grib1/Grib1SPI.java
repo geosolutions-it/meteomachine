@@ -82,7 +82,7 @@ public class Grib1SPI extends DefaultSPI {
                 Map<String,String> root=new HashMap<String,String>();
                 dictionary.put(MetocsBaseDictionary.ROOT_SECTION_KEY, root);
                 root.put(MetocsBaseDictionary.RUNTIME_KEY, "_CoordinateModelRunDate");
-                root.put(MetocsBaseDictionary.BASETIME_KEY, "GRIB_orgReferenceTime");
+                root.put(MetocsBaseDictionary.TIMEORIGIN_KEY, "GRIB_orgReferenceTime");
                 root.put(MetocsBaseDictionary.FILLVALUE_KEY, "missing_value");
 
                 root.put(MetocsBaseDictionary.LONGITUDE_KEY, "lon");
@@ -92,7 +92,7 @@ public class Grib1SPI extends DefaultSPI {
 
                 final Map<String, String> time = new HashMap<String, String>();
                 dictionary.put("time", time);
-                time.put(MetocsBaseDictionary.BASETIME_KEY, "GRIB_orgReferenceTime");
+                time.put(MetocsBaseDictionary.TIMEORIGIN_KEY, "GRIB_orgReferenceTime");
                 time.put(MetocsBaseDictionary.TAU_KEY, "3600000"); // 1 hour in millisecs
                 return dictionary;
             }

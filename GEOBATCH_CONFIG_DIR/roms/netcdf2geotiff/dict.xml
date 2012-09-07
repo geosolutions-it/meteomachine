@@ -11,6 +11,10 @@
                 <string>nodata</string> 
             </entry>
             <entry>
+                <string>TAU</string>
+                <string>tau</string>
+            </entry>
+            <entry>
                 <string>FILLVALUE</string>
                 <string>_FillValue</string>
             </entry>

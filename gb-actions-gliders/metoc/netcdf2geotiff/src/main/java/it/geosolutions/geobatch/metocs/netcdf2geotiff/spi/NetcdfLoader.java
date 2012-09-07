@@ -31,9 +31,7 @@ import java.io.File;
 import java.io.IOException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.Calendar;
 import java.util.Date;
-import java.util.GregorianCalendar;
 import java.util.List;
 import java.util.Map;
 import java.util.TimeZone;
@@ -83,10 +81,15 @@ public class NetcdfLoader { // <OutputType> { extends OutputQueueHandler<OutputT
 	 */
 	public NetcdfLoader(final NetcdfFile ncFileIn,
 			final File dictionaryFile, final NetcdfSPI spi) throws Exception {
-//        LOGGER = LoggerFactory.getLogger(spi.getClass());
+
+		if (ncFileIn == null)
+			throw new NullPointerException("Input file is null");
+
+    	this.ncFileIn = ncFileIn;
 
 		dictionary = spi.buildDictionary(dictionaryFile);
-		sdf = new SimpleDateFormat(getTimeFormat());
+
+        sdf = new SimpleDateFormat(getTimeFormat());
 		sdf.setTimeZone(getTimeZone());
 
 		converterManager=new ConverterManager();
@@ -100,11 +103,6 @@ public class NetcdfLoader { // <OutputType> { extends OutputQueueHandler<OutputT
 			converterManager.addAlias(alias_section);
 		}
 
-		if (ncFileIn != null)
-			this.ncFileIn = ncFileIn;
-		else
-			throw new NullPointerException(
-					"Unable to initialize a checker using a null NetcdfFile as input.");
 	}
 
 	/**
@@ -375,8 +373,8 @@ public class NetcdfLoader { // <OutputType> { extends OutputQueueHandler<OutputT
 				return Long.parseLong(conversionVal);
 			} catch (NumberFormatException e) {
 				if (LOGGER.isErrorEnabled())
-					LOGGER.error("Unable to parse conversion value for the variable: \'"
-							+ timeVarName + "\'.");
+					LOGGER.error("Unable to parse time conversion value for the variable '"
+							+ timeVarName + "' with value '"+conversionVal+"'.");
 			}
 		}
 		return null;
@@ -409,40 +407,40 @@ public class NetcdfLoader { // <OutputType> { extends OutputQueueHandler<OutputT
 	 * @param index
 	 * @return
 	 */
-	public long getBaseTime(final Variable time) {
-        long ret = getIndirectBaseTime(time);
-        return ret != -1 ? ret : getFixedBaseTime(time);
+	public long getTimeOrigin(final Variable time) {
+        long ret = getIndirectTimeOrigin(time);
+        return ret != -1 ? ret : getFixedTimeOrigin(time);
     }
 
-	public long getFixedBaseTime(final Variable time) {
-		final String fixedbt = getDictionary().getValueFromDictionary(time.getFullName(), MetocsBaseDictionary.FIXEDBASETIME_KEY);
+	public long getFixedTimeOrigin(final Variable time) {
+		final String fixedto = getDictionary().getValueFromDictionary(time.getFullName(), MetocsBaseDictionary.FIXEDTIMEORIGIN_KEY);
 
-        if (fixedbt != null) {
+        if (fixedto != null) {
             if(LOGGER.isDebugEnabled())
-                LOGGER.debug("Found FixedBaseTime: " + time);
+                LOGGER.debug("Found FixedTimeOrigin: " + time);
 
 			try {
 				final TimeParser parser = new TimeParser();
-				final List<Date> dates = parser.parse(fixedbt);
+				final List<Date> dates = parser.parse(fixedto);
 				if (dates.size() > 0) {
 					return dates.get(0).getTime();
 				} else {
                     if (LOGGER.isWarnEnabled())
-                        LOGGER.warn("No date returned from value '"+fixedbt+"'");
+                        LOGGER.warn("No date returned from FixedTimeOrigin value '"+fixedto+"'");
 				}
 			} catch (ParseException e) {
 				if (LOGGER.isWarnEnabled())
-					LOGGER.warn("Unable to parse the FixedBaseTime '"+fixedbt+"': " + e.getMessage(), e);
+					LOGGER.warn("Unable to parse the FixedTimeOrigin '"+fixedto+"': " + e.getMessage(), e);
 			}
 		}
 		return -1;
 	}
 
-	public long getIndirectBaseTime(final Variable time) {
-		final Attribute attr = getVarAttrByKey(time, MetocsBaseDictionary.BASETIME_KEY);
+	public long getIndirectTimeOrigin(final Variable time) {
+		final Attribute attr = getVarAttrByKey(time, MetocsBaseDictionary.TIMEORIGIN_KEY);
 		if (attr != null) {
             if(LOGGER.isDebugEnabled())
-                LOGGER.debug("Found BaseTime: " + time);
+                LOGGER.debug("Found TimeOrigin: " + time);
 			try {
                 // try to get the value as a string
                 final String sval = attr.getStringValue();
@@ -453,11 +451,11 @@ public class NetcdfLoader { // <OutputType> { extends OutputQueueHandler<OutputT
                         return dates.get(0).getTime();
                     } else {
                         if (LOGGER.isWarnEnabled())
-                            LOGGER.warn("No date returned from string value '"+sval+"'");
+                            LOGGER.warn("No date returned from TimeOrigin string value '"+sval+"'");
                     }
                 } else if(attr.getNumericValue() != null) { // try to get the value as a numeric value
                     if(LOGGER.isDebugEnabled())
-                        LOGGER.debug("Numeric value from "+time.getFullName()+"."+attr.getName() +": " + attr.getNumericValue());
+                        LOGGER.debug("Numeric TimeOrigin value from "+time.getFullName()+"."+attr.getName() +": " + attr.getNumericValue());
                     return attr.getNumericValue().longValue();
                 }
 			} catch (ParseException e) {

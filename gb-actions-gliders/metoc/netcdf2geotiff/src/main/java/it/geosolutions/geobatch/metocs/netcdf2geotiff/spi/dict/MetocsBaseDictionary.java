@@ -66,11 +66,13 @@ public class MetocsBaseDictionary extends
 
 	public static final String RUNTIME_KEY = "RUNTIME";
 
-	public static final String BASETIME_KEY = "BASETIME";
-    
-	public static final String TIMEUNITS_KEY = "TIMEUNITS";
+    public static final String TIMEUNITS_KEY = "TIMEUNITS";
 
- 	public static final String FIXEDBASETIME_KEY = "FIXEDBASETIME";
+    /** Expected a fieldname containing any datetime format (not a long) */
+	public static final String TIMEORIGIN_KEY = "TIMEORIGIN";
+
+    /** Expected a fixed string with any datetime format (not a long) */
+ 	public static final String FIXEDTIMEORIGIN_KEY = "FIXEDTIMEORIGIN";
 
 	public static final String FIXEDTAU_KEY = "FIXEDTAU";
 
@@ -86,7 +88,7 @@ public class MetocsBaseDictionary extends
 	 *       NetcdfChecker.getTimeInstant() which uses this value (returned by
 	 *       the getTimeConversion())
 	 */
-	public static final String TIME_CONVERSION_KEY = "TIME_CONVERSION";
+	public static final String TIME_CONVERSION_KEY = "TIMECONVERSION";
 
 	/**
 	 * Specify the name of the unit to convert to this name represent a unit

@@ -106,15 +106,27 @@
             <entry>
                 <!-- a Long representing the conversion constant to convert the time
 	                 of the passed timeVarName variable into milliseconds -->
-                <string>TIME_CONVERSION</string>
+                <string>TIMECONVERSION</string>
                 <string>1000</string>
             </entry>
-            <entry>
-                <!--seconds since 1980-1-1 0:0:0 -->
-                <string>FIXEDBASETIME</string>
+<!--            <entry>
+                <string>FIXEDTIMEORIGIN</string>
                 <string>1980-01-01T00:00:00</string>
-<!--                <string>BASETIME</string>
-                <string>time_origin</string>-->
+            </entry>-->
+            <entry>
+                <string>FIXEDTAU</string>
+                <string>1</string>
+            </entry>
+
+<!--
+            <entry>
+                <string>BASETIME</string>
+                <string>time_origin</string>
+            </entry>
+-->
+            <entry>
+                <string>TIMEUNITS</string>
+                <string>units</string>
             </entry>
         </map>
     </entry>

@@ -324,16 +324,16 @@ public class Netcdf2GeotiffAction
                     }
 
 
-                    for (int z = 0; z < nvar.getZetaSize(); z++) {
+                    for (int zIdx = 0; zIdx < nvar.getZetaSize(); zIdx++) {
 
                         if (rank == 4) {
-                            section2d.setRange(1, new Range(z, z));
+                            section2d.setRange(1, new Range(zIdx, zIdx));
                         }
 
-                        for (int t = 0; t < nvar.getTimeSize(); t++) {
+                        for (int tIdx = 0; tIdx < nvar.getTimeSize(); tIdx++) {
 
                             if (rank >= 3) {
-                                section2d.setRange(0, new Range(t, t));
+                                section2d.setRange(0, new Range(tIdx, tIdx));
                             }
 
                             final Array originalVarArray = var.read(section2d); // TODO MOVE INTO THE FOR USING section2d)
@@ -349,8 +349,8 @@ public class Netcdf2GeotiffAction
                             // ////
                             // producing the Coverage here...
                             // ////
-                            tokens.put("zeta", z);
-                            tokens.put("time", t);
+                            tokens.put("zeta", zIdx);
+                            tokens.put("time", tIdx);
                             final String coverageName = spi.nameBuilder.buildName(nvar, tokens);
 
                             if (LOGGER.isDebugEnabled()) {

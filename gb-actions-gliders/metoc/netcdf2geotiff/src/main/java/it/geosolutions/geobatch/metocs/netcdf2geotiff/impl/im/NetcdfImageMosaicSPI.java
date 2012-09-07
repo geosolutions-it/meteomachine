@@ -57,7 +57,6 @@ public class NetcdfImageMosaicSPI extends DefaultSPI {
                 Map<String,Map<String,String>> dictionary=new HashMap<String, Map<String,String>>();
                 Map<String,String> root=new HashMap<String,String>();
                 dictionary.put(MetocsBaseDictionary.ROOT_SECTION_KEY, root);
-                root.put(MetocsBaseDictionary.BASETIME_KEY,"base_time");
                 root.put(MetocsBaseDictionary.TAU_KEY,"tau");
                 return dictionary;
             }

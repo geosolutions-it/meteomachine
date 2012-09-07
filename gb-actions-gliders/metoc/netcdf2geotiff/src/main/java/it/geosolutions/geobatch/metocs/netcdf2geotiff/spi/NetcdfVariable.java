@@ -51,23 +51,25 @@ public class NetcdfVariable {
     // ----------------------------------------------------------------------------
     // per variable cache
 
+    private final Variable var;
+
     // name
     private String varName;
     private Converter converter;
+
     // zeta
     private Array zetaArray = null;
     private int zetaSize = 1;
     private boolean zDimDefined = false;
+
     // time
     private Array timeArray = null;
     private int timeSize = 1;
-    private Long timeConversion = null;
-    private long localBaseTime;
+    private boolean timeDimDefined = false;
+
+    private Long timeMillisConversion = null;
     private long timeOrigin = -1;
 
-    private boolean timeDimDefined = false;
-    // fillValue
-    private double fillValue;
     // lat
     private Array lat;
     private int latSize;
@@ -78,9 +80,9 @@ public class NetcdfVariable {
     private boolean lonDimDefined = false;
     // envelope
     private GeneralEnvelope envelope;
+    private double fillValue;
 
 //    private final NetcdfLoader loader;
-    private final Variable var;
 
     private final CachedGlobal cachedGlobal;
     private final boolean status;
@@ -161,7 +163,7 @@ public class NetcdfVariable {
             // ZETA
             initZeta(null, loader);
             // TIME
-            initTime(null, loader);
+            undefineTime();
         } else {
             if (LOGGER.isErrorEnabled())
                 LOGGER.error("SKIPPING variable: \'" + varName + "\' -> Wrong shape rank: "
@@ -260,81 +262,67 @@ public class NetcdfVariable {
         return zetaSize;
     }
 
+    private void undefineTime() {
+        timeDimDefined = false;
+        timeArray = null;
+        timeSize = 1;
+    }
+
     // Time
     private void initTime(final Variable var, final NetcdfLoader loader) {
         if(var == null) {
-            timeDimDefined = false;
-            timeArray = null;
-            timeSize = 1;
+            undefineTime();
             return;
         }
 
         timeDimDefined = true;
-        long baseTime = -1;
+
         final Variable timeVar = loader.getTime(var);
         if (timeVar == null) {
             if (LOGGER.isWarnEnabled())
                 LOGGER.warn("Unable to get the time for this variable, check your dictionary");
-            timeArray = null;
-            timeDimDefined = false;
+            undefineTime();
+            return;
         } else {
             try {
                 timeArray = timeVar.read();
                 timeSize = (int)timeArray.getSize();
-                timeConversion = loader.getTimeConversion(timeVar.getFullName());
             } catch (IOException e) {
                 if(LOGGER.isInfoEnabled())
                     LOGGER.info("Can't read time var: " + e.getMessage());
-                timeDimDefined = false;// TODO LOG
-                timeSize = 1;
+                undefineTime();
+                return;
             }
         }
         // base time
-        if (timeDimDefined) {
-            baseTime = loader.getBaseTime(timeVar);
-
-            UnitsParser parser = loader.getTimeOriginParser(timeVar);
-            if (parser != null) {
-                timeOrigin = parser.getDate().getTime();
-                timeConversion = parser.getSecondsMultiplier() * 1000;
+        UnitsParser parser = loader.getTimeOriginParser(timeVar);
+        if (parser != null) {
+            timeOrigin = parser.getDate().getTime();
+            timeMillisConversion = parser.getSecondsMultiplier() * 1000;
+            if(LOGGER.isDebugEnabled()) {
+                LOGGER.debug("Time params from UnitsParser" +  parser) ;
+            }
+        } else {
+            // no units found, look for specific origin and converter
+            timeOrigin = loader.getTimeOrigin(timeVar);
+            timeMillisConversion = loader.getTimeConversion(timeVar.getFullName());
+            if(LOGGER.isDebugEnabled()) {
+                LOGGER.debug("Time params from origin("+timeOrigin+") and conversion("+timeMillisConversion+")") ;
             }
         }
 
-        if (baseTime != -1) {
-//            if (timeConversion != null) {
-//                baseTime *= timeConversion;
+        if(timeOrigin == -1) {
+            if (LOGGER.isWarnEnabled())
+                LOGGER.warn("Could not retrieve any time origin for the time var " + var.getFullName());
+            undefineTime();
+        }
+
+        // ETj 20120907: should we support this behaviour?
+//        if (baseTime != -1) {
+//            if (timeMillisConversion != null) {
+//                baseTime *= timeMillisConversion;
 //            }
             // local base time is set to global base time
-            localBaseTime = baseTime;
-            if (LOGGER.isWarnEnabled())
-                LOGGER.warn("Setting the BaseTime for the variable \'" + var.getFullName()
-                            + "' to " + baseTime);
-        } else {
-            // ???
-
-            final Date date = loader.getRunTimeDate();
-            if (date != null) {
-                localBaseTime = date.getTime();
-                if (localBaseTime < 0) {
-                    if (LOGGER.isErrorEnabled())
-                        LOGGER.error("Unable to get the BaseTime for the varibale \'" + var.getName()
-                                     + "\' setting !timeDimExists");
-                    timeDimDefined = false;
-                    timeSize = 1;
-                } else {
-                    if (LOGGER.isWarnEnabled()) {
-                        LOGGER.warn("Unable to get the BaseTime for the varibale \'" + var.getName()
-                                    + "\' setting to RunTime");
-                    }
-                }
-            } else {
-                if (LOGGER.isErrorEnabled())
-                    LOGGER.error("Unable to get the BaseTime for the varibale \'" + var.getName()
-                                 + "\' setting !timeDimExists");
-                timeDimDefined = false;
-                timeSize = 1;
-            }
-        }
     }
 
     /**
@@ -432,7 +420,7 @@ public class NetcdfVariable {
     }
 
     public Long getTimeConversion() {
-        return timeConversion;
+        return timeMillisConversion;
     }
 
     public void initSimpleDateFormat(final NetcdfLoader loader) {
