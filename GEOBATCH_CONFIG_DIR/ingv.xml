@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <FlowConfiguration>
-    <id>roms</id>
-    <name>NURC: ROMS ingestion</name>
+    <id>ingv</id>
+    <name>NURC: INGV ingestion</name>
     <description>Create images from netcdf publish on GeoServer</description>
 	
     <corePoolSize>2</corePoolSize>
@@ -15,7 +15,7 @@
         <id>id</id>
         <serviceID>fsEventGeneratorService</serviceID>
 
-        <wildCard>*_his.nc</wildCard>
+        <wildCard>*_RFVL.nc.gz</wildCard>
 
         <!-- CUSTOMIZABLE : netcdf input directory -->
         <watchDirectory>models/in</watchDirectory>
@@ -33,49 +33,32 @@
 
         <performBackup>false</performBackup>
         <preserveInput>false</preserveInput>
-
-        <OctaveFreeMarkerConfiguration>
-            <id>octave</id>
-            <serviceID>OctaveFreeMarkerGeneratorService</serviceID>
-
-            <name>RegularGrid</name>
-            <description>Interpolate a regular grid and rename variables</description>
-
-            <octave>
-                <sheets>
-                    <sheet name="sheet01">
-                        <commands>
-                            <OctaveCommand executed="false">
-                                <command>source "/usr/share/octave/3.0.1/m/startup/octaverc";</command>
-                            </OctaveCommand>
-                            <OctaveCommand executed="false">
-                                <command>cd "/opt/data/GBGLIDERS_CONFIG_DIR/roms/octave";</command>
-                            </OctaveCommand>
-                        </commands>
-                        <definitions/>
-                        <functions>
-                            <function name="roms_f">
-                                <commands/>
-                                <returns/>
-                                <definitions>
-                                    <OctaveFile name="file_in"  value="${IN_FILE}" output="false" input="true"/>
-                                    <OctaveFile name="file_out" value="${OUT_FILE}" output="false" input="true"/>
-                                </definitions>
-                            </function>
-                        </functions>
-                        <returns/>
-                    </sheet>
-                </sheets>
-            </octave>
-
-        </OctaveFreeMarkerConfiguration>
+        
+        
+        <FreeMarker>
+          <!-- Action using NCML to rename variables as watvel-u, watvel-v -->
+          <serviceID>FreeMarkerGeneratorService</serviceID>
+          <id>freemarker</id>
+          <description>description</description>
+          <name>FreeMarkerConfiguration</name>
+          
+          <dirty>false</dirty>
+          <listenerConfigurations/>
+          <failIgnored>false</failIgnored>
+          <!-- should be located into the config dir -->
+          <input>NCML.xml</input>
+          
+          <output>tmp_out/</output>
+          <nToN>false</nToN>
+        </FreeMarker>
+        
 
         <Netcdf2GeotiffConfiguration>
             <id>netcdf2geotiff</id>
             <serviceID>Netcdf2GeotiffService</serviceID>
 
             <name>NetCDF to GeoTIFF</name>
-            <description>NURC ROMS: netcdf -> geotiff</description>
+            <description>NURC INGV: netcdf -> geotiff</description>
             
             <!-- if layerParentDirectory is not defined the dir hierarchy will be created inside the tempdir -->
             <!--<layerParentDirectory>/opt/data/models/arw_3km_run00/</layerParentDirectory>-->
@@ -96,14 +79,21 @@
                 <entry>
                     <string>mosaicPath</string>
                     <!-- CUSTOMIZABLE : mosaic dir -->
-                    <string>/tmp/roms/mosaic/</string>
+                    <string>/tmp/ingv/mosaic/</string>
                 </entry>
             </outputConfiguration>
 
             <listenerId>NURCModelsLogger</listenerId>
             <listenerId>NURCModelsCumulator</listenerId>
             <listenerId>NURCModelsStatus</listenerId>
-
+            <dynamicTokens>
+              <stringToken>
+                <name>runtime</name>
+                <base>${FILENAME}</base>
+                <regex>.*_([0-9]{4})([0-9]{2})([0-9]{2})_[0-9]{8}_.*</regex>
+                <compose>${1}${2}${3}T000000000Z</compose>
+              </stringToken>
+            </dynamicTokens>
         </Netcdf2GeotiffConfiguration>
 				
         <ScriptingConfiguration>
@@ -158,7 +148,7 @@
                 <entry>
                     <string>mosaicPath</string>
                     <!-- CUSTOMIZABLE : mosaic dir -->
-                    <string>/tmp/roms/watvelroms</string>
+                    <string>/tmp/ingv/watvelingv/</string>
                 </entry>
             </properties>
         </ScriptingConfiguration>
@@ -176,7 +166,7 @@
 
             <datastoreFileName>datastore.properties</datastoreFileName>
             <!-- CUSTOMIZABLE : the name is the last part of the mosaic dir name -->
-            <typeName>watvelroms</typeName> 
+            <typeName>watvelingv</typeName> 
 
             <!-- forecast attribute name shll be extracted from the index prop files -->
             <forecastAttribute>forecast</forecastAttribute>
@@ -212,11 +202,10 @@
             <geoserverUID>admin</geoserverUID>
             <geoserverPWD>geoserver</geoserverPWD>
             <geoserverURL>http://localhost:8080/geoserver</geoserverURL>
-
             <!-- CUSTOMIZABLE -->
             <defaultNamespace>nurc</defaultNamespace>
-            <storeName>watvelroms</storeName> <!-- will be created if not exists -->
-            <layerName>watvelroms</layerName> <!-- will be created if not exists -->
+            <storeName>watvelingv</storeName> <!-- will be created if not exists -->
+            <layerName>watvelingv</layerName> <!-- will be created if not exists -->
 
             <defaultStyle>watervelocityCR_meters</defaultStyle>
 

@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<netcdf xmlns="http://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2" location="${event[0].PARENT?replace("\\", "/")}/${event[0].FILENAME}.${event[0].EXTENSION}">
+  <attribute name="filename" type="string" value="${event[0].PARENT?replace("\\", "/")}/${event[0].FILENAME}.${event[0].EXTENSION}"/>
+  <variable name="watvel-u" orgName="vozocrtx" />
+  <variable name="watvel-v" orgName="vomecrty"/>
+</netcdf>

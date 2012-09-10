@@ -14,11 +14,11 @@
                 <string>FILLVALUE</string>
                 <string>_FillValue</string>
             </entry>
-            <entry>
-                <string>TAU</string>
-                <string>tau</string>
+              <entry>
+                <string>FIXEDTAU</string>
+                <string>24</string>
             </entry>
-        </map>
+         </map>
     </entry>
 
 
@@ -106,10 +106,10 @@
             <entry>
                 <!-- a Long representing the conversion constant to convert the time
 	                 of the passed timeVarName variable into milliseconds -->
-                <string>TIMECONVERSION</string>
-                <string>1000</string>
+                <string>TIME_CONVERSION</string>
+                <string>3600000</string>
             </entry>
-             <entry>
+            <entry>
                 <string>TIMEUNITS</string>
                 <string>units</string>
             </entry>

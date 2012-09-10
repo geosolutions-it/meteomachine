@@ -326,27 +326,40 @@ public class MergeImageUtils {
 
 	}
 
-	// /////////////////////////////////////////////
-	// WIND SPECIFIC
-	// /////////////////////////////////////////////
+    private File merge2BandsImage(final File outDir, final File fileU,
+            final File fileV, final String outVarName,
+            final boolean reverseDirection) throws Throwable {
+    
+        // the first file is used as model for others in the list
+        final File model = fileU;
+    
+        if (!inittedModel)
+            initModel(model);
+    
+        // build an in memory image using the files list
+        final RenderedImage tiledImage = mergeComponents(fileU, fileV, reverseDirection);
+    
+        // exclude first part of the variable (name) substituting varName
+        final String name = buildName(outVarName, model.getName());
+    
+        return writeGeotiff(outDir, name, tiledImage, envelope);
+    }
+    
+    // /////////////////////////////////////////////
+    // WIND SPECIFIC
+    // /////////////////////////////////////////////
+    public File mergeWindImage(final File outDir, final File fileU,
+            final File fileV, final String outVarName) throws Throwable {
+        return merge2BandsImage(outDir, fileU, fileV, outVarName, true);
+    }
 
-	public File mergeWindImage(final File outDir, final File fileU,
-			final File fileV, final String outVarName) throws Throwable {
-
-		// the first file is used as model for others in the list
-		final File model = fileU;
-
-		if (!inittedModel)
-			initModel(model);
-
-		// build an in memory image using the files list
-		final RenderedImage tiledImage = mergeWindComponents(fileU, fileV);
-
-		// exclude first part of the variable (name) substituting varName
-		final String name = buildName(outVarName, model.getName());
-
-		return writeGeotiff(outDir, name, tiledImage, envelope);
-	}
+    // /////////////////////////////////////////////
+    // WATER SPECIFIC
+    // /////////////////////////////////////////////
+    public File mergeWaterImage(final File outDir, final File fileU,
+            final File fileV, final String outVarName) throws Throwable {
+        return merge2BandsImage(outDir, fileU, fileV, outVarName, false);
+    }
 
 	/**
 	 * Merge all the passed images into a
@@ -355,8 +368,8 @@ public class MergeImageUtils {
 	 * @return
 	 * @throws IllegalArgumentException
 	 */
-	public final RenderedImage mergeWindComponents(final File fileU,
-			final File fileV) throws IllegalArgumentException {
+	public final RenderedImage mergeComponents(final File fileU,
+			final File fileV, final boolean reverseDirection) throws IllegalArgumentException {
 
 		final ImageCursor cursorU = new ImageCursor();
 		final ImageCursor cursorV = new ImageCursor();
@@ -413,7 +426,7 @@ public class MergeImageUtils {
 						double u=valueU.doubleValue();
 						double v=valueV.doubleValue();
 						setModule = getModule(u,v);
-						setDirection = getDirection(u,v);
+						setDirection = getDirection(u,v, reverseDirection);
 					}
 					tiledImage.setSample(w, h, 0, setModule);
 					tiledImage.setSample(w, h, 1, setDirection);
@@ -465,8 +478,9 @@ public class MergeImageUtils {
 	 * @param valueV
 	 * @return
 	 */
-	public double getDirection(double valueU, double valueV) {
-		final double direction=(180 / Math.PI) * Math.atan2(-valueU,-valueV);
+	public double getDirection(double valueU, double valueV, final boolean revert) {
+	        final double atan = revert ? Math.atan2(-valueU,-valueV): Math.atan2(valueU,valueV);
+		final double direction=(180 / Math.PI) * atan;
 		return (direction<0)?(360+direction):direction;
 	}
 
@@ -482,7 +496,7 @@ public class MergeImageUtils {
 		util.iHeight=10;
 		util.iWidth=25;
 		util.nodata=Double.NaN;
-		RenderedImage image=util.mergeWindComponents(imageFile, imageFile2);
+		RenderedImage image=util.mergeComponents(imageFile, imageFile2, true);
 		
 		ImageIO.write(image, "TIFF", imageFile);
 		
