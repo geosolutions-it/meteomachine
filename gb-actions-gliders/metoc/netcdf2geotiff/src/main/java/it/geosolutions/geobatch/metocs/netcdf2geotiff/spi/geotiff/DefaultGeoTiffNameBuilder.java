@@ -111,10 +111,18 @@ public class DefaultGeoTiffNameBuilder implements GeoTiffNameBuilder {
      */
     @Override
     public String getDirName(final NetcdfVariable var, Map<String, Object> tokens) {
-        if(var.getGlobal().getRuntime() != null)
-            return var.getFullName() + "_" + var.getGlobal().getRuntime();
-        else
-            return var.getFullName();
+        String runtime = var.getGlobal().getRuntime();
+
+        if (runtime!= null) {
+            return var.getFullName() + "_" + runtime;
+        } else if (tokens != null && tokens.containsKey("runtime")) {
+            Object runTimeString = tokens.get("runtime");
+            if (runTimeString != null && runTimeString instanceof String) {
+                runtime = (String) runTimeString;
+                return var.getFullName() + "_" + runtime;
+            }
+        }
+        return var.getFullName();
     }
 
 	/**

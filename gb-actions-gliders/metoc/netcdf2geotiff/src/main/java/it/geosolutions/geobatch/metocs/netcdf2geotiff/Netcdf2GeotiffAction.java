@@ -26,8 +26,8 @@ import it.geosolutions.geobatch.actions.tools.adapter.EventAdapter;
 import it.geosolutions.geobatch.flow.event.action.ActionException;
 import it.geosolutions.geobatch.flow.event.action.BaseAction;
 import it.geosolutions.geobatch.metocs.netcdf2geotiff.spi.NetcdfLoader;
-import it.geosolutions.geobatch.metocs.netcdf2geotiff.spi.NetcdfSPILoader;
 import it.geosolutions.geobatch.metocs.netcdf2geotiff.spi.NetcdfSPI;
+import it.geosolutions.geobatch.metocs.netcdf2geotiff.spi.NetcdfSPILoader;
 import it.geosolutions.geobatch.metocs.netcdf2geotiff.spi.NetcdfVariable;
 import it.geosolutions.geobatch.metocs.netcdf2geotiff.spi.geotiff.GeoTiffNameBuilder;
 import it.geosolutions.geobatch.metocs.netcdf2geotiff.spi.output.OutputQueueHandler;
@@ -61,6 +61,7 @@ import org.slf4j.LoggerFactory;
 import ucar.ma2.Array;
 import ucar.ma2.Range;
 import ucar.ma2.Section;
+import ucar.nc2.Attribute;
 import ucar.nc2.NetcdfFile;
 import ucar.nc2.Variable;
 import ucar.nc2.dataset.NetcdfDataset;
@@ -91,6 +92,8 @@ public class Netcdf2GeotiffAction
     private static final int DEFAULT_TILE_SIZE = 256;
     private static final double DEFAULT_COMPRESSION_RATIO = 0.75;
     private static final String DEFAULT_COMPRESSION_TYPE = "LZW";
+    
+    private static final String FILENAME = "filename";
 
     private final Netcdf2GeotiffConfiguration configuration;
 
@@ -131,7 +134,7 @@ public class Netcdf2GeotiffAction
         final int eventSize = events.size();
         // looking for file
         while (!events.isEmpty()) {
-            NetcdfFile ncFileIn = null;
+            NetcdfFile ncDataset = null;
             try {
                 final EventObject event = events.remove();
                 if (LOGGER.isInfoEnabled()) {
@@ -140,14 +143,21 @@ public class Netcdf2GeotiffAction
                 // adapt the input event
                 final NetcdfEvent netcdfEvent = adapter(event);
 
-                ncFileIn = netcdfEvent.getSource();
+                ncDataset = netcdfEvent.getSource();
 
                 final String inputFileBaseName;
-                final String originalInputFileBaseName;
+                String originalInputFileBaseName;
 
-                if (ncFileIn != null) {
+                if (ncDataset != null) {
 //                    inputFileBaseName = FilenameUtils.getBaseName(ncFileIn.getLocation()).replaceAll("_", "");
-                    originalInputFileBaseName = FilenameUtils.getBaseName(ncFileIn.getLocation());
+                    originalInputFileBaseName = FilenameUtils.getBaseName(ncDataset.getLocation());
+                    if (originalInputFileBaseName.contains("NCML")) {
+                        // is an NCML file. get back the original filename
+                        Attribute fileNameAttribute = ncDataset.findGlobalAttribute(FILENAME);
+                        if (fileNameAttribute != null) {
+                            originalInputFileBaseName = FilenameUtils.getBaseName(fileNameAttribute.getStringValue());
+                        }
+                    }
                     inputFileBaseName = originalInputFileBaseName.replaceAll("_", "");
                 } else {
                     final String message = "Unable to locate event file sources for event: " + netcdfEvent.getPath();
@@ -179,12 +189,12 @@ public class Netcdf2GeotiffAction
 //    System.out.println("TypeID:"+ncFileIn.getIosp().toString());
 
                 // SPI LOADING
-                final SPIObjects spi = loadSPI(ncFileIn);
+                final SPIObjects spi = loadSPI(ncDataset);
                 if(spi == null)
                     continue; // logs already performed in method
 
                 // VARIABLES
-                final List<Variable> foundVariables = ncFileIn.getVariables();
+                final List<Variable> foundVariables = ncDataset.getVariables();
                 final Set<String> readVariables = checkVariables(foundVariables);
 
                 // PROGRESS
@@ -393,8 +403,8 @@ public class Netcdf2GeotiffAction
 
             } finally {
                 try {
-                    if (ncFileIn != null) {
-                        ncFileIn.close();
+                    if (ncDataset != null) {
+                        ncDataset.close();
                     }
                 } catch (IOException e) {
                     if (LOGGER.isErrorEnabled()) {
@@ -429,8 +439,9 @@ public class Netcdf2GeotiffAction
                  */
                 // TODO we should check if this file is a netcdf file!
                 try {
-                    NetcdfFile ncFileIn = NetcdfFile.open(inputFile.getAbsolutePath());
-                    NetcdfDataset d = new NetcdfDataset(ncFileIn);// TODO: add performBackup arg
+                    NetcdfDataset d = NetcdfDataset.acquireDataset(inputFile.getAbsolutePath(), null);
+//                    NetcdfFile ncFileIn = NetcdfFile.open(inputFile.getAbsolutePath());
+//                    NetcdfDataset d = new NetcdfDataset.(inputFile.getAbsolutePath());// TODO: add performBackup arg
                     return new NetcdfEvent(d);
                 } catch (IOException ioe) {
                     throw new ActionException(this, ioe.getLocalizedMessage(), ioe.getCause());
