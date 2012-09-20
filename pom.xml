@@ -227,6 +227,12 @@
 
 			<dependency>
 				<groupId>it.geosolutions.geobatch</groupId>
+				<artifactId>gb-action-freemarker</artifactId>
+				<version>${gb.version}</version>
+			</dependency>
+
+			<dependency>
+				<groupId>it.geosolutions.geobatch</groupId>
 				<artifactId>gb-tools</artifactId>
 				<version>${gb.version}</version>
 			</dependency>
