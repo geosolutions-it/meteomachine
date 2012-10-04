@@ -31,6 +31,7 @@
 package it.geosolutions.geobatch.gliders.ingest.tracks;
 
 import it.geosolutions.filesystemmonitor.monitor.FileSystemEvent;
+import it.geosolutions.filesystemmonitor.monitor.FileSystemEventType;
 import it.geosolutions.geobatch.flow.event.action.ActionException;
 import it.geosolutions.geobatch.flow.event.action.BaseAction;
 
@@ -38,6 +39,7 @@ import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.URL;
@@ -52,6 +54,7 @@ import net.opengis.wps10.OutputDefinitionType;
 import net.opengis.wps10.ResponseFormType;
 import net.opengis.wps10.Wps10Factory;
 
+import org.apache.commons.io.IOUtils;
 import org.eclipse.emf.ecore.EObject;
 import org.geotools.data.ows.HTTPClient;
 import org.geotools.data.wps.WebProcessingService;
@@ -76,6 +79,11 @@ public class TracksIngestAction extends BaseAction<EventObject>
     private String wpsProcessIdentifier = null;
     private String targetWorkspace = null;
     private String targetDataStore = null;
+    
+    private String aoiKmzFormatOptions = null;
+    private String aoiKmzLayers = null;
+    private String aoiKmzStyles = null;
+    private String gsBaseUrl = null;
 
     private HTTPClient wpsHTTPClient = null;
 
@@ -99,6 +107,11 @@ public class TracksIngestAction extends BaseAction<EventObject>
         wpsProcessIdentifier = conf.getWpsProcessIdentifier();
         targetWorkspace = conf.getTargetWorkspace();
         targetDataStore = conf.getTargetDataStore();
+        
+        aoiKmzFormatOptions = conf.getAoiKmzFormatOptions();
+        aoiKmzLayers = conf.getAoiKmzLayers();
+        aoiKmzStyles = conf.getAoiKmzStyles();
+        gsBaseUrl = conf.getGsBaseUrl();
 
         final Queue<EventObject> ret = new LinkedList<EventObject>();
         if(LOGGER.isInfoEnabled()){
@@ -144,6 +157,12 @@ public class TracksIngestAction extends BaseAction<EventObject>
                         // Workspace and DataStore simple Inputs
                         execRequest.addInput("workspace", Arrays.asList(wps.createLiteralInputValue(targetWorkspace)));
                         execRequest.addInput("store", Arrays.asList(wps.createLiteralInputValue(targetDataStore)));
+                        
+                        // Input for the KMZ URL definition when gliders go out the defined AOI. Add here the kmz config to the WPS execute arguments
+                        execRequest.addInput("aoiKmzFormatOptions", Arrays.asList(wps.createLiteralInputValue(aoiKmzFormatOptions)));
+                        execRequest.addInput("aoiKmzLayers", Arrays.asList(wps.createLiteralInputValue(aoiKmzLayers)));
+                        execRequest.addInput("aoiKmzStyles", Arrays.asList(wps.createLiteralInputValue(aoiKmzStyles)));
+                        execRequest.addInput("gsBaseUrl", Arrays.asList(wps.createLiteralInputValue(gsBaseUrl)));
                         
                         OutputDefinitionType rawOutput = wps.createOutputDefinitionType("result");
 						ResponseFormType responseForm = wps.createResponseForm(null, rawOutput);
@@ -197,7 +216,7 @@ public class TracksIngestAction extends BaseAction<EventObject>
                         }
 
                         ExecuteProcessResponse response = wps.issueRequest(execRequest);
-
+                        
                         // Checking for Exceptions and Status...
                         if ((response.getExceptionResponse() == null) && (response.getRawContentType() != null))
                         {
@@ -216,10 +235,29 @@ public class TracksIngestAction extends BaseAction<EventObject>
                             }
                         	throw new ActionException(this,response.getExceptionResponse().getException().get(0).toString() );
                         }
+                        
+                        // //////////////////////////////////
+                        // KMZ link as WPS result
+                        // //////////////////////////////////
+                        String responseText = IOUtils.toString(response.getInputStream());
+                        
+                        if(responseText.contains("application/vnd.google-earth.kmz")){
+                        	// ////////////////////////////////////////////
+                        	// Send mail invoking the Sent Mail Action
+                        	// ////////////////////////////////////////////
+                        	File tempDir = this.getTempDir();
+                        	
+                        	File mail = new File(tempDir, "mail.txt");
+                        	FileOutputStream fos = new FileOutputStream(mail);
+                        	IOUtils.write(responseText, fos);    
+                        	
+                        	//
+                        	// Add a new event to return for the next action (Send Mail)
+                        	//
+                            FileSystemEvent event = new FileSystemEvent(mail, FileSystemEventType.FILE_ADDED);
+                            ret.add(event);
+                        }
                     }
-                    
-                    // add the event to the return
-                    // ret.add(ev);
                 }
                 else
                 {

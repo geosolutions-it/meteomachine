@@ -42,12 +42,53 @@
 			<listenerConfigurations/>
 			<failIgnored>false</failIgnored>
 			
-			<wpsServiceCapabilitiesURL>http://localhost:8080/geoserver/ows?service=wps&amp;version=1.0.0&amp;request=GetCapabilities</wpsServiceCapabilitiesURL>
+			<wpsServiceCapabilitiesURL>http://localhost:8181/geoserver/ows?service=wps&amp;version=1.0.0&amp;request=GetCapabilities</wpsServiceCapabilitiesURL>
 			<wpsProcessIdentifier>gs:KMZGliders</wpsProcessIdentifier>
 			<targetWorkspace>it.geosolutions</targetWorkspace>
 			<targetDataStore>nurc_gliders</targetDataStore>
 			
+		    <aoiKmzFormatOptions>SUPEROVERLAY:false;KMPLACEMARK:false;KMSCORE:100;KMATTR:true;</aoiKmzFormatOptions>
+			<aoiKmzStyles>GlidersPoints,aoi</aoiKmzStyles>
+			<aoiKmzLayers>it.geosolutions:GlidersPoints,it.geosolutions:aoi</aoiKmzLayers>
+			<gsBaseUrl>http://localhost:8181/geoserver/</gsBaseUrl>		
+
+			<wpsHTTPClientUser>admin</wpsHTTPClientUser>
+			<wpsHTTPClientPassword>1nurc2</wpsHTTPClientPassword>
+			<wpsHTTPClientConnectionTimeout>300</wpsHTTPClientConnectionTimeout>
+			<wpsHTTPClientReadTimeout>300</wpsHTTPClientReadTimeout>
 		</TracksIngestConfiguration>
+		
+		<SendMailConfiguration>
+			<serviceID>SendMailGeneratorService</serviceID>
+			<id>SendMailGeneratorService</id>
+			<description>SendMail action</description>
+			<name>SendMailConfiguration</name>
+			
+			<mailSubject>WARNING - A glider outside the area of interest</mailSubject>
+			
+			<mailSmtpHost>smtp.gmail.com</mailSmtpHost>
+			<mailSmtpStarttlsEnable>true</mailSmtpStarttlsEnable>   
+			<mailSmtpAuth>true</mailSmtpAuth>                       
+			<mailSmtpPort>587</mailSmtpPort>                        
+			
+			<mailAuthUsername>nurc.portal.test@gmail.com</mailAuthUsername> 
+			<mailAuthPassword>Crociera100!</mailAuthPassword>               
+			
+			<mailToAddress>ilcovo@gmail.com</mailToAddress>
+			<mailFromAddress>nurc.portal.test@gmail.com</mailFromAddress>
+			
+			<!-- Possible NURC configuration
+			#mail.smtp.host=mail-smtp.nurc.nato.int
+			#mail.smtp.auth=false
+			#mail.smtp.port=25
+			#
+			#username=cimino@nurc.nato.int
+			#fromAddress=noreply
+			#toAdminAddress=cimino@nurc.nato.int
+			#subject=Nurc Activation Proce
+			-->
+			
+		</SendMailConfiguration>
 		
 	</EventConsumerConfiguration>
 

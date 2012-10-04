@@ -36,6 +36,7 @@ import it.geosolutions.geobatch.flow.event.action.ActionService;
 import java.util.EventObject;
 
 import org.geotools.data.ows.HTTPClient;
+import org.geotools.data.ows.SimpleHttpClient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -62,6 +63,13 @@ public class TracksIngestGeneratorService extends BaseService implements ActionS
         try
         {
         	TracksIngestAction glidersTracksIngestAction = new TracksIngestAction(configuration);
+        	
+        	wpsHTTPClient = new SimpleHttpClient();
+        	wpsHTTPClient.setConnectTimeout(configuration.getWpsHTTPClientConnectionTimeout());
+        	wpsHTTPClient.setPassword(configuration.getWpsHTTPClientPassword());
+        	wpsHTTPClient.setReadTimeout(configuration.getWpsHTTPClientReadTimeout());
+        	wpsHTTPClient.setUser(configuration.getWpsHTTPClientUser());
+        	
         	glidersTracksIngestAction.setWpsHTTPClient(wpsHTTPClient);
 
             return glidersTracksIngestAction;
@@ -87,6 +95,15 @@ public class TracksIngestGeneratorService extends BaseService implements ActionS
             String wpsProcessIdentifier = configuration.getWpsProcessIdentifier();
             String targetWorkspace = configuration.getTargetWorkspace();
             String targetDataStore = configuration.getTargetDataStore();
+            String aoiKmzFormatOptions = configuration.getAoiKmzFormatOptions();
+            String aoiKmzStyles = configuration.getAoiKmzLayers();
+            String aoiKmzLayers = configuration.getAoiKmzStyles();
+            String gsBaseUrl = configuration.getGsBaseUrl();
+            
+            String wpsHTTPClientUser = configuration.getWpsHTTPClientUser();
+            String wpsHTTPClientPassword = configuration.getWpsHTTPClientPassword();
+            Integer wpsHTTPClientConnectionTimeout = Integer.valueOf(configuration.getWpsHTTPClientConnectionTimeout());
+            Integer wpsHTTPClientReadTimeout = Integer.valueOf(configuration.getWpsHTTPClientReadTimeout());
 
             if (wpsServiceCapabilitiesURL != null)
             {
@@ -134,6 +151,134 @@ public class TracksIngestGeneratorService extends BaseService implements ActionS
 
                 return false;
             }
+            
+            if (aoiKmzFormatOptions != null)
+            {
+                LOGGER.info("WPS aoiKmzFormatOptions " + aoiKmzFormatOptions);
+
+            }
+            else
+            {
+                if (LOGGER.isWarnEnabled())
+                {
+                    LOGGER.warn("TracksIngestGeneratorService::canCreateAction(): " +
+                        "unable to create action, it's not possible to get the aoiKmzFormatOptions.");
+                }
+
+                return false;
+            }
+            
+            if (aoiKmzStyles != null)
+            {
+                LOGGER.info("WPS aoiKmzStyles " + aoiKmzStyles);
+
+            }
+            else
+            {
+                if (LOGGER.isWarnEnabled())
+                {
+                    LOGGER.warn("TracksIngestGeneratorService::canCreateAction(): " +
+                        "unable to create action, it's not possible to get the aoiKmzStyles.");
+                }
+
+                return false;
+            }
+            
+            if (aoiKmzLayers != null)
+            {
+                LOGGER.info("WPS aoiKmzLayers " + aoiKmzLayers);
+
+            }
+            else
+            {
+                if (LOGGER.isWarnEnabled())
+                {
+                    LOGGER.warn("TracksIngestGeneratorService::canCreateAction(): " +
+                        "unable to create action, it's not possible to get the aoiKmzLayers.");
+                }
+
+                return false;
+            }
+            
+            if (gsBaseUrl != null)
+            {
+                LOGGER.info("WPS gsBaseUrl " + gsBaseUrl);
+
+            }
+            else
+            {
+                if (LOGGER.isWarnEnabled())
+                {
+                    LOGGER.warn("TracksIngestGeneratorService::canCreateAction(): " +
+                        "unable to create action, it's not possible to get the gsBaseUrl.");
+                }
+
+                return false;
+            }
+            
+            if (wpsHTTPClientUser != null)
+            {
+                LOGGER.info("WPS wpsHTTPClientUser " + wpsHTTPClientUser);
+
+            }
+            else
+            {
+                if (LOGGER.isWarnEnabled())
+                {
+                    LOGGER.warn("TracksIngestGeneratorService::canCreateAction(): " +
+                        "unable to create action, it's not possible to get the wpsHTTPClientUser.");
+                }
+
+                return false;
+            }
+            
+            if (wpsHTTPClientPassword != null)
+            {
+                LOGGER.info("WPS wpsHTTPClientPassword " + wpsHTTPClientPassword);
+
+            }
+            else
+            {
+                if (LOGGER.isWarnEnabled())
+                {
+                    LOGGER.warn("TracksIngestGeneratorService::canCreateAction(): " +
+                        "unable to create action, it's not possible to get the wpsHTTPClientPassword.");
+                }
+
+                return false;
+            }
+            
+            if (wpsHTTPClientConnectionTimeout != null)
+            {
+                LOGGER.info("WPS wpsHTTPClientConnectionTimeout " + wpsHTTPClientConnectionTimeout);
+
+            }
+            else
+            {
+                if (LOGGER.isWarnEnabled())
+                {
+                    LOGGER.warn("TracksIngestGeneratorService::canCreateAction(): " +
+                        "unable to create action, it's not possible to get the wpsHTTPClientConnectionTimeout.");
+                }
+
+                return false;
+            }
+            
+            if (wpsHTTPClientReadTimeout != null)
+            {
+                LOGGER.info("WPS wpsHTTPClientReadTimeout " + wpsHTTPClientReadTimeout);
+
+            }
+            else
+            {
+                if (LOGGER.isWarnEnabled())
+                {
+                    LOGGER.warn("TracksIngestGeneratorService::canCreateAction(): " +
+                        "unable to create action, it's not possible to get the wpsHTTPClientReadTimeout.");
+                }
+
+                return false;
+            }
 
         }
         catch (Throwable e)
@@ -148,18 +293,4 @@ public class TracksIngestGeneratorService extends BaseService implements ActionS
 
         return true;
     }
-
-	/**
-	 * @param wpsHTTPClient the wpsHTTPClient to set
-	 */
-	public void setWpsHTTPClient(HTTPClient wpsHTTPClient) {
-		this.wpsHTTPClient = wpsHTTPClient;
-	}
-
-	/**
-	 * @return the wpsHTTPClient
-	 */
-	public HTTPClient getWpsHTTPClient() {
-		return wpsHTTPClient;
-	}
 }

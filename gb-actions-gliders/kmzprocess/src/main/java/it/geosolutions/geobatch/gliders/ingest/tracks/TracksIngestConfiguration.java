@@ -48,6 +48,16 @@ public class TracksIngestConfiguration extends ActionConfiguration implements Co
     private String targetWorkspace = null;
     private String targetDataStore = null;
     
+    private String aoiKmzFormatOptions = null;
+    private String aoiKmzStyles = null;
+    private String aoiKmzLayers = null;
+    private String gsBaseUrl = null;
+    
+    private String wpsHTTPClientUser = null;
+    private String wpsHTTPClientPassword = null;
+    private int wpsHTTPClientConnectionTimeout;
+    private int wpsHTTPClientReadTimeout;
+    
 	public TracksIngestConfiguration(String id, String name, String description)
     {
         super(id, name, description);
@@ -113,6 +123,118 @@ public class TracksIngestConfiguration extends ActionConfiguration implements Co
 		return targetDataStore;
 	}
 
+	/**
+	 * @return the aoiKmzFormatOptions
+	 */
+	public String getAoiKmzFormatOptions() {
+		return aoiKmzFormatOptions;
+	}
+
+	/**
+	 * @param aoiKmzFormatOptions the aoiKmzFormatOptions to set
+	 */
+	public void setAoiKmzFormatOptions(String aoiKmzFormatOptions) {
+		this.aoiKmzFormatOptions = aoiKmzFormatOptions;
+	}
+
+	/**
+	 * @return the aoiKmzStyles
+	 */
+	public String getAoiKmzStyles() {
+		return aoiKmzStyles;
+	}
+
+	/**
+	 * @param aoiKmzStyles the aoiKmzStyles to set
+	 */
+	public void setAoiKmzStyles(String aoiKmzStyles) {
+		this.aoiKmzStyles = aoiKmzStyles;
+	}
+
+	/**
+	 * @return the aoiKmzLayers
+	 */
+	public String getAoiKmzLayers() {
+		return aoiKmzLayers;
+	}
+
+	/**
+	 * @param aoiKmzLayers the aoiKmzLayers to set
+	 */
+	public void setAoiKmzLayers(String aoiKmzLayers) {
+		this.aoiKmzLayers = aoiKmzLayers;
+	}
+	
+	/**
+	 * @return the gsBaseUrl
+	 */
+	public String getGsBaseUrl() {
+		return gsBaseUrl;
+	}
+
+	/**
+	 * @param gsBaseUrl the gsBaseUrl to set
+	 */
+	public void setGsBaseUrl(String gsBaseUrl) {
+		this.gsBaseUrl = gsBaseUrl;
+	}
+	
+	/**
+	 * @return the wpsHTTPClientUser
+	 */
+	public String getWpsHTTPClientUser() {
+		return wpsHTTPClientUser;
+	}
+
+	/**
+	 * @param wpsHTTPClientUser the wpsHTTPClientUser to set
+	 */
+	public void setWpsHTTPClientUser(String wpsHTTPClientUser) {
+		this.wpsHTTPClientUser = wpsHTTPClientUser;
+	}
+
+	/**
+	 * @return the wpsHTTPClientPassword
+	 */
+	public String getWpsHTTPClientPassword() {
+		return wpsHTTPClientPassword;
+	}
+
+	/**
+	 * @param wpsHTTPClientPassword the wpsHTTPClientPassword to set
+	 */
+	public void setWpsHTTPClientPassword(String wpsHTTPClientPassword) {
+		this.wpsHTTPClientPassword = wpsHTTPClientPassword;
+	}
+
+	/**
+	 * @return the wpsHTTPClientConnectionTimeout
+	 */
+	public int getWpsHTTPClientConnectionTimeout() {
+		return wpsHTTPClientConnectionTimeout;
+	}
+
+	/**
+	 * @param wpsHTTPClientConnectionTimeout the wpsHTTPClientConnectionTimeout to set
+	 */
+	public void setWpsHTTPClientConnectionTimeout(int wpsHTTPClientConnectionTimeout) {
+		this.wpsHTTPClientConnectionTimeout = wpsHTTPClientConnectionTimeout;
+	}
+
+	/**
+	 * @return the wpsHTTPClientReadTimeout
+	 */
+	public int getWpsHTTPClientReadTimeout() {
+		return wpsHTTPClientReadTimeout;
+	}
+
+	/**
+	 * @param wpsHTTPClientReadTimeout the wpsHTTPClientReadTimeout to set
+	 */
+	public void setWpsHTTPClientReadTimeout(int wpsHTTPClientReadTimeout) {
+		this.wpsHTTPClientReadTimeout = wpsHTTPClientReadTimeout;
+	}
+
 	@Override
     public TracksIngestConfiguration clone()
     {
@@ -123,6 +245,16 @@ public class TracksIngestConfiguration extends ActionConfiguration implements Co
         ret.setWpsServiceCapabilitiesURL(wpsServiceCapabilitiesURL);
         ret.setTargetDataStore(targetDataStore);
         ret.setTargetWorkspace(targetWorkspace);
+        
+        ret.setAoiKmzFormatOptions(aoiKmzFormatOptions);
+        ret.setAoiKmzStyles(aoiKmzStyles);
+        ret.setAoiKmzLayers(aoiKmzLayers);
+        ret.setGsBaseUrl(gsBaseUrl);
+        
+        ret.setWpsHTTPClientConnectionTimeout(wpsHTTPClientConnectionTimeout);
+        ret.setWpsHTTPClientPassword(wpsHTTPClientPassword);
+        ret.setWpsHTTPClientReadTimeout(wpsHTTPClientReadTimeout);
+        ret.setWpsHTTPClientUser(wpsHTTPClientUser);
         
         ret.setServiceID(this.getServiceID());
         ret.setListenerConfigurations(ret.getListenerConfigurations());

@@ -3,13 +3,6 @@
 
 <beans default-init-method="init" default-destroy-method="dispose">
 
-	<bean id="simpleWPSHTTPClient" class="org.geotools.data.ows.SimpleHttpClient">
-		<property name="user" value="admin" /> <!-- HTTP BASIC Authentication user name -->
-		<property name="password" value="1nurc2" /> <!-- HTTP BASIC Authentication password -->
-		<property name="connectTimeout" value="300" /> <!-- tcp/ip connect timeout in seconds -->
-		<property name="readTimeout" value="300" /> <!-- socket read timeout in seconds -->
-	</bean>
-			
 	<!-- Environment Initialization -->
 	<bean id="TracksIngestGeneratorService"
 		class="it.geosolutions.geobatch.gliders.ingest.tracks.TracksIngestGeneratorService">
@@ -22,9 +15,6 @@
 		<constructor-arg type="String">
 			<value>TracksIngestGeneratorService</value>
 		</constructor-arg>
-
-		<property name="wpsHTTPClient" ref="simpleWPSHTTPClient" />
-
 	</bean>
 
 	<bean id="TracksIngestAliasRegistrar"
@@ -32,7 +22,25 @@
 		lazy-init="false">
 		<constructor-arg ref="aliasRegistry" />
 	</bean>
+	
+	<bean id="SendMailGeneratorService"
+		class="it.geosolutions.geobatch.gliders.ingest.tracks.mail.SendMailGeneratorService">
+		<constructor-arg type="String">
+			<value>SendMailGeneratorService</value>
+		</constructor-arg>
+		<constructor-arg type="String">
+			<value>SendMailGeneratorService</value>
+		</constructor-arg>
+		<constructor-arg type="String">
+			<value>SendMailGeneratorService</value>
+		</constructor-arg>
+	</bean>
 
+	<bean id="SendMailAliasRegistrar"
+		class="it.geosolutions.geobatch.gliders.ingest.tracks.mail.SendMailAliasRegistrar"
+		lazy-init="false">
+		<constructor-arg ref="aliasRegistry" />
+	</bean>
 
 	<bean id="PredictionsIngestGeneratorService"
 		class="it.geosolutions.geobatch.gliders.ingest.predictions.PredictionsIngestGeneratorService">
@@ -45,9 +53,6 @@
 		<constructor-arg type="String">
 			<value>PredictionsIngestGeneratorService</value>
 		</constructor-arg>
-
-		<property name="wpsHTTPClient" ref="simpleWPSHTTPClient" />
-
 	</bean>
 
 	<bean id="PredictionsIngestAliasRegistrar"

@@ -50,6 +50,11 @@ public class PredictionsIngestConfiguration extends ActionConfiguration implemen
     private String targetWorkspace = null;
     private String targetDataStore = null;
     
+    private String wpsHTTPClientUser = null;
+    private String wpsHTTPClientPassword = null;
+    private int wpsHTTPClientConnectionTimeout;
+    private int wpsHTTPClientReadTimeout;
+    
 	public PredictionsIngestConfiguration(String id, String name, String description)
     {
         super(id, name, description);
@@ -142,6 +147,62 @@ public class PredictionsIngestConfiguration extends ActionConfiguration implemen
 	public String getTargetDataStore() {
 		return targetDataStore;
 	}
+	
+	/**
+	 * @return the wpsHTTPClientUser
+	 */
+	public String getWpsHTTPClientUser() {
+		return wpsHTTPClientUser;
+	}
+
+	/**
+	 * @param wpsHTTPClientUser the wpsHTTPClientUser to set
+	 */
+	public void setWpsHTTPClientUser(String wpsHTTPClientUser) {
+		this.wpsHTTPClientUser = wpsHTTPClientUser;
+	}
+
+	/**
+	 * @return the wpsHTTPClientPassword
+	 */
+	public String getWpsHTTPClientPassword() {
+		return wpsHTTPClientPassword;
+	}
+
+	/**
+	 * @param wpsHTTPClientPassword the wpsHTTPClientPassword to set
+	 */
+	public void setWpsHTTPClientPassword(String wpsHTTPClientPassword) {
+		this.wpsHTTPClientPassword = wpsHTTPClientPassword;
+	}
+
+	/**
+	 * @return the wpsHTTPClientConnectionTimeout
+	 */
+	public int getWpsHTTPClientConnectionTimeout() {
+		return wpsHTTPClientConnectionTimeout;
+	}
+
+	/**
+	 * @param wpsHTTPClientConnectionTimeout the wpsHTTPClientConnectionTimeout to set
+	 */
+	public void setWpsHTTPClientConnectionTimeout(int wpsHTTPClientConnectionTimeout) {
+		this.wpsHTTPClientConnectionTimeout = wpsHTTPClientConnectionTimeout;
+	}
+
+	/**
+	 * @return the wpsHTTPClientReadTimeout
+	 */
+	public int getWpsHTTPClientReadTimeout() {
+		return wpsHTTPClientReadTimeout;
+	}
+
+	/**
+	 * @param wpsHTTPClientReadTimeout the wpsHTTPClientReadTimeout to set
+	 */
+	public void setWpsHTTPClientReadTimeout(int wpsHTTPClientReadTimeout) {
+		this.wpsHTTPClientReadTimeout = wpsHTTPClientReadTimeout;
+	}
 
 	@Override
     public PredictionsIngestConfiguration clone()
@@ -155,6 +216,11 @@ public class PredictionsIngestConfiguration extends ActionConfiguration implemen
         ret.setTargetGliderRegex(targetGliderRegex);
         ret.setTargetDataStore(targetDataStore);
         ret.setTargetWorkspace(targetWorkspace);
+        
+        ret.setWpsHTTPClientConnectionTimeout(wpsHTTPClientConnectionTimeout);
+        ret.setWpsHTTPClientPassword(wpsHTTPClientPassword);
+        ret.setWpsHTTPClientReadTimeout(wpsHTTPClientReadTimeout);
+        ret.setWpsHTTPClientUser(wpsHTTPClientUser);
         
         ret.setServiceID(this.getServiceID());
         ret.setListenerConfigurations(ret.getListenerConfigurations());

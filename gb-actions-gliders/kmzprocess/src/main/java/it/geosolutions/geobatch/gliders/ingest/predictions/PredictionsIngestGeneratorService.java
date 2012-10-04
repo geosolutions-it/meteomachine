@@ -36,6 +36,7 @@ import it.geosolutions.geobatch.flow.event.action.ActionService;
 import java.util.EventObject;
 
 import org.geotools.data.ows.HTTPClient;
+import org.geotools.data.ows.SimpleHttpClient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -62,6 +63,13 @@ public class PredictionsIngestGeneratorService extends BaseService implements Ac
         try
         {
         	PredictionsIngestAction glidersTracksIngestAction = new PredictionsIngestAction(configuration);
+        	
+        	wpsHTTPClient = new SimpleHttpClient();
+        	wpsHTTPClient.setConnectTimeout(configuration.getWpsHTTPClientConnectionTimeout());
+        	wpsHTTPClient.setPassword(configuration.getWpsHTTPClientPassword());
+        	wpsHTTPClient.setReadTimeout(configuration.getWpsHTTPClientReadTimeout());
+        	wpsHTTPClient.setUser(configuration.getWpsHTTPClientUser());
+        	
         	glidersTracksIngestAction.setWpsHTTPClient(wpsHTTPClient);
 
             return glidersTracksIngestAction;
@@ -89,6 +97,11 @@ public class PredictionsIngestGeneratorService extends BaseService implements Ac
         	String targetGliderRegex = configuration.getTargetGliderRegex();
             String targetWorkspace = configuration.getTargetWorkspace();
             String targetDataStore = configuration.getTargetDataStore();
+            
+            String wpsHTTPClientUser = configuration.getWpsHTTPClientUser();
+            String wpsHTTPClientPassword = configuration.getWpsHTTPClientPassword();
+            Integer wpsHTTPClientConnectionTimeout = Integer.valueOf(configuration.getWpsHTTPClientConnectionTimeout());
+            Integer wpsHTTPClientReadTimeout = Integer.valueOf(configuration.getWpsHTTPClientReadTimeout());
 
             if (wpsServiceCapabilitiesURL != null)
             {
@@ -136,6 +149,70 @@ public class PredictionsIngestGeneratorService extends BaseService implements Ac
 
                 return false;
             }
+            
+            if (wpsHTTPClientUser != null)
+            {
+                LOGGER.info("WPS wpsHTTPClientUser " + wpsHTTPClientUser);
+
+            }
+            else
+            {
+                if (LOGGER.isWarnEnabled())
+                {
+                    LOGGER.warn("TracksIngestGeneratorService::canCreateAction(): " +
+                        "unable to create action, it's not possible to get the wpsHTTPClientUser.");
+                }
+
+                return false;
+            }
+            
+            if (wpsHTTPClientPassword != null)
+            {
+                LOGGER.info("WPS wpsHTTPClientPassword " + wpsHTTPClientPassword);
+
+            }
+            else
+            {
+                if (LOGGER.isWarnEnabled())
+                {
+                    LOGGER.warn("TracksIngestGeneratorService::canCreateAction(): " +
+                        "unable to create action, it's not possible to get the wpsHTTPClientPassword.");
+                }
+
+                return false;
+            }
+            
+            if (wpsHTTPClientConnectionTimeout != null)
+            {
+                LOGGER.info("WPS wpsHTTPClientConnectionTimeout " + wpsHTTPClientConnectionTimeout);
+
+            }
+            else
+            {
+                if (LOGGER.isWarnEnabled())
+                {
+                    LOGGER.warn("TracksIngestGeneratorService::canCreateAction(): " +
+                        "unable to create action, it's not possible to get the wpsHTTPClientConnectionTimeout.");
+                }
+
+                return false;
+            }
+            
+            if (wpsHTTPClientReadTimeout != null)
+            {
+                LOGGER.info("WPS wpsHTTPClientReadTimeout " + wpsHTTPClientReadTimeout);
+
+            }
+            else
+            {
+                if (LOGGER.isWarnEnabled())
+                {
+                    LOGGER.warn("TracksIngestGeneratorService::canCreateAction(): " +
+                        "unable to create action, it's not possible to get the wpsHTTPClientReadTimeout.");
+                }
+
+                return false;
+            }
 
         }
         catch (Throwable e)
@@ -151,17 +228,4 @@ public class PredictionsIngestGeneratorService extends BaseService implements Ac
         return true;
     }
 
-	/**
-	 * @param wpsHTTPClient the wpsHTTPClient to set
-	 */
-	public void setWpsHTTPClient(HTTPClient wpsHTTPClient) {
-		this.wpsHTTPClient = wpsHTTPClient;
-	}
-
-	/**
-	 * @return the wpsHTTPClient
-	 */
-	public HTTPClient getWpsHTTPClient() {
-		return wpsHTTPClient;
-	}
 }

@@ -5,6 +5,8 @@
 package org.geoserver.wps.gs;
 
 import java.io.IOException;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
@@ -12,6 +14,7 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Level;
 
 import org.geoserver.catalog.CatalogBuilder;
 import org.geoserver.catalog.DataStoreInfo;
@@ -23,6 +26,8 @@ import org.geotools.data.DataStore;
 import org.geotools.data.DataUtilities;
 import org.geotools.data.DefaultTransaction;
 import org.geotools.data.Transaction;
+import org.geotools.data.simple.SimpleFeatureCollection;
+import org.geotools.data.simple.SimpleFeatureIterator;
 import org.geotools.data.simple.SimpleFeatureStore;
 import org.geotools.feature.simple.SimpleFeatureBuilder;
 import org.geotools.feature.simple.SimpleFeatureTypeBuilder;
@@ -36,6 +41,7 @@ import org.opengis.feature.simple.SimpleFeatureType;
 import org.opengis.filter.Filter;
 import org.opengis.util.ProgressListener;
 
+import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.MultiLineString;
 import com.vividsolutions.jts.geom.Point;
 
@@ -60,6 +66,7 @@ public class KMZGlidersProcess extends KMZProcess implements GSProcess {
 	public static final String HEADING 				= "Heading";
 	public static final String CRUISE_NAME 			= "cruise_name";
 	public static final String GLIDER_NAME 			= "glider_name";
+	public static final String OUT_AOI 			    = "out_aoi";
 
 	public static final String TYPE_POINT 			= "Points";
 	public static final String TYPE_ABORT 			= "Aborts";
@@ -76,10 +83,16 @@ public class KMZGlidersProcess extends KMZProcess implements GSProcess {
 	final static Map<String, Class<?>> typeGeometries = new HashMap<String, Class<?>>();
 
 	final static List<String> gliderVariables;
+	
+	private static final String AOI_TABLE 			= "aoi";	
+	private Map<String, Geometry> gliderAOi = new HashMap<String, Geometry>();
+	
+	private Date startTime;
+	private Date endTime;
 
 	static
 	{
-		typeSchema.put(typeNames[0], Arrays.asList(KMZGlidersProcess.GEOMETRY, KMZGlidersProcess.CRUISE_NAME, KMZGlidersProcess.GLIDER_NAME, KMZGlidersProcess.DESCRIPTION, KMZGlidersProcess.TYPE, KMZGlidersProcess.TIME_BEGIN, KMZGlidersProcess.TIME_END));
+		typeSchema.put(typeNames[0], Arrays.asList(KMZGlidersProcess.GEOMETRY, KMZGlidersProcess.CRUISE_NAME, KMZGlidersProcess.GLIDER_NAME, KMZGlidersProcess.DESCRIPTION, KMZGlidersProcess.TYPE, KMZGlidersProcess.TIME_BEGIN, KMZGlidersProcess.TIME_END, KMZGlidersProcess.OUT_AOI));
 		typeSchema.put(typeNames[1], Arrays.asList(KMZGlidersProcess.GEOMETRY, KMZGlidersProcess.CRUISE_NAME, KMZGlidersProcess.GLIDER_NAME, KMZGlidersProcess.DESCRIPTION, KMZGlidersProcess.TYPE));
 		typeSchema.put(typeNames[2], Arrays.asList(KMZGlidersProcess.GEOMETRY, KMZGlidersProcess.CRUISE_NAME, KMZGlidersProcess.GLIDER_NAME, KMZGlidersProcess.DESCRIPTION, KMZGlidersProcess.NAME));
 
@@ -132,7 +145,7 @@ public class KMZGlidersProcess extends KMZProcess implements GSProcess {
 		gliderVariables.add("status_code");
 		gliderVariables.add("valid");
 		gliderVariables.add("endTrack");
-
+		
 		//WaterCurrent
 		gliderVariables.add("WaterSpeed_m_s");
 		gliderVariables.add("WaterSpeed_knots");
@@ -148,6 +161,10 @@ public class KMZGlidersProcess extends KMZProcess implements GSProcess {
 			@DescribeParameter(name = "input Gliders KMZ file", description = "The feature collection to be updated", min = 1) Kml file,
 			@DescribeParameter(name = "workspace", description = "The workSpace (must exist in the catalog)", min = 1) String workspace,
 			@DescribeParameter(name = "store", description = "The dataStore (must exist in the catalog)", min = 1) String store,
+			@DescribeParameter(name = "aoiKmzFormatOptions", description = "KMZ format options", min = 1) String aoiKmzFormatOptions,
+			@DescribeParameter(name = "aoiKmzLayers", description = "KMZ layers list", min = 1) String aoiKmzLayers,
+			@DescribeParameter(name = "aoiKmzStyles", description = "KMZ styles list", min = 1) String aoiKmzStyles,
+			@DescribeParameter(name = "gsBaseUrl", description = "GS base URL for KMZ", min = 1) String gsBaseUrl,
 			ProgressListener progressListener) throws ProcessException {
 
 		// first off, decide what is the target store
@@ -195,6 +212,51 @@ public class KMZGlidersProcess extends KMZProcess implements GSProcess {
 			}
 		}
 
+		
+		// ////////////////////////////////////////////////////////////////
+		// Retrieving the AOI features for the current glider/cruise.
+		// ////////////////////////////////////////////////////////////////
+		try
+		{
+			// grab the data store
+			DataStore ds = (DataStore) storeInfo.getDataStore(null);
+
+			// start a transaction and fill the target with the input features
+			Transaction t = new DefaultTransaction();
+			SimpleFeatureStore fstore = (SimpleFeatureStore) ds.getFeatureSource(AOI_TABLE);
+			fstore.setTransaction(t);
+			
+			try
+			{
+		        Filter filterAOI = ff.equals(ff.property("cruise_name"), ff.literal(cruiseName));			        
+		        SimpleFeatureCollection collectionAOI = fstore.getFeatures(filterAOI);
+		        
+				// set outAOI attribute
+				SimpleFeatureIterator features = collectionAOI.features();
+				while(features.hasNext()){
+					SimpleFeature feature = features.next();
+					String gname = (String)feature.getAttribute("glider_name");
+					Geometry g = (Geometry)feature.getDefaultGeometry();
+					
+					gliderAOi.put(gname, g);
+				}
+			}//try
+			catch (IOException e) {
+				throw new IOException(e);
+			}//catch
+			finally
+			{
+				t.close();
+			}//finally
+		}//try 
+		catch (IOException e) {
+			throw new ProcessException("", e);
+		}//catch
+		
+		// ///////////////////////////////////
+		// Ingestion
+		// ///////////////////////////////////
+		
 		// check FeatureTypes
 		for (String typeName : typeNames)
 		{
@@ -230,6 +292,10 @@ public class KMZGlidersProcess extends KMZProcess implements GSProcess {
 					{
 						hasTimeDimension=true;
 						tb.add(attType, Date.class);
+					}//description::if
+					else if(attType.equals(KMZGlidersProcess.OUT_AOI))
+					{
+						tb.add(attType, Boolean.class);
 					}//description::if
 					else
 					{
@@ -386,7 +452,21 @@ public class KMZGlidersProcess extends KMZProcess implements GSProcess {
 														if(typeGeometries.get(typeName) == Point.class && pm.getGeometry() instanceof de.micromata.opengis.kml.v_2_2_0.Point)
 														{
 															de.micromata.opengis.kml.v_2_2_0.Point thePoint = (de.micromata.opengis.kml.v_2_2_0.Point)pm.getGeometry();
-															fb.set(KMZGlidersProcess.GEOMETRY, geomBuilder.point(thePoint.getCoordinates().get(0).getLongitude(), thePoint.getCoordinates().get(0).getLatitude()));
+															Point p = geomBuilder.point(thePoint.getCoordinates().get(0).getLongitude(), thePoint.getCoordinates().get(0).getLatitude());
+															fb.set(KMZGlidersProcess.GEOMETRY, p);
+															
+															if(typeName.equalsIgnoreCase(typeNames[0])){
+																if(gliderAOi.containsKey(glider.getName())){
+														    		Geometry g = gliderAOi.get(glider.getName());
+														    		if(!g.contains(p)){
+														    			fb.set(KMZGlidersProcess.OUT_AOI, true);
+														    		}else{
+														    			fb.set(KMZGlidersProcess.OUT_AOI, false);													    			
+														    		}
+																}else{
+																	fb.set(KMZGlidersProcess.OUT_AOI, false);	
+																}
+															} 													
 														}//Point::if
 
 														if(typeGeometries.get(typeName) == MultiLineString.class && pm.getGeometry() instanceof de.micromata.opengis.kml.v_2_2_0.LineString)
@@ -405,7 +485,7 @@ public class KMZGlidersProcess extends KMZProcess implements GSProcess {
 															}//if
 															else
 															{
-																for(Coordinate coord : theLine.getCoordinates())
+																for(@SuppressWarnings("unused") Coordinate coord : theLine.getCoordinates())
 																{
 																	coords[c++] = theLine.getCoordinates().get(0).getLongitude();
 																	coords[c++] = theLine.getCoordinates().get(0).getLatitude();
@@ -420,14 +500,65 @@ public class KMZGlidersProcess extends KMZProcess implements GSProcess {
 													{
 														if(pm.getTimePrimitive() instanceof TimeSpan)
 														{
-															fb.set(KMZGlidersProcess.TIME_BEGIN, ((TimeSpan)pm.getTimePrimitive()).getBegin());
+															String time = ((TimeSpan)pm.getTimePrimitive()).getBegin();
+															fb.set(KMZGlidersProcess.TIME_BEGIN, time);
+															
+															if(typeName.equalsIgnoreCase(typeNames[0]) && time != null){
+														        String pattern = "yyyy-MM-dd'T'HH:mm:ss'Z'";
+														        SimpleDateFormat sdf = new SimpleDateFormat(pattern);
+														        
+														        Date start;
+														        try
+														        {
+														            start = (Date)sdf.parse(time);
+																	if(this.startTime != null){
+																		if(start.before(this.startTime)){
+																			this.startTime = start;
+																		}
+																	}else{
+																		this.startTime = start;
+																	}
+														        } 
+														        catch (ParseException e)
+														        {
+														            if(LOGGER.isLoggable(Level.WARNING)){
+														            	LOGGER.info(e.getMessage());
+														            }
+														        }
+															}
+															
 														}//TimePrimitive::if
 													}//KMZGlidersProcess.TIME_BEGIN::if
 													if(attType.equals(KMZGlidersProcess.TIME_END))
 													{
 														if(pm.getTimePrimitive() instanceof TimeSpan)
 														{
-															fb.set(KMZGlidersProcess.TIME_END, ((TimeSpan)pm.getTimePrimitive()).getEnd());
+															String time = ((TimeSpan)pm.getTimePrimitive()).getEnd();
+															fb.set(KMZGlidersProcess.TIME_END, time);
+															
+															if(typeName.equalsIgnoreCase(typeNames[0]) && time != null){
+														        String pattern = "yyyy-MM-dd'T'HH:mm:ss'Z'";
+														        SimpleDateFormat sdf = new SimpleDateFormat(pattern);
+														        
+														        Date end;
+														        try
+														        {
+														        	end = (Date)sdf.parse(time);
+																	if(this.endTime != null){
+																		if(end.after(this.endTime)){
+																			this.endTime = end;
+																		}
+																	}else{
+																		this.endTime = end;
+																	}
+														        } 
+														        catch (ParseException e)
+														        {
+														            if(LOGGER.isLoggable(Level.WARNING)){
+														            	LOGGER.info(e.getMessage());
+														            }
+														        }
+															}
 														}//TimePrimitive::if
 													}//KMZGlidersProcess.TIME_END::if
 												}//schemaBuild::for
@@ -489,8 +620,81 @@ public class KMZGlidersProcess extends KMZProcess implements GSProcess {
 						"Failed to import data into the target store", e);
 			}//try:catch
 		}//typeNames::for
-
-		return cruiseName;
+		
+		String response = cruiseName;
+		
+		// ////////////////////////////////////////////////
+		// Produce the KML link if needed and if possible
+		// ////////////////////////////////////////////////
+		
+		if(this.startTime != null && this.endTime != null){
+			try {
+				// /////////////////////////////
+				// Gliders points OGC filter
+				// /////////////////////////////
+		        Filter filterCruise = ff.equals(ff.property("cruise_name"), ff.literal(cruiseName));
+		        Filter filterAoi = ff.equals(ff.property("out_aoi"), ff.literal(true));
+		        Filter filterType = ff.equals(ff.property("type"), ff.literal("Points"));
+	
+		        Filter filter = ff.and(Arrays.asList(filterCruise, filterAoi, filterType));
+		        
+		        org.geotools.xml.Configuration conf = new org.geotools.filter.v1_1.OGCConfiguration();
+		        org.geotools.xml.Encoder encoder = new org.geotools.xml.Encoder( conf );
+		        
+		        String pointFilterString = encoder.encodeAsString(filter, org.geotools.filter.v1_0.OGC.Filter);
+		        if(pointFilterString.startsWith("<?xml")){
+		        	pointFilterString = pointFilterString.substring(pointFilterString.indexOf("<ogc:Filter"));
+		        }
+		        
+				// /////////////////////////////
+				// AOI OGC filter
+				// /////////////////////////////
+		        filter = ff.and(Arrays.asList(filterCruise));
+		        
+		        org.geotools.xml.Configuration aoiconf = new org.geotools.filter.v1_1.OGCConfiguration();
+		        org.geotools.xml.Encoder aoiencoder = new org.geotools.xml.Encoder( aoiconf );
+		        
+		        String aoiFilterString = aoiencoder.encodeAsString(filter, org.geotools.filter.v1_0.OGC.Filter);
+		        if(aoiFilterString.startsWith("<?xml")){
+		        	aoiFilterString = aoiFilterString.substring(aoiFilterString.indexOf("<ogc:Filter"));
+		        }
+		        
+				// ////////////////////////////
+				// Build the KML URL
+				// ////////////////////////////
+				if(pointFilterString != null && aoiFilterString != null){
+					String pattern = "yyyy-MM-dd'T'HH:mm:ss'Z'";
+			        SimpleDateFormat sdf = new SimpleDateFormat(pattern);
+			        
+					String startDateString = sdf.format(this.startTime);
+					String endDateString = sdf.format(this.endTime);
+					
+					String kmlURL = gsBaseUrl + "wms?" +
+							"height=1024" +
+							"&width=1024" +
+							"&TIME=" + startDateString + "/" + endDateString +
+							"&layers=" + aoiKmzLayers +
+							"&request=GetMap" +
+							"&service=wms" +
+							"&BBOX=-180,-90,180,90" +
+							"&styles=" + aoiKmzStyles +
+							"&format_options=" + aoiKmzFormatOptions + 
+							"&srs=EPSG:4326" +
+							"&format=application/vnd.google-earth.kmz" +
+							"&transparent=false" +
+							"&version=1.1.1" +
+							"&filter=(" + pointFilterString + ")(" + aoiFilterString + ")";
+					
+					response = kmlURL;
+				}
+				
+			} catch (IOException e) {
+	            if(LOGGER.isLoggable(Level.WARNING)){
+	            	LOGGER.info(e.getMessage());
+	            }
+			}
+		}
+        
+		return response;
 	}
-
 }
