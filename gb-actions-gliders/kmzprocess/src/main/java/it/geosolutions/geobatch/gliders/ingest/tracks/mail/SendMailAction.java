@@ -146,9 +146,15 @@ public class SendMailAction extends BaseAction<EventObject>
                        // Set Subject: header field
                        message.setSubject(conf.getMailSubject());
            			
-           			   message.addHeader("X-NURC-DMZ-Trusted", "Yes");
-           			           			   
-           			   message.setText("Copy and paste the URL inside the browser command line:" +
+                       String mailHeaderName = conf.getMailHeaderName();
+                       String mailHeaderValule = conf.getMailHeaderValue();
+                       if(mailHeaderName != null && mailHeaderValule != null){
+                    	   message.addHeader(mailHeaderName, mailHeaderValule);
+                       }
+
+                       String mailMessageText = conf.getMailMessageText();
+                       
+           			   message.setText(mailMessageText +
            			   		"\n\n" + kmlURL);
 
                        // Send message

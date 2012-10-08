@@ -101,6 +101,7 @@ public class SendMailGeneratorService extends BaseService implements ActionServi
             String mailToAddress = configuration.getMailToAddress();
             String mailFromAddress = configuration.getMailFromAddress();
 
+            String mailMessageText = configuration.getMailMessageText();
 
             if (mailSubject != null)
             {
@@ -225,6 +226,20 @@ public class SendMailGeneratorService extends BaseService implements ActionServi
                 {
                     LOGGER.warn("TracksIngestGeneratorService::canCreateAction(): " +
                         "unable to create action, it's not possible to get the mailToAddress.");
+                }
+
+                return false;
+            }
+            if (mailMessageText != null)
+            {
+                LOGGER.info("mailMessageText value is " + mailMessageText);
+            }
+            else
+            {
+                if (LOGGER.isWarnEnabled())
+                {
+                    LOGGER.warn("TracksIngestGeneratorService::canCreateAction(): " +
+                        "unable to create action, it's not possible to get the mailMessageText.");
                 }
 
                 return false;

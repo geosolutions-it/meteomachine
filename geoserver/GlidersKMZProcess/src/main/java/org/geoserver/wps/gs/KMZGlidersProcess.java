@@ -633,10 +633,10 @@ public class KMZGlidersProcess extends KMZProcess implements GSProcess {
 				// Gliders points OGC filter
 				// /////////////////////////////
 		        Filter filterCruise = ff.equals(ff.property("cruise_name"), ff.literal(cruiseName));
-		        Filter filterAoi = ff.equals(ff.property("out_aoi"), ff.literal(true));
+//		        Filter filterAoi = ff.equals(ff.property("out_aoi"), ff.literal(true));
 		        Filter filterType = ff.equals(ff.property("type"), ff.literal("Points"));
 	
-		        Filter filter = ff.and(Arrays.asList(filterCruise, filterAoi, filterType));
+		        Filter filter = ff.and(Arrays.asList(filterCruise, /*filterAoi,*/ filterType));
 		        
 		        org.geotools.xml.Configuration conf = new org.geotools.filter.v1_1.OGCConfiguration();
 		        org.geotools.xml.Encoder encoder = new org.geotools.xml.Encoder( conf );

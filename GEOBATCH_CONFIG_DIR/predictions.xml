@@ -42,13 +42,17 @@
 			<listenerConfigurations/>
 			<failIgnored>false</failIgnored>
 			
-			<wpsServiceCapabilitiesURL>http://localhost:8080/geoserver/ows?service=wps&amp;version=1.0.0&amp;request=GetCapabilities</wpsServiceCapabilitiesURL>
+			<wpsServiceCapabilitiesURL>http://localhost:8181/geoserver/ows?service=wps&amp;version=1.0.0&amp;request=GetCapabilities</wpsServiceCapabilitiesURL>
 			<wpsProcessIdentifier>gs:KMZPredictions</wpsProcessIdentifier>
-			<targetCruise>Rep11b</targetCruise>
+			<targetCruise>NOMR12</targetCruise>
 			<targetGliderRegex><![CDATA[(?<=_)(.*)(?=_)]]></targetGliderRegex>
 			<targetWorkspace>it.geosolutions</targetWorkspace>
 			<targetDataStore>nurc_gliders</targetDataStore>
 			
+			<wpsHTTPClientUser>admin</wpsHTTPClientUser>
+			<wpsHTTPClientPassword>1nurc2</wpsHTTPClientPassword>
+			<wpsHTTPClientConnectionTimeout>300</wpsHTTPClientConnectionTimeout>
+			<wpsHTTPClientReadTimeout>300</wpsHTTPClientReadTimeout>
 		</PredictionsIngestConfiguration>
 		
 	</EventConsumerConfiguration>

@@ -77,6 +77,11 @@
 			<mailToAddress>ilcovo@gmail.com</mailToAddress>
 			<mailFromAddress>nurc.portal.test@gmail.com</mailFromAddress>
 			
+			<mailHeaderName>X-NURC-DMZ-Trusted</mailHeaderName> <!-- optional -->
+			<mailHeaderValue>true</mailHeaderValue>             <!-- optional -->
+			
+			<mailMessageText>Copy and paste the URL inside the browser:</mailMessageText>
+			
 			<!-- Possible NURC configuration
 			#mail.smtp.host=mail-smtp.nurc.nato.int
 			#mail.smtp.auth=false

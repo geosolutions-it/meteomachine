@@ -53,6 +53,10 @@ public class SendMailConfiguration extends ActionConfiguration implements Config
 	private String mailFromAddress = null;
 	private String mailAuthPassword = null;
 	
+	private String mailHeaderName = null;
+	private String mailHeaderValue = null;
+	private String mailMessageText = null;
+	
 	public SendMailConfiguration(String id, String name, String description)
     {
         super(id, name, description);
@@ -203,6 +207,47 @@ public class SendMailConfiguration extends ActionConfiguration implements Config
 		this.mailAuthPassword = mailAuthPassword;
 	}
 
+	/**
+	 * @return the mailHeaderName
+	 */
+	public String getMailHeaderName() {
+		return mailHeaderName;
+	}
+
+	/**
+	 * @param mailHeaderName the mailHeaderName to set
+	 */
+	public void setMailHeaderName(String mailHeaderName) {
+		this.mailHeaderName = mailHeaderName;
+	}
+
+	/**
+	 * @return the mailHeaderValue
+	 */
+	public String getMailHeaderValue() {
+		return mailHeaderValue;
+	}
+
+	/**
+	 * @param mailHeaderValue the mailHeaderValue to set
+	 */
+	public void setMailHeaderValue(String mailHeaderValue) {
+		this.mailHeaderValue = mailHeaderValue;
+	}
+
+	/**
+	 * @return the mailMessageText
+	 */
+	public String getMailMessageText() {
+		return mailMessageText;
+	}
+
+	/**
+	 * @param mailMessageText the mailMessageText to set
+	 */
+	public void setMailMessageText(String mailMessageText) {
+		this.mailMessageText = mailMessageText;
+	}
 
 	@Override
     public SendMailConfiguration clone()
@@ -223,6 +268,10 @@ public class SendMailConfiguration extends ActionConfiguration implements Config
         
         ret.setMailToAddress(mailToAddress);
         ret.setMailFromAddress(mailFromAddress);
+        
+        ret.setMailHeaderName(mailHeaderName);
+        ret.setMailHeaderValue(mailHeaderValue);
+        ret.setMailMessageText(mailMessageText);
         
         // TODO CLONE YOUR MEMBERS
         ret.setServiceID(this.getServiceID());
