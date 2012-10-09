@@ -247,6 +247,11 @@
                     <groupId>it.geosolutions.geobatch.gliders</groupId>
                     <artifactId>gb-action-gliders-kmzprocess</artifactId>
                 </dependency>
+				
+				<dependency>
+                    <groupId>it.geosolutions.geobatch.gliders</groupId>
+                    <artifactId>gb-action-gliders-logfile</artifactId>
+                </dependency>
             </dependencies>
             <build>
                 <plugins>
@@ -265,6 +270,16 @@
                                         <artifactItem>
                                             <groupId>it.geosolutions.geobatch.gliders</groupId>
                                             <artifactId>gb-action-gliders-kmzprocess</artifactId>
+                                            <classifier>flowdata</classifier>
+                                            <type>jar</type>
+                                            <overWrite>false</overWrite>
+                                            <outputDirectory>${project.build.directory}/${flow.dir}</outputDirectory>
+                                            <includes>data/**</includes>
+                                        </artifactItem>
+										
+										<artifactItem>
+                                            <groupId>it.geosolutions.geobatch.gliders</groupId>
+                                            <artifactId>gb-action-gliders-logfile</artifactId>
                                             <classifier>flowdata</classifier>
                                             <type>jar</type>
                                             <overWrite>false</overWrite>

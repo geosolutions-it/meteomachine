@@ -149,6 +149,7 @@
             </activation>
             <modules>
                 <module>kmzprocess</module>
+				<module>logfile</module>
             </modules>
         </profile>
         

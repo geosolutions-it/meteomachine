@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<FlowConfiguration>
+	
+	<id>logfile</id>
+	<description>Gliders Logs configuration flow</description>
+	<name>Gliders Logs flow</name>
+	
+	<maxStoredConsumers>10</maxStoredConsumers>
+	
+	<!-- to have a single istance, corePoolSize must be 2 -->
+	<corePoolSize>10</corePoolSize>
+	<maximumPoolSize>10</maximumPoolSize>
+	<workQueueSize>100</workQueueSize>
+	<keepAliveTime>150</keepAliveTime>
+	<autorun>true</autorun>
+	
+	<EventGeneratorConfiguration>
+		<wildCard>*.log</wildCard>
+		<watchDirectory>logfile/in</watchDirectory>
+		<osType>OS_UNDEFINED</osType>
+		<eventType>FILE_ADDED</eventType>
+		<interval>0/10 * * * * ?</interval><!-- CRON: every 10 sec -->
+		<!--<interval>20</interval> each 20 sec -->
+		<id>GlidersLogsFlow</id>
+		<serviceID>fsEventGeneratorService</serviceID>
+		<description>Gliders Logs event generator description</description>
+		<name>Logs</name>
+	</EventGeneratorConfiguration>
+	
+	<EventConsumerConfiguration>
+		<id>logfile</id>
+		<description>logfile</description>
+		<name>logfile</name>
+		
+		<performBackup>false</performBackup>
+		
+		<LogsConfiguration>
+			<serviceID>LogsGeneratorService</serviceID>
+			<id>LogsGeneratorService</id>
+			<description>Logs action</description>
+			<name>LogsConfiguration</name>			
+		</LogsConfiguration>
+		
+		<MoveConfiguration>
+			<serviceID>MoveGeneratorService</serviceID>
+			<id>MoveGeneratorService</id>
+			<description>Move file</description>			
+			<name>MoveConfiguration</name>
+			
+			<destination>C:/gbTemp</destination>
+			<timeout>1000</timeout>
+		</MoveConfiguration>
+		
+	</EventConsumerConfiguration>
+
+</FlowConfiguration>
