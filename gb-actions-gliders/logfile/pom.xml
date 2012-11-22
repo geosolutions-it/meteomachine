@@ -104,7 +104,13 @@
 			<groupId>org.slf4j</groupId>
 			<artifactId>slf4j-log4j12</artifactId>
 		</dependency>
-
+		
+		<!-- GeoStore Client -->
+		<dependency>
+	        <groupId>it.geosolutions.geostore</groupId>
+	        <artifactId>geostore-rest-client</artifactId>
+	    </dependency>
+		
 
 		<!-- BEGIN: Geographic Domain 
 		<dependency>

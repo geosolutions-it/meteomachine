@@ -28,7 +28,7 @@
  * <http://www.geo-solutions.it/>.
  *
  */
-package it.geosolutions.geobatch.gliders.ingest.logfile;
+package it.geosolutions.geobatch.gliders.ingest.missionlogfile;
 
 import it.geosolutions.filesystemmonitor.monitor.FileSystemEvent;
 import it.geosolutions.filesystemmonitor.monitor.FileSystemEventType;
@@ -58,22 +58,22 @@ import org.slf4j.LoggerFactory;
 
 
 /**
- * Class LogsAction.
+ * Class MissionLogsAction.
  * 
  * @author Tobia Di Pisa - tobia.dipisa@geo-solutions.it
  *
  */
-public class LogsAction extends BaseAction<EventObject>
+public class MissionLogsAction extends BaseAction<EventObject>
 {
-	private static final Logger LOGGER = LoggerFactory.getLogger(LogsAction.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(MissionLogsAction.class);
 	
 
     /**
      * configuration
      */
-    private final LogsConfiguration conf;
+    private final MissionLogsConfiguration conf;
 
-    public LogsAction(LogsConfiguration configuration)
+    public MissionLogsAction(MissionLogsConfiguration configuration)
     {
         super(configuration);
         conf = configuration;
@@ -100,27 +100,37 @@ public class LogsAction extends BaseAction<EventObject>
                 {
                     if (LOGGER.isTraceEnabled())
                     {
-                        LOGGER.trace("Gliders Logs action.execute(): working on incoming event: " +
+                        LOGGER.trace("Gliders Mission Logs action.execute(): working on incoming event: " +
                             ev.getSource());
                     }
 
                     FileSystemEvent fileEvent = (FileSystemEvent) ev;
 
-                    File logFile = fileEvent.getSource();   
+                    File missionLogFile = fileEvent.getSource();   
                     
                     // ///////////////////////////////
                     // Parse the log file
                     // ///////////////////////////////
 
                     Date curr_time = null;
+                    Date timestamp = null;
+                    
+                    Double log_file_opened = null;
+                    Double log_file_closed = null;
+                    Double curr_time_mt = null;
+                    
             		String vehicle_name = null;
             		String mission_name = null;
             		String mission_number = null;
             		String cruise_name = conf.getCruiseName();
-
+            		
+            		String pattern = conf.getTimePattern();
+			        SimpleDateFormat sdf = new SimpleDateFormat(pattern, Locale.US);
+			        sdf.setTimeZone(TimeZone.getTimeZone("GMT"));
+			        
             		Scanner scanner =  null;
             		try{
-            			scanner = new Scanner(logFile);
+            			scanner = new Scanner(missionLogFile);
             			while (scanner.hasNextLine()){
             				String line = scanner.nextLine();
             				
@@ -128,31 +138,17 @@ public class LogsAction extends BaseAction<EventObject>
             				// Parse Mission Name
             				// ///////////////////////////
                         	if(line.contains("Mission Name:") && mission_name == null){
-//                        		String mname = line.replace("Mission Name:", "");
-//                        		
-//                        		mname = mname.trim();
-//                        		
-//                        		mission_name = mname;
                         		String mname = line.split(":")[1];
                         		
                         		mname = mname.trim();
                         		
                         		mission_name = mname;
-                        	}else
+                        	}
                         	
             				// ///////////////////////////
             				// Parse Mission Number
             				// ///////////////////////////
                         	if(line.contains("Mission Number:") && mission_number == null){
-//                        		String name = line.replace("Mission Number:", "");
-//                        		
-//                        		if(name.startsWith(" "))
-//                        			name = name.replaceFirst(" ", "");
-//                        		
-//                        		if(name.endsWith(" "))
-//                        			name = name.substring(0, name.length() - 1);
-//                        		
-//                        		mission_number = name;
                         		String number = line.split(":")[1];
                         		
                         		if(number.startsWith(" "))
@@ -162,50 +158,82 @@ public class LogsAction extends BaseAction<EventObject>
                         			number = number.substring(0, number.length() - 1);
                         		
                         		mission_number = number;
-                        	}else
+                        	}
                         	
             				// ///////////////////////////
             				// Parse Vehicle Name
             				// ///////////////////////////
                         	if(line.contains("Vehicle Name:") && vehicle_name == null){
-//                        		String name = line.replace("Vehicle Name:", "");
-//                        		
-//                        		if(name.startsWith(" "))
-//                        			name = name.replaceFirst(" ", "");
-//                        		
-//                        		if(name.endsWith(" "))
-//                        			name = name.substring(0, name.length() - 1);
-//                        		
-//                        		vehicle_name = name;
                         		String name = line.split(":")[1];
 
                         		name = name.trim();
                         		
                         		vehicle_name = name;
-                        	}else
+                        	}
                         	
             				// ///////////////////////////
-            				// Parse Curr Time
+            				// Parse LOG FILE OPENED
             				// ///////////////////////////
-                        	if(line.contains("Curr Time:") && curr_time == null){
+                        	if(line.contains("LOG FILE OPENED") && log_file_opened == null){
+                        		String lfo = line;
                         		
-//                        		String time = line.replace("Curr Time:", "");
-//                        		
-//                        		int startIntex = 0;
-//                        		int endIndex = time.indexOf("MT");
-//                        
-//                        		time = time.substring(startIntex, endIndex);
-//                        		
-//                        		if(time.startsWith(" "))
-//                        			time = time.replaceFirst(" ", "");
-//                        		
-//                        		if(time.endsWith(" "))
-//                        			time = time.substring(0, time.length() - 1);
-//                        		
-//                        		String pattern = conf.getTimePattern();
-//    					        SimpleDateFormat sdf = new SimpleDateFormat(pattern, Locale.US);
-//    					        
-//                        		curr_time = sdf.parse(time);
+                        		if(lfo.startsWith(" "))
+                        			lfo = lfo.replaceFirst(" ", "");
+                        		
+                        		lfo = lfo.split(" ")[0];
+                        		
+                        		try{
+                        			log_file_opened = Double.parseDouble(lfo);
+                        		}catch(NumberFormatException exc){
+                        			log_file_opened = null;
+                        			
+                    				if (LOGGER.isWarnEnabled())
+                    					LOGGER.warn("WARNING: Exception parsing the LOG FILE OPENED property ", exc);
+                        		}
+                        	}
+                        	
+            				// ///////////////////////////
+            				// Parse LOG FILE CLOSED
+            				// ///////////////////////////
+                        	if(line.contains("LOG FILE CLOSED") && log_file_closed == null){
+                        		String lfc = line;
+                        		
+                        		if(lfc.startsWith(" "))
+                        			lfc = lfc.replaceFirst(" ", "");
+                        		
+                        		lfc = lfc.split(" ")[0];
+                        		
+                        		try{
+                        			log_file_closed = Double.parseDouble(lfc);
+                        		}catch(NumberFormatException exc){
+                        			log_file_closed = null;
+                        			
+                    				if (LOGGER.isWarnEnabled())
+                    					LOGGER.warn("WARNING: Exception parsing the LOG FILE CLOSED property ", exc);
+                        		}
+                        	}
+                        	
+                        	if(line.contains("timestamp:") && timestamp == null){
+                        		
+                				// ///////////////////////////
+                				// Parse Timestamp
+                				// ///////////////////////////
+                        		
+                        		String time = line.split("timestamp:")[1];
+                        		
+                        		if(time.startsWith(" "))
+                        			time = time.replaceFirst(" ", "");
+                        		
+                        		if(time.endsWith(" "))
+                        			time = time.substring(0, time.length() - 1);
+                        		
+                        		timestamp = sdf.parse(time);
+                        		
+                        	}else if(line.contains("Curr Time:") && curr_time == null){
+                        		
+                				// ///////////////////////////
+                				// Parse Curr Time
+                				// ///////////////////////////
                         		
                         		String time = line.split("Curr Time:")[1];
                         		
@@ -220,16 +248,21 @@ public class LogsAction extends BaseAction<EventObject>
                         		if(ctime.endsWith(" "))
                         			ctime = ctime.substring(0, ctime.length() - 1);
                         		
-                        		String pattern = conf.getTimePattern();
-    					        SimpleDateFormat sdf = new SimpleDateFormat(pattern, Locale.US);
-    					        sdf.setTimeZone(TimeZone.getTimeZone("GMT"));
-    					        
                         		curr_time = sdf.parse(ctime);
-                        	}
-                        	
-                        	if(curr_time != null && vehicle_name != null && 
-                        			mission_number != null && mission_name != null){
-                        		break;
+                        		
+                        		// --- Parsing MT --- //
+                        		String mt = time_curr_props[1];
+                        		
+                        		mt = mt.trim();
+                        		
+                        		try{
+                        			curr_time_mt = Double.parseDouble(mt);
+                        		}catch(NumberFormatException exc){
+                        			curr_time_mt = null;
+                        			
+                    				if (LOGGER.isWarnEnabled())
+                    					LOGGER.warn("WARNING: Exception parsing the MT property ", exc);
+                        		}
                         	}
             			}   
             		}finally{
@@ -251,40 +284,83 @@ public class LogsAction extends BaseAction<EventObject>
                     // //////////////////////////////////
                     // Create a new GeoStore resources
                     // //////////////////////////////////
+                	
                     GeoStoreClient client = new GeoStoreClient();
                     client.setGeostoreRestUrl(conf.getGeostoreURL());
                     client.setUsername(conf.getGeostoreUs());
                     client.setPassword(conf.getGeostorePw());
                     
                     RESTResource  resource = new RESTResource();
-                    resource.setName(logFile.getName());
+                    resource.setName(missionLogFile.getName());
                     
                     // ///////////////////////////////////////
                     // Check if the LOGFILE category exists 
                     // ///////////////////////////////////////
-                    long count = client.getCategoryCount(conf.getLogfileCategoryName());
-                    RESTCategory category = new RESTCategory(conf.getLogfileCategoryName());
+                    
+                    long count = client.getCategoryCount(conf.getCategoryName());
+                    RESTCategory category = new RESTCategory(conf.getCategoryName());
                     if(count < 1){
                     	client.insert(category);
                     }
                     
                     resource.setCategory(category);
                     
-                    List<ShortAttribute> attributes = new ArrayList<ShortAttribute>();
-                    
-                    // ////////////////////////////////////
+                	List<ShortAttribute> attributes = new ArrayList<ShortAttribute>();
+                	
+                	// ////////////////////////////////////
                     // Time begin/end Attributes definition
                     // ////////////////////////////////////
-                    if(curr_time != null){
+                    
+                	DateFormat format = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSZ");
+                    if(timestamp != null){
+                    	
+                    	// --- time begin --- //
 	                    ShortAttribute startTime = new ShortAttribute();
 	                    startTime.setName("time_begin");
-	                    startTime.setType(DataType.DATE);
-	                    
-	                    DateFormat format = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSZ");
-	                    startTime.setValue(format.format(curr_time));
+	                    startTime.setType(DataType.DATE);	                    
+	                    startTime.setValue(format.format(timestamp));
 	                    
 	                    attributes.add(startTime);
 	                    
+	                    // --- time end --- //	                    
+	                    ShortAttribute endTime = new ShortAttribute();
+	                    endTime.setName("time_end");
+	                    endTime.setType(DataType.DATE);	
+	                    
+	                    if(log_file_closed != null){
+	                    	long timestamp_seconds = timestamp.getTime() / 1000;
+	                    	long seconds = new Double(timestamp_seconds + log_file_closed).longValue();
+	                    	endTime.setValue(format.format(new Date(seconds * 1000)));
+	                    }else{
+	                    	endTime.setValue(format.format(timestamp));
+	                    	
+	                    	if (LOGGER.isWarnEnabled())
+            					LOGGER.warn("WARNING: Exception setting time_end attribute: log_file_closed is null");
+	                    }
+	                    
+	                    attributes.add(endTime);
+                    	
+                    }else if(curr_time != null){
+                    	
+                    	// --- time begin --- //
+	                    ShortAttribute startTime = new ShortAttribute();
+	                    startTime.setName("time_begin");
+	                    startTime.setType(DataType.DATE);	       
+	                    
+	                    if(log_file_opened != null && curr_time_mt != null){
+	                    	long curr_time_seconds = curr_time.getTime() / 1000;
+	                    	long seconds = new Double(curr_time_seconds - (curr_time_mt - log_file_opened)).longValue();
+	                    	startTime.setValue(format.format(new Date(seconds * 1000)));
+	                    }else{
+	                    	startTime.setValue(format.format(curr_time));
+	                    	
+	                    	if (LOGGER.isWarnEnabled())
+            					LOGGER.warn("WARNING: Exception setting time_begin attribute: LOG FILE OPENED and/or MT are null");
+	                    }
+	                    
+	                    attributes.add(startTime);
+	                    
+	                    // --- time end --- //
 	                    ShortAttribute endTime = new ShortAttribute();
 	                    endTime.setName("time_end");
 	                    endTime.setType(DataType.DATE);
@@ -341,11 +417,12 @@ public class LogsAction extends BaseAction<EventObject>
                         attributes.add(cName);
                 	}
                 	
-                    if(attributes.size() > 0 && curr_time != null && vehicle_name != null && cruise_name != null){
+                    if(attributes.size() > 0 && (curr_time != null || timestamp != null) &&
+                    		vehicle_name != null && cruise_name != null){
                     	resource.setAttribute(attributes);
                     }else{
                     	if(LOGGER.isWarnEnabled()){
-                    		LOGGER.warn("WARNING the logfile: " + logFile.getName() + " has no required attributes defined !");
+                    		LOGGER.warn("WARNING the Mission Logfile: " + missionLogFile.getName() + " has no required attributes defined !");
                     	}
                     }
                     
@@ -355,14 +432,14 @@ public class LogsAction extends BaseAction<EventObject>
                 		LOGGER.info("Moving the file inside the defined location ...");
                 	}
                 	
-                    FileSystemEvent event = new FileSystemEvent(logFile, FileSystemEventType.FILE_ADDED);
+                    FileSystemEvent event = new FileSystemEvent(missionLogFile, FileSystemEventType.FILE_ADDED);
                     ret.add(event);
                 }
                 else
                 {
                     if (LOGGER.isErrorEnabled())
                     {
-                        LOGGER.error("Gliders Logs action.execute(): Encountered a NULL event: SKIPPING...");
+                        LOGGER.error("Gliders Mission Logs action.execute(): Encountered a NULL event: SKIPPING...");
                     }
 
                     continue;
@@ -371,7 +448,7 @@ public class LogsAction extends BaseAction<EventObject>
             catch (Exception ioe)
             {
                 if (LOGGER.isErrorEnabled()){
-                    LOGGER.error( "Gliders Logs action.execute(): Unable to produce the output: ", ioe.getLocalizedMessage(), ioe);
+                    LOGGER.error( "Gliders Mission Logs action.execute(): Unable to produce the output: ", ioe.getLocalizedMessage(), ioe);
                 }
                 throw new ActionException(this,ioe.getLocalizedMessage(),ioe );
             }

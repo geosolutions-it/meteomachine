@@ -28,25 +28,25 @@
  * <http://www.geo-solutions.it/>.
  *
  */
-package it.geosolutions.geobatch.gliders.ingest.logfile;
+package it.geosolutions.geobatch.gliders.ingest.missionlogfile;
 
 import it.geosolutions.geobatch.catalog.Configuration;
 import it.geosolutions.geobatch.configuration.event.action.ActionConfiguration;
 
 /**
- * Class LogsConfiguration.
+ * Class MissionLogsConfiguration.
  * 
  * @author Tobia Di Pisa - tobia.dipisa@geo-solutions.it
  *
  */
-public class LogsConfiguration extends ActionConfiguration implements Configuration
+public class MissionLogsConfiguration extends ActionConfiguration implements Configuration
 {
 	private String cruiseName = null;
 	private String geostoreURL = null;
 	private String geostoreUs = null;
 	private String geostorePw = null;
 	private String timePattern = null;
-	private String logfileCategoryName = null;
+	private String categoryName = null;
 	private String cruiseDir = null;
 	
 	/**
@@ -54,15 +54,10 @@ public class LogsConfiguration extends ActionConfiguration implements Configurat
 	 * @param name
 	 * @param description
 	 */
-	public LogsConfiguration(String id, String name, String description)
+	public MissionLogsConfiguration(String id, String name, String description)
     {
         super(id, name, description);
-
-        // TODO INITIALIZE MEMBERS
     }
-
-    // TODO ADD YOUR MEMBERS
-
 	
 	/**
 	 * @return the geostoreURL
@@ -140,20 +135,18 @@ public class LogsConfiguration extends ActionConfiguration implements Configurat
 		this.timePattern = timePattern;
 	}
 
-
 	/**
-	 * @return the logfileCategoryName
+	 * @return the categoryName
 	 */
-	public String getLogfileCategoryName() {
-		return logfileCategoryName;
+	public String getCategoryName() {
+		return categoryName;
 	}
 
-
 	/**
-	 * @param logfileCategoryName the logfileCategoryName to set
+	 * @param categoryName the categoryName to set
 	 */
-	public void setLogfileCategoryName(String logfileCategoryName) {
-		this.logfileCategoryName = logfileCategoryName;
+	public void setCategoryName(String categoryName) {
+		this.categoryName = categoryName;
 	}
 
 	/**
@@ -174,16 +167,15 @@ public class LogsConfiguration extends ActionConfiguration implements Configurat
 	 * @see it.geosolutions.geobatch.configuration.event.action.ActionConfiguration#clone()
 	 */
 	@Override
-    public LogsConfiguration clone()
+    public MissionLogsConfiguration clone()
     {
-        final LogsConfiguration ret = new LogsConfiguration(this.getId(), this.getName(), this.getDescription());
+        final MissionLogsConfiguration ret = new MissionLogsConfiguration(this.getId(), this.getName(), this.getDescription());
 
-        // TODO CLONE YOUR MEMBERS
         ret.setCruiseName(cruiseName);
         ret.setGeostorePw(geostorePw);
         ret.setGeostoreUs(geostoreUs);
         ret.setGeostoreURL(geostoreURL);
-        ret.setLogfileCategoryName(logfileCategoryName);
+        ret.setCategoryName(categoryName);
         ret.setTimePattern(timePattern);
         ret.setCruiseDir(cruiseDir);
         

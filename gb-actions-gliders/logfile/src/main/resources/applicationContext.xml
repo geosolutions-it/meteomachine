@@ -16,9 +16,29 @@
 			<value>LogsGeneratorService</value>
 		</constructor-arg>
 	</bean>
-
-	<bean id="LogsAliasRegistrar"
+	
+    <bean id="LogsAliasRegistrar"
 		class="it.geosolutions.geobatch.gliders.ingest.logfile.LogsAliasRegistrar"
+		lazy-init="false">
+		<constructor-arg ref="aliasRegistry" />
+	</bean>
+	
+	<!-- Environment Initialization -->
+	<bean id="MissionLogsGeneratorService"
+		class="it.geosolutions.geobatch.gliders.ingest.missionlogfile.MissionLogsGeneratorService">
+		<constructor-arg type="String">
+			<value>MissionLogsGeneratorService</value>
+		</constructor-arg>
+		<constructor-arg type="String">
+			<value>MissionLogsGeneratorService</value>
+		</constructor-arg>
+		<constructor-arg type="String">
+			<value>MissionLogsGeneratorService</value>
+		</constructor-arg>
+	</bean>
+
+    <bean id="MissionLogsAliasRegistrar"
+		class="it.geosolutions.geobatch.gliders.ingest.missionlogfile.MissionLogsAliasRegistrar"
 		lazy-init="false">
 		<constructor-arg ref="aliasRegistry" />
 	</bean>

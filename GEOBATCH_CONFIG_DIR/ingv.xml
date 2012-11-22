@@ -200,8 +200,8 @@
 
             <!-- CUSTOMIZABLE : geoserver credentials -->
             <geoserverUID>admin</geoserverUID>
-            <geoserverPWD>geoserver</geoserverPWD>
-            <geoserverURL>http://localhost:8080/geoserver</geoserverURL>
+            <geoserverPWD>1nurc2</geoserverPWD>
+            <geoserverURL>http://demo.geo-solutions.it/geoserver-gliders</geoserverURL>
             <!-- CUSTOMIZABLE -->
             <defaultNamespace>nurc</defaultNamespace>
             <storeName>watvelingv</storeName> <!-- will be created if not exists -->

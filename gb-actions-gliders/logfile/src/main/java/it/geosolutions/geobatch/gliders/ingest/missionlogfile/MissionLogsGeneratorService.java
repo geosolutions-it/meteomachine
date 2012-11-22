@@ -28,7 +28,7 @@
  * <http://www.geo-solutions.it/>.
  *
  */
-package it.geosolutions.geobatch.gliders.ingest.logfile;
+package it.geosolutions.geobatch.gliders.ingest.missionlogfile;
 
 import it.geosolutions.geobatch.catalog.impl.BaseService;
 import it.geosolutions.geobatch.flow.event.action.ActionService;
@@ -40,22 +40,22 @@ import org.slf4j.LoggerFactory;
 
 
 /**
- * Class LogsGeneratorService.
+ * Class MissionLogsGeneratorService.
  * 
  * @author Tobia Di Pisa - tobia.dipisa@geo-solutions.it
  *
  */
-public class LogsGeneratorService extends BaseService implements ActionService<EventObject, LogsConfiguration>
+public class MissionLogsGeneratorService extends BaseService implements ActionService<EventObject, MissionLogsConfiguration>
 {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(LogsGeneratorService.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(MissionLogsGeneratorService.class);
 
     /**
      * @param id
      * @param name
      * @param description
      */
-    public LogsGeneratorService(String id, String name, String description)
+    public MissionLogsGeneratorService(String id, String name, String description)
     {
         super(id, name, description);
     }
@@ -63,11 +63,11 @@ public class LogsGeneratorService extends BaseService implements ActionService<E
     /* (non-Javadoc)
      * @see it.geosolutions.geobatch.flow.event.action.ActionService#createAction(it.geosolutions.geobatch.configuration.event.action.ActionConfiguration)
      */
-    public LogsAction createAction(LogsConfiguration configuration)
+    public MissionLogsAction createAction(MissionLogsConfiguration configuration)
     {
         try
         {
-        	LogsAction glidersLogsAction = new LogsAction(configuration);
+        	MissionLogsAction glidersLogsAction = new MissionLogsAction(configuration);
             return glidersLogsAction;
         }
         catch (Exception e)
@@ -84,7 +84,7 @@ public class LogsGeneratorService extends BaseService implements ActionService<E
     /* (non-Javadoc)
      * @see it.geosolutions.geobatch.flow.event.action.ActionService#canCreateAction(it.geosolutions.geobatch.configuration.event.action.ActionConfiguration)
      */
-    public boolean canCreateAction(LogsConfiguration configuration)
+    public boolean canCreateAction(MissionLogsConfiguration configuration)
     {
     	if(LOGGER.isInfoEnabled()){
     		LOGGER.info("-------------------> Checking setting parameters");
@@ -98,7 +98,7 @@ public class LogsGeneratorService extends BaseService implements ActionService<E
                 LOGGER.info("Cruise Name value is " + cruiseName);
             }else{
                 if (LOGGER.isWarnEnabled()){
-                    LOGGER.warn("LogsGeneratorService::canCreateAction(): " +
+                    LOGGER.warn("MissionLogsGeneratorService::canCreateAction(): " +
                         "unable to create action, it's not possible to get the Cruise Name.");
                 }
 
@@ -111,7 +111,7 @@ public class LogsGeneratorService extends BaseService implements ActionService<E
                 LOGGER.info("GeoStore URL value is " + geostoreURL);
             }else{
                 if (LOGGER.isWarnEnabled()){
-                    LOGGER.warn("LogsGeneratorService::canCreateAction(): " +
+                    LOGGER.warn("MissionLogsGeneratorService::canCreateAction(): " +
                         "unable to create action, it's not possible to get the GeoStore URL.");
                 }
 
@@ -124,7 +124,7 @@ public class LogsGeneratorService extends BaseService implements ActionService<E
                 LOGGER.info("GeoStore Us value is " + geostoreUs);
             }else{
                 if (LOGGER.isWarnEnabled()){
-                    LOGGER.warn("LogsGeneratorService::canCreateAction(): " +
+                    LOGGER.warn("MissionLogsGeneratorService::canCreateAction(): " +
                         "unable to create action, it's not possible to get the GeoStore Us.");
                 }
 
@@ -137,7 +137,7 @@ public class LogsGeneratorService extends BaseService implements ActionService<E
                 LOGGER.info("GeoStore Us value is " + geostorePw);
             }else{
                 if (LOGGER.isWarnEnabled()){
-                    LOGGER.warn("LogsGeneratorService::canCreateAction(): " +
+                    LOGGER.warn("MissionLogsGeneratorService::canCreateAction(): " +
                         "unable to create action, it's not possible to get the GeoStore Pw.");
                 }
 
@@ -150,20 +150,20 @@ public class LogsGeneratorService extends BaseService implements ActionService<E
                 LOGGER.info("Curr. Time pattern value is " + timePattern);
             }else{
                 if (LOGGER.isWarnEnabled()){
-                    LOGGER.warn("LogsGeneratorService::canCreateAction(): " +
+                    LOGGER.warn("MissionLogsGeneratorService::canCreateAction(): " +
                         "unable to create action, it's not possible to get the Curr. Time pattern.");
                 }
 
                 return false;
             }
             
-        	String logfileCategoryName = configuration.getLogfileCategoryName();
+        	String categoryName = configuration.getCategoryName();
         	
-            if (logfileCategoryName != null){
-                LOGGER.info("Logfile category name value is " + logfileCategoryName);
+            if (categoryName != null){
+                LOGGER.info("Mission Logfile category name value is " + categoryName);
             }else{
                 if (LOGGER.isWarnEnabled()){
-                    LOGGER.warn("LogsGeneratorService::canCreateAction(): " +
+                    LOGGER.warn("MissionLogsGeneratorService::canCreateAction(): " +
                         "unable to create action, it's not possible to get the Logfile category name.");
                 }
 
@@ -173,10 +173,10 @@ public class LogsGeneratorService extends BaseService implements ActionService<E
         	String cruiseDir = configuration.getCruiseDir();
         	
             if (cruiseDir != null){
-                LOGGER.info("Logfile cruise dir name value is " + cruiseDir);
+                LOGGER.info("Mission Logfile cruise dir name value is " + cruiseDir);
             }else{
                 if (LOGGER.isWarnEnabled()){
-                    LOGGER.warn("LogsGeneratorService::canCreateAction(): " +
+                    LOGGER.warn("MissionLogsGeneratorService::canCreateAction(): " +
                         "unable to create action, it's not possible to get the Logfile cruise dir.");
                 }
 

@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <FlowConfiguration>
 	
-	<id>logfile</id>
-	<description>Gliders Logs configuration flow</description>
-	<name>Gliders Logs flow</name>
+	<id>missionlogfile</id>
+	<description>Gliders Mission Logs configuration flow</description>
+	<name>Gliders Mission Logs flow</name>
 	
 	<maxStoredConsumers>10</maxStoredConsumers>
 	
@@ -15,39 +15,39 @@
 	<autorun>true</autorun>
 	
 	<EventGeneratorConfiguration>
-		<wildCard>*.log</wildCard>
-		<watchDirectory>logfile/in</watchDirectory>
+		<wildCard>*.mlg</wildCard>
+		<watchDirectory>missionlogfile/in</watchDirectory>
 		<osType>OS_UNDEFINED</osType>
 		<eventType>FILE_ADDED</eventType>
 		<interval>0/10 * * * * ?</interval><!-- CRON: every 10 sec -->
 		<!--<interval>20</interval> each 20 sec -->
-		<id>GlidersLogsFlow</id>
+		<id>GlidersMissionLogsFlow</id>
 		<serviceID>fsEventGeneratorService</serviceID>
-		<description>Gliders Logs event generator description</description>
-		<name>Logs</name>
+		<description>Gliders Mission Logs event generator description</description>
+		<name>MissionLogs</name>
 	</EventGeneratorConfiguration>
 	
 	<EventConsumerConfiguration>
-		<id>logfile</id>
-		<description>logfile</description>
-		<name>logfile</name>
+		<id>missionlogfile</id>
+		<description>missionlogfile</description>
+		<name>missionlogfile</name>
 		
 		<performBackup>true</performBackup>
 		
-		<LogsConfiguration>
-			<serviceID>LogsGeneratorService</serviceID>
-			<id>LogsGeneratorService</id>
-			<description>Logs action</description>
-			<name>LogsConfiguration</name>		
+		<MissionLogsConfiguration>
+			<serviceID>MissionLogsGeneratorService</serviceID>
+			<id>MissionLogsGeneratorService</id>
+			<description>MissionLogs Action</description>
+			<name>MissionLogsConfiguration</name>		
 
 			<cruiseName>NOMR12</cruiseName>
 			<geostoreURL>http://localhost:8181/geostore-gliders/rest</geostoreURL>
 			<geostoreUs>admin</geostoreUs>
 	        <geostorePw>admin</geostorePw>
 			<timePattern>EEE MMM dd HH:mm:ss yyyy</timePattern> <!-- US locale -->
-			<logfileCategoryName>LOGFILE</logfileCategoryName>	
-			<cruiseDir>C:/gbTemp</cruiseDir>   <!-- ??? -->
-		</LogsConfiguration>
+			<categoryName>MISSION-LOGFILE</categoryName>	
+            <cruiseDir>C:/gbTemp</cruiseDir>   <!-- ??? -->
+		</MissionLogsConfiguration>
 		
 		<MoveConfiguration>
 			<serviceID>MoveGeneratorService</serviceID>
