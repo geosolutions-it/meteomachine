@@ -32,6 +32,8 @@ package it.geosolutions.geobatch.gliders.ingest.missionlogfile;
 
 import it.geosolutions.geobatch.catalog.impl.BaseService;
 import it.geosolutions.geobatch.flow.event.action.ActionService;
+import it.geosolutions.geostore.services.rest.GeoStoreClient;
+import it.geosolutions.geostore.services.rest.model.RESTCategory;
 
 import java.util.EventObject;
 
@@ -68,6 +70,24 @@ public class MissionLogsGeneratorService extends BaseService implements ActionSe
         try
         {
         	MissionLogsAction glidersLogsAction = new MissionLogsAction(configuration);
+        	
+            GeoStoreClient client = new GeoStoreClient();
+            client.setGeostoreRestUrl(configuration.getGeostoreURL());
+            client.setUsername(configuration.getGeostoreUs());
+            client.setPassword(configuration.getGeostorePw());
+            
+            glidersLogsAction.setGeoStoreClient(client);
+            
+            // ///////////////////////////////////////
+            // Check if the LOGFILE category exists 
+            // ///////////////////////////////////////
+            
+            long count = client.getCategoryCount(configuration.getCategoryName());
+            RESTCategory category = new RESTCategory(configuration.getCategoryName());
+            if(count < 1){
+            	client.insert(category);
+            }
+            
             return glidersLogsAction;
         }
         catch (Exception e)

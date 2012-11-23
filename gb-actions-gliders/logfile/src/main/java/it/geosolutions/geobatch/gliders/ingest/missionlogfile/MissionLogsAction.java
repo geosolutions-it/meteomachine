@@ -73,6 +73,9 @@ public class MissionLogsAction extends BaseAction<EventObject>
      */
     private final MissionLogsConfiguration conf;
 
+
+	private GeoStoreClient geostoreClient;
+
     public MissionLogsAction(MissionLogsConfiguration configuration)
     {
         super(configuration);
@@ -123,6 +126,7 @@ public class MissionLogsAction extends BaseAction<EventObject>
             		String mission_name = null;
             		String mission_number = null;
             		String cruise_name = conf.getCruiseName();
+            		String cruise_dir = conf.getCruiseDir();
             		
             		String pattern = conf.getTimePattern();
 			        SimpleDateFormat sdf = new SimpleDateFormat(pattern, Locale.US);
@@ -151,11 +155,13 @@ public class MissionLogsAction extends BaseAction<EventObject>
                         	if(line.contains("Mission Number:") && mission_number == null){
                         		String number = line.split(":")[1];
                         		
-                        		if(number.startsWith(" "))
+                        		while(number.startsWith(" ")){
                         			number = number.replaceFirst(" ", "");
+                        		}
                         		
-                        		if(number.endsWith(" "))
+                        		while(number.endsWith(" ")){
                         			number = number.substring(0, number.length() - 1);
+                        		}
                         		
                         		mission_number = number;
                         	}
@@ -177,8 +183,9 @@ public class MissionLogsAction extends BaseAction<EventObject>
                         	if(line.contains("LOG FILE OPENED") && log_file_opened == null){
                         		String lfo = line;
                         		
-                        		if(lfo.startsWith(" "))
+                        		while(lfo.startsWith(" ")){
                         			lfo = lfo.replaceFirst(" ", "");
+                        		}
                         		
                         		lfo = lfo.split(" ")[0];
                         		
@@ -188,7 +195,7 @@ public class MissionLogsAction extends BaseAction<EventObject>
                         			log_file_opened = null;
                         			
                     				if (LOGGER.isWarnEnabled())
-                    					LOGGER.warn("WARNING: Exception parsing the LOG FILE OPENED property ", exc);
+                    					LOGGER.warn("WARNING: Exception parsing file: " + missionLogFile + ". The LOG FILE OPENED property ", exc);
                         		}
                         	}
                         	
@@ -198,8 +205,9 @@ public class MissionLogsAction extends BaseAction<EventObject>
                         	if(line.contains("LOG FILE CLOSED") && log_file_closed == null){
                         		String lfc = line;
                         		
-                        		if(lfc.startsWith(" "))
-                        			lfc = lfc.replaceFirst(" ", "");
+                        		while(lfc.startsWith(" ")){
+                            		lfc = lfc.replaceFirst(" ", "");
+                        		}
                         		
                         		lfc = lfc.split(" ")[0];
                         		
@@ -209,7 +217,7 @@ public class MissionLogsAction extends BaseAction<EventObject>
                         			log_file_closed = null;
                         			
                     				if (LOGGER.isWarnEnabled())
-                    					LOGGER.warn("WARNING: Exception parsing the LOG FILE CLOSED property ", exc);
+                    					LOGGER.warn("WARNING: Exception parsing file: " + missionLogFile + ". The LOG FILE CLOSED property ", exc);
                         		}
                         	}
                         	
@@ -221,11 +229,13 @@ public class MissionLogsAction extends BaseAction<EventObject>
                         		
                         		String time = line.split("timestamp:")[1];
                         		
-                        		if(time.startsWith(" "))
+                        		while(time.startsWith(" ")){
                         			time = time.replaceFirst(" ", "");
+                        		}
                         		
-                        		if(time.endsWith(" "))
+                        		while(time.endsWith(" ")){
                         			time = time.substring(0, time.length() - 1);
+                        		}
                         		
                         		timestamp = sdf.parse(time);
                         		
@@ -242,11 +252,13 @@ public class MissionLogsAction extends BaseAction<EventObject>
                         		// --- Parsing Curr Time --- //
                         		String ctime = time_curr_props[0];
                         		
-                        		if(ctime.startsWith(" "))
+                        		while(ctime.startsWith(" ")){
                         			ctime = ctime.replaceFirst(" ", "");
+                        		}
                         		
-                        		if(ctime.endsWith(" "))
+                        		while(ctime.endsWith(" ")){
                         			ctime = ctime.substring(0, ctime.length() - 1);
+                        		}
                         		
                         		curr_time = sdf.parse(ctime);
                         		
@@ -284,11 +296,6 @@ public class MissionLogsAction extends BaseAction<EventObject>
                     // //////////////////////////////////
                     // Create a new GeoStore resources
                     // //////////////////////////////////
-                	
-                    GeoStoreClient client = new GeoStoreClient();
-                    client.setGeostoreRestUrl(conf.getGeostoreURL());
-                    client.setUsername(conf.getGeostoreUs());
-                    client.setPassword(conf.getGeostorePw());
                     
                     RESTResource  resource = new RESTResource();
                     resource.setName(missionLogFile.getName());
@@ -296,13 +303,7 @@ public class MissionLogsAction extends BaseAction<EventObject>
                     // ///////////////////////////////////////
                     // Check if the LOGFILE category exists 
                     // ///////////////////////////////////////
-                    
-                    long count = client.getCategoryCount(conf.getCategoryName());
                     RESTCategory category = new RESTCategory(conf.getCategoryName());
-                    if(count < 1){
-                    	client.insert(category);
-                    }
-                    
                     resource.setCategory(category);
                     
                 	List<ShortAttribute> attributes = new ArrayList<ShortAttribute>();
@@ -417,8 +418,17 @@ public class MissionLogsAction extends BaseAction<EventObject>
                         attributes.add(cName);
                 	}
                 	
+                	if(cruise_dir != null){
+                        ShortAttribute cDir = new ShortAttribute();
+                        cDir.setName("logfile_path");
+                        cDir.setType(DataType.STRING);                    
+                        cDir.setValue(cruise_dir);
+                        
+                        attributes.add(cDir);
+                	}
+                	
                     if(attributes.size() > 0 && (curr_time != null || timestamp != null) &&
-                    		vehicle_name != null && cruise_name != null){
+                    		vehicle_name != null && cruise_name != null && cruise_dir != null){
                     	resource.setAttribute(attributes);
                     }else{
                     	if(LOGGER.isWarnEnabled()){
@@ -426,7 +436,7 @@ public class MissionLogsAction extends BaseAction<EventObject>
                     	}
                     }
                     
-                    client.insert(resource);
+                    geostoreClient.insert(resource);
         			
                 	if(LOGGER.isInfoEnabled()){
                 		LOGGER.info("Moving the file inside the defined location ...");
@@ -456,5 +466,12 @@ public class MissionLogsAction extends BaseAction<EventObject>
 
         return ret;
     }
+
+	/**
+	 * @param client
+	 */
+	public void setGeoStoreClient(GeoStoreClient client) {
+		this.geostoreClient = client;
+	}
 
 }

@@ -67,11 +67,12 @@ public class LogsAction extends BaseAction<EventObject>
 {
 	private static final Logger LOGGER = LoggerFactory.getLogger(LogsAction.class);
 	
-
     /**
      * configuration
      */
     private final LogsConfiguration conf;
+
+	private GeoStoreClient geostoreClient;
 
     public LogsAction(LogsConfiguration configuration)
     {
@@ -117,6 +118,7 @@ public class LogsAction extends BaseAction<EventObject>
             		String mission_name = null;
             		String mission_number = null;
             		String cruise_name = conf.getCruiseName();
+            		String cruise_dir = conf.getCruiseDir();
 
             		Scanner scanner =  null;
             		try{
@@ -128,11 +130,6 @@ public class LogsAction extends BaseAction<EventObject>
             				// Parse Mission Name
             				// ///////////////////////////
                         	if(line.contains("Mission Name:") && mission_name == null){
-//                        		String mname = line.replace("Mission Name:", "");
-//                        		
-//                        		mname = mname.trim();
-//                        		
-//                        		mission_name = mname;
                         		String mname = line.split(":")[1];
                         		
                         		mname = mname.trim();
@@ -144,22 +141,15 @@ public class LogsAction extends BaseAction<EventObject>
             				// Parse Mission Number
             				// ///////////////////////////
                         	if(line.contains("Mission Number:") && mission_number == null){
-//                        		String name = line.replace("Mission Number:", "");
-//                        		
-//                        		if(name.startsWith(" "))
-//                        			name = name.replaceFirst(" ", "");
-//                        		
-//                        		if(name.endsWith(" "))
-//                        			name = name.substring(0, name.length() - 1);
-//                        		
-//                        		mission_number = name;
                         		String number = line.split(":")[1];
                         		
-                        		if(number.startsWith(" "))
+                        		while(number.startsWith(" ")){
                         			number = number.replaceFirst(" ", "");
+                        		}
                         		
-                        		if(number.endsWith(" "))
+                        		while(number.endsWith(" ")){
                         			number = number.substring(0, number.length() - 1);
+                        		}
                         		
                         		mission_number = number;
                         	}else
@@ -168,15 +158,6 @@ public class LogsAction extends BaseAction<EventObject>
             				// Parse Vehicle Name
             				// ///////////////////////////
                         	if(line.contains("Vehicle Name:") && vehicle_name == null){
-//                        		String name = line.replace("Vehicle Name:", "");
-//                        		
-//                        		if(name.startsWith(" "))
-//                        			name = name.replaceFirst(" ", "");
-//                        		
-//                        		if(name.endsWith(" "))
-//                        			name = name.substring(0, name.length() - 1);
-//                        		
-//                        		vehicle_name = name;
                         		String name = line.split(":")[1];
 
                         		name = name.trim();
@@ -187,26 +168,7 @@ public class LogsAction extends BaseAction<EventObject>
             				// ///////////////////////////
             				// Parse Curr Time
             				// ///////////////////////////
-                        	if(line.contains("Curr Time:") && curr_time == null){
-                        		
-//                        		String time = line.replace("Curr Time:", "");
-//                        		
-//                        		int startIntex = 0;
-//                        		int endIndex = time.indexOf("MT");
-//                        
-//                        		time = time.substring(startIntex, endIndex);
-//                        		
-//                        		if(time.startsWith(" "))
-//                        			time = time.replaceFirst(" ", "");
-//                        		
-//                        		if(time.endsWith(" "))
-//                        			time = time.substring(0, time.length() - 1);
-//                        		
-//                        		String pattern = conf.getTimePattern();
-//    					        SimpleDateFormat sdf = new SimpleDateFormat(pattern, Locale.US);
-//    					        
-//                        		curr_time = sdf.parse(time);
-                        		
+                        	if(line.contains("Curr Time:") && curr_time == null){                        		
                         		String time = line.split("Curr Time:")[1];
                         		
                         		String[] time_curr_props = time.split("MT:");
@@ -214,11 +176,13 @@ public class LogsAction extends BaseAction<EventObject>
                         		// --- Parsing Curr Time --- //
                         		String ctime = time_curr_props[0];
                         		
-                        		if(ctime.startsWith(" "))
+                        		while(ctime.startsWith(" ")){
                         			ctime = ctime.replaceFirst(" ", "");
+                        		}
                         		
-                        		if(ctime.endsWith(" "))
+                        		while(ctime.endsWith(" ")){
                         			ctime = ctime.substring(0, ctime.length() - 1);
+                        		}
                         		
                         		String pattern = conf.getTimePattern();
     					        SimpleDateFormat sdf = new SimpleDateFormat(pattern, Locale.US);
@@ -251,23 +215,13 @@ public class LogsAction extends BaseAction<EventObject>
                     // //////////////////////////////////
                     // Create a new GeoStore resources
                     // //////////////////////////////////
-                    GeoStoreClient client = new GeoStoreClient();
-                    client.setGeostoreRestUrl(conf.getGeostoreURL());
-                    client.setUsername(conf.getGeostoreUs());
-                    client.setPassword(conf.getGeostorePw());
-                    
                     RESTResource  resource = new RESTResource();
                     resource.setName(logFile.getName());
                     
                     // ///////////////////////////////////////
                     // Check if the LOGFILE category exists 
                     // ///////////////////////////////////////
-                    long count = client.getCategoryCount(conf.getLogfileCategoryName());
                     RESTCategory category = new RESTCategory(conf.getLogfileCategoryName());
-                    if(count < 1){
-                    	client.insert(category);
-                    }
-                    
                     resource.setCategory(category);
                     
                     List<ShortAttribute> attributes = new ArrayList<ShortAttribute>();
@@ -341,7 +295,17 @@ public class LogsAction extends BaseAction<EventObject>
                         attributes.add(cName);
                 	}
                 	
-                    if(attributes.size() > 0 && curr_time != null && vehicle_name != null && cruise_name != null){
+                	if(cruise_dir != null){
+                        ShortAttribute cDir = new ShortAttribute();
+                        cDir.setName("logfile_path");
+                        cDir.setType(DataType.STRING);                    
+                        cDir.setValue(cruise_dir);
+                        
+                        attributes.add(cDir);
+                	}
+                	
+                    if(attributes.size() > 0 && curr_time != null && vehicle_name != null && 
+                    		cruise_name != null && cruise_dir != null){
                     	resource.setAttribute(attributes);
                     }else{
                     	if(LOGGER.isWarnEnabled()){
@@ -349,7 +313,7 @@ public class LogsAction extends BaseAction<EventObject>
                     	}
                     }
                     
-                    client.insert(resource);
+                    geostoreClient.insert(resource);
         			
                 	if(LOGGER.isInfoEnabled()){
                 		LOGGER.info("Moving the file inside the defined location ...");
@@ -379,5 +343,12 @@ public class LogsAction extends BaseAction<EventObject>
 
         return ret;
     }
+
+	/**
+	 * @param client
+	 */
+	public void setGeoStoreClient(GeoStoreClient client) {
+		this.geostoreClient = client;
+	}
 
 }

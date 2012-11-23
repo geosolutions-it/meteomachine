@@ -41,12 +41,12 @@
 			<name>LogsConfiguration</name>		
 
 			<cruiseName>NOMR12</cruiseName>
-			<geostoreURL>http://localhost:8181/geostore-gliders/rest</geostoreURL>
+			<geostoreURL>http://84.33.199.62/geostore-gliders/rest</geostoreURL>
 			<geostoreUs>admin</geostoreUs>
 	        <geostorePw>admin</geostorePw>
 			<timePattern>EEE MMM dd HH:mm:ss yyyy</timePattern> <!-- US locale -->
 			<logfileCategoryName>LOGFILE</logfileCategoryName>	
-			<cruiseDir>C:/gbTemp</cruiseDir>   <!-- ??? -->
+			<cruiseDir>/home/nurc/logfile_data/log</cruiseDir>   <!-- ??? -->
 		</LogsConfiguration>
 		
 		<MoveConfiguration>
@@ -55,7 +55,7 @@
 			<description>Move file</description>			
 			<name>MoveConfiguration</name>
 			
-			<destination>C:/gbTemp</destination>
+			<destination>/home/nurc/logfile_data/log</destination>
 			<timeout>1000</timeout>
 		</MoveConfiguration>
 		
