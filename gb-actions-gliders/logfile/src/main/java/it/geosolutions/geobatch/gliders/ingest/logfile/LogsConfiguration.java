@@ -48,6 +48,7 @@ public class LogsConfiguration extends ActionConfiguration implements Configurat
 	private String timePattern = null;
 	private String logfileCategoryName = null;
 	private String cruiseDir = null;
+	private String keywords = null;
 	
 	/**
 	 * @param id
@@ -169,6 +170,20 @@ public class LogsConfiguration extends ActionConfiguration implements Configurat
 	public void setCruiseDir(String cruiseDir) {
 		this.cruiseDir = cruiseDir;
 	}
+	
+	/**
+	 * @return the keywords
+	 */
+	public String getKeywords() {
+		return keywords;
+	}
+
+	/**
+	 * @param keywords the keywords to set
+	 */
+	public void setKeywords(String keywords) {
+		this.keywords = keywords;
+	}
 
 	/* (non-Javadoc)
 	 * @see it.geosolutions.geobatch.configuration.event.action.ActionConfiguration#clone()
@@ -186,6 +201,7 @@ public class LogsConfiguration extends ActionConfiguration implements Configurat
         ret.setLogfileCategoryName(logfileCategoryName);
         ret.setTimePattern(timePattern);
         ret.setCruiseDir(cruiseDir);
+        ret.setKeywords(keywords);
         
         ret.setServiceID(this.getServiceID());
 

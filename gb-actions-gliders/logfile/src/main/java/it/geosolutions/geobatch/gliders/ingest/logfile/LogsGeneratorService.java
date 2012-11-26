@@ -202,6 +202,19 @@ public class LogsGeneratorService extends BaseService implements ActionService<E
 
                 return false;
             }
+            
+        	String keywords = configuration.getKeywords();
+        	
+            if (keywords != null){
+                LOGGER.info("Mission Logfile keywords value is " + keywords);
+            }else{
+                if (LOGGER.isWarnEnabled()){
+                    LOGGER.warn("MissionLogsGeneratorService::canCreateAction(): " +
+                        "unable to create action, it's not possible to get the Logfile keywords.");
+                }
+
+                return false;
+            }
         }
         catch (Throwable e){
             if (LOGGER.isErrorEnabled()){

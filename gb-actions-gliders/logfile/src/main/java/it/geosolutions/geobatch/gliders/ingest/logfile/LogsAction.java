@@ -44,6 +44,7 @@ import java.io.File;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.EventObject;
 import java.util.LinkedList;
@@ -119,6 +120,12 @@ public class LogsAction extends BaseAction<EventObject>
             		String mission_number = null;
             		String cruise_name = conf.getCruiseName();
             		String cruise_dir = conf.getCruiseDir();
+            		
+            		String keywords = conf.getKeywords();
+            		String[] keywordsArray = keywords.split(",");             		
+            		List<String> keywordsList = Arrays.asList(keywordsArray);
+            		
+            		String metadata = "";
 
             		Scanner scanner =  null;
             		try{
@@ -189,6 +196,24 @@ public class LogsAction extends BaseAction<EventObject>
     					        sdf.setTimeZone(TimeZone.getTimeZone("GMT"));
     					        
                         		curr_time = sdf.parse(ctime);
+                        	}
+                        	
+            				// ///////////////////////////
+            				// Parse LOG Keywords
+            				// ///////////////////////////
+                        	if(keywordsList != null){
+                               	for(int i=0, size = keywordsList.size(); i<size; i++){
+                               		String key = keywordsList.get(i);
+                        			if(line.contains(key)){
+                        				if(metadata.isEmpty()){
+                        					metadata = metadata.concat(key);
+                        				}else if(!metadata.contains(key)){
+                        					metadata = metadata.concat("," + key);
+                        				}
+                        			}else{
+                        				continue;
+                        			}
+                            	}
                         	}
                         	
                         	if(curr_time != null && vehicle_name != null && 
@@ -302,6 +327,10 @@ public class LogsAction extends BaseAction<EventObject>
                         cDir.setValue(cruise_dir);
                         
                         attributes.add(cDir);
+                	}
+                	
+                	if(metadata != null && !metadata.isEmpty()){
+                		resource.setMetadata(metadata);
                 	}
                 	
                     if(attributes.size() > 0 && curr_time != null && vehicle_name != null && 

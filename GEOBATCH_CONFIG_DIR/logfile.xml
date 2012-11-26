@@ -47,6 +47,7 @@
 			<timePattern>EEE MMM dd HH:mm:ss yyyy</timePattern> <!-- US locale -->
 			<logfileCategoryName>LOGFILE</logfileCategoryName>	
 			<cruiseDir>/home/nurc/logfile_data/log</cruiseDir>   <!-- ??? -->
+			<keywords>ABORT,ERROR,^R,^F,^C</keywords>
 		</LogsConfiguration>
 		
 		<MoveConfiguration>
