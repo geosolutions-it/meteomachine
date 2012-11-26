@@ -149,6 +149,7 @@
 		<geoserver.version>2.2-RC1</geoserver.version>
 		<tools.version>1.1-SNAPSHOT</tools.version>
 		<app.version>1.0-SNAPSHOT</app.version>
+		<geostore.version>1.1-SNAPSHOT</geostore.version>
     </properties>
 
   
