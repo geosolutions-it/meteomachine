@@ -237,7 +237,11 @@ public class KMZGlidersProcess extends KMZProcess implements GSProcess {
 				while(features.hasNext()){
 					SimpleFeature feature = features.next();
 					String gname = (String)feature.getAttribute("glider_name");
+					
+					// Retrieve the AOI geometry 
 					Geometry g = (Geometry)feature.getDefaultGeometry();
+					
+					// Retrieve AOI creation time and put this in a proper Map
 					Date creation = (Date)feature.getAttribute("creation");
 					
 					gliderAOi.put(gname, g);
@@ -523,6 +527,11 @@ public class KMZGlidersProcess extends KMZProcess implements GSProcess {
 																		this.startTime = start;
 																	}
 																	
+																	// //////////////////////////////////////////////////////
+																	// The out_aoi attribute should be set to true only 
+																	// for points that are outside the AOI for time values 
+																	// after the AOI creation time. 
+																	// //////////////////////////////////////////////////////
 																	if(gliderAOICreation.containsKey(glider.getName())){
 															    		Date aoiCreation = gliderAOICreation.get(glider.getName());
 															    		if(start.after(aoiCreation) && aoi){
