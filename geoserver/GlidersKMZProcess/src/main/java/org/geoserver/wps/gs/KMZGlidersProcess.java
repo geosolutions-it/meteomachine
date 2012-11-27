@@ -86,6 +86,7 @@ public class KMZGlidersProcess extends KMZProcess implements GSProcess {
 	
 	private static final String AOI_TABLE 			= "aoi";	
 	private Map<String, Geometry> gliderAOi = new HashMap<String, Geometry>();
+	private Map<String, Date> gliderAOICreation = new HashMap<String, Date>();
 	
 	private Date startTime;
 	private Date endTime;
@@ -237,8 +238,10 @@ public class KMZGlidersProcess extends KMZProcess implements GSProcess {
 					SimpleFeature feature = features.next();
 					String gname = (String)feature.getAttribute("glider_name");
 					Geometry g = (Geometry)feature.getDefaultGeometry();
+					Date creation = (Date)feature.getAttribute("creation");
 					
 					gliderAOi.put(gname, g);
+					gliderAOICreation.put(gname, creation);
 				}
 			}//try
 			catch (IOException e) {
@@ -409,6 +412,7 @@ public class KMZGlidersProcess extends KMZProcess implements GSProcess {
 												fb.set(KMZGlidersProcess.GLIDER_NAME, glider.getName());
 
 												Placemark pm = (Placemark) element;
+												boolean aoi = false;
 												for(String attType : typeSchema.get(typeName))
 												{
 													if(attType.equals(KMZGlidersProcess.NAME))
@@ -459,12 +463,12 @@ public class KMZGlidersProcess extends KMZProcess implements GSProcess {
 																if(gliderAOi.containsKey(glider.getName())){
 														    		Geometry g = gliderAOi.get(glider.getName());
 														    		if(!g.contains(p)){
-														    			fb.set(KMZGlidersProcess.OUT_AOI, true);
+														    			aoi = true;
 														    		}else{
-														    			fb.set(KMZGlidersProcess.OUT_AOI, false);													    			
+														    			aoi = false;
 														    		}
 																}else{
-																	fb.set(KMZGlidersProcess.OUT_AOI, false);	
+																	aoi = false;
 																}
 															} 													
 														}//Point::if
@@ -518,6 +522,20 @@ public class KMZGlidersProcess extends KMZProcess implements GSProcess {
 																	}else{
 																		this.startTime = start;
 																	}
+																	
+																	if(gliderAOICreation.containsKey(glider.getName())){
+															    		Date aoiCreation = gliderAOICreation.get(glider.getName());
+															    		if(start.after(aoiCreation) && aoi){
+															    			aoi = true;
+															    		}else{
+															    			aoi = false;
+															    		}
+																	}else{
+																		aoi = false;
+																	}
+																	
+																	fb.set(KMZGlidersProcess.OUT_AOI, aoi);
+																	aoi = false;
 														        } 
 														        catch (ParseException e)
 														        {
