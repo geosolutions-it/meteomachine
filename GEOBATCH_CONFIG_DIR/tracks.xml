@@ -74,7 +74,7 @@
 			<mailAuthUsername>nurc.portal.test@gmail.com</mailAuthUsername> 
 			<mailAuthPassword>Crociera100!</mailAuthPassword>               
 			
-			<mailToAddress>ilcovo@gmail.com</mailToAddress>
+			<mailToAddress>ilcovo@gmail.com,nurc.portal.test@gmail.com,offtherailz@gmail.com</mailToAddress>
 			<mailFromAddress>nurc.portal.test@gmail.com</mailFromAddress>
 			
 			<mailHeaderName>X-NURC-DMZ-Trusted</mailHeaderName> <!-- optional -->

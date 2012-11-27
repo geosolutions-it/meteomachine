@@ -139,10 +139,21 @@ public class SendMailAction extends BaseAction<EventObject>
                        // Set From: header field of the header.
                        message.setFrom(new InternetAddress(mailFrom));
 
-                       // Set To: header field of the header.
-                       message.addRecipient(Message.RecipientType.TO,
-                                                new InternetAddress(mailTo));
+                       // Set To: header field of the header (All addresses inside the configured list).
+                       String[] addresses = null;
+                       if(mailTo.contains(",")){
+                    	   addresses = mailTo.split(",");
+                       }else{
+                    	   addresses = new String[]{mailTo};
+                       }
+                       
+                       InternetAddress[] ia = new InternetAddress[addresses.length];
+                       for(int i=0, size = ia.length; i<size; i++){
+                    	   ia[i] = new InternetAddress(addresses[i]);
+                       }
 
+                       message.addRecipients(Message.RecipientType.TO, ia);
+                       
                        // Set Subject: header field
                        message.setSubject(conf.getMailSubject());
            			
