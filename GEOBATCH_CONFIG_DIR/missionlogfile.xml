@@ -41,13 +41,13 @@
 			<name>MissionLogsConfiguration</name>		
 
 			<cruiseName>NOMR12</cruiseName>
-			<geostoreURL>http://84.33.199.62/geostore-gliders/rest</geostoreURL>
+			<geostoreURL>http://localhost:8080/geostore-gliders/rest</geostoreURL>
 			<geostoreUs>admin</geostoreUs>
 	        <geostorePw>admin</geostorePw>
 			<timePattern>EEE MMM dd HH:mm:ss yyyy</timePattern> <!-- US locale -->
 			<categoryName>MISSION-LOGFILE</categoryName>	
             <cruiseDir>/home/nurc/logfile_data/mlg</cruiseDir>   <!-- ??? -->
-			<keywords>ABORT,ERROR,^R,^F,^C</keywords>
+			<keywords>ABORT,ERROR,^R,^F,^C,GliderDos A,GliderDos N,GliderDos I,run,sequence,initial.mi,lastgasp.mi,!type,callback,GPS fix is getting stale:,type,DRIVER_ODDITY,DRIVER_WARNING,DRIVER_ERROR</keywords>
 		</MissionLogsConfiguration>
 		
 		<MoveConfiguration>
