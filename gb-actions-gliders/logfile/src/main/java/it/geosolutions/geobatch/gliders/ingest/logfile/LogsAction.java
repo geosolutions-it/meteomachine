@@ -333,14 +333,16 @@ public class LogsAction extends BaseAction<EventObject>
                 		resource.setMetadata(metadata);
                 	}
                 	
-                    if(attributes.size() > 0 && curr_time != null && vehicle_name != null && 
-                    		cruise_name != null && cruise_dir != null){
-                    	resource.setAttribute(attributes);
-                    }else{
-                    	if(LOGGER.isWarnEnabled()){
-                    		LOGGER.warn("WARNING the logfile: " + logFile.getName() + " has no required attributes defined !");
-                    	}
-                    }
+//                    if(attributes.size() > 0 && curr_time != null && vehicle_name != null && 
+//                    		cruise_name != null && cruise_dir != null){
+                	if(attributes.size() > 0){
+                		resource.setAttribute(attributes);
+                	}
+//                    }else{
+//                    	if(LOGGER.isWarnEnabled()){
+//                    		LOGGER.warn("WARNING the logfile: " + logFile.getName() + " has no required attributes defined !");
+//                    	}
+//                    }
                     
                     geostoreClient.insert(resource);
         			
