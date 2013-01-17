@@ -43,4 +43,24 @@
 		<constructor-arg ref="aliasRegistry" />
 	</bean>
 	
+    <!-- Environment Initialization -->
+	<bean id="MissionScriptGeneratorService"
+		class="it.geosolutions.geobatch.gliders.ingest.missionscript.MissionScriptGeneratorService">
+		<constructor-arg type="String">
+			<value>MissionScriptGeneratorService</value>
+		</constructor-arg>
+		<constructor-arg type="String">
+			<value>MissionScriptGeneratorService</value>
+		</constructor-arg>
+		<constructor-arg type="String">
+			<value>MissionScriptGeneratorService</value>
+		</constructor-arg>
+	</bean>
+
+    <bean id="MissionScriptAliasRegistrar"
+		class="it.geosolutions.geobatch.gliders.ingest.missionscript.MissionScriptAliasRegistrar"
+		lazy-init="false">
+		<constructor-arg ref="aliasRegistry" />
+	</bean>
+	
 </beans>

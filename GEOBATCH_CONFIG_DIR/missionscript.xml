@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<FlowConfiguration>
+	
+	<id>missionscript</id>
+	<description>Gliders Mission Script configuration flow</description>
+	<name>Gliders Mission Script flow</name>
+	
+	<maxStoredConsumers>10</maxStoredConsumers>
+	
+	<!-- to have a single istance, corePoolSize must be 2 -->
+	<corePoolSize>10</corePoolSize>
+	<maximumPoolSize>10</maximumPoolSize>
+	<workQueueSize>100</workQueueSize>
+	<keepAliveTime>150</keepAliveTime>
+	<autorun>true</autorun>
+	
+	<EventGeneratorConfiguration>
+		<wildCard>*.zip</wildCard>
+		<watchDirectory>missionscript/in</watchDirectory>
+		<osType>OS_UNDEFINED</osType>
+		<eventType>FILE_ADDED</eventType>
+		<interval>0/10 * * * * ?</interval><!-- CRON: every 10 sec -->
+		<!--<interval>20</interval> each 20 sec -->
+		<id>GlidersMissionScriptFlow</id>
+		<serviceID>fsEventGeneratorService</serviceID>
+		<description>Gliders Mission Script event generator description</description>
+		<name>MissionScript</name>
+	</EventGeneratorConfiguration>
+	
+	<EventConsumerConfiguration>
+		<id>missionscript</id>
+		<description>missionscript</description>
+		<name>missionscript</name>
+		
+		<performBackup>true</performBackup>
+		
+		<MissionScriptConfiguration>
+			<serviceID>MissionScriptGeneratorService</serviceID>
+			<id>MissionScriptGeneratorService</id>
+			<description>MissionScript Action</description>
+			<name>MissionScriptConfiguration</name>		
+
+			<cruiseName>NOMR12</cruiseName>
+			<unzipPath>C:/GEOBATCH_CONFIG_DIR/temp/missionscript/unzip</unzipPath>
+			
+			<coordsApprox>100</coordsApprox>
+			<kmlIconScale>1.0</kmlIconScale>
+			<kmlFirstIconURLpath>http://localhost:8181/MapStore-gliders/theme/app/img/gearth/flag_green.png</kmlFirstIconURLpath>
+			<kmlSecondIconURLpath>http://localhost:8181/MapStore-gliders/theme/app/img/gearth/flag_orange.png</kmlSecondIconURLpath>
+			<placemarkLogoAnchor>http://84.33.199.62</placemarkLogoAnchor>
+			<placemarkLogoURL>http://84.33.199.62/MapStore-gliders/theme/app/img/nurc-logo.png</placemarkLogoURL>
+			<kmlOutputPath></kmlOutputPath>
+			
+		</MissionScriptConfiguration>
+		
+	</EventConsumerConfiguration>
+
+</FlowConfiguration>
