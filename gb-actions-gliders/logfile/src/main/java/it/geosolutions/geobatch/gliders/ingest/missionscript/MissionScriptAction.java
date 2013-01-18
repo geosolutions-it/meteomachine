@@ -398,7 +398,15 @@ public class MissionScriptAction extends BaseAction<EventObject>
                 	//
                 	String kmlOutputPath = conf.getKmlOutputPath();
                 	String kmlPath = kmlOutputPath == null || kmlOutputPath.isEmpty() ? unzippedPath : kmlOutputPath;
-                	System.out.println(kmlPath);
+                	
+                	if(kmlOutputPath == null){
+        				if (LOGGER.isWarnEnabled())
+        					LOGGER.warn("The kmlOutputPath isnt specified inside the Action configuration! The KML file will be placed at the unzip path: " + kmlPath);
+                	}
+
+    				if (LOGGER.isInfoEnabled())
+    					LOGGER.info("Generating the KML Output at the following System path: " + kmlPath);
+    				
                 	File kmlOutput = new File(kmlPath + File.separatorChar + extractTo.getName() + ".kml");
                 	FileOutputStream os = null;
                 	
