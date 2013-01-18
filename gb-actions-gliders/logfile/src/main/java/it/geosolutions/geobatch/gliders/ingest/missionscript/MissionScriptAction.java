@@ -117,8 +117,7 @@ public class MissionScriptAction extends BaseAction<EventObject>
                     FileSystemEvent fileEvent = (FileSystemEvent) ev;
 
                     File scriptZip = fileEvent.getSource();   
-                    String zipName = scriptZip.getName().split("\\.")[0];
-                    String vheicleName = zipName.split("-")[0];
+                    String vheicleName = scriptZip.getName().split("\\.")[0];
  
                     String cruiseDirUnzipPath = conf.getUnzipPath() + File.separatorChar + conf.getCruiseName().toLowerCase();
                     File cruiseDir = new File(cruiseDirUnzipPath);
@@ -130,7 +129,7 @@ public class MissionScriptAction extends BaseAction<EventObject>
                     // ////////////////////////////////
                     // Unzip the received file 
                     // ////////////////////////////////
-                    String unzippedPath = cruiseDirUnzipPath + File.separatorChar + zipName;
+                    String unzippedPath = cruiseDirUnzipPath + File.separatorChar + vheicleName + "-" + System.nanoTime();
                     File extractTo = new File(unzippedPath); 
                     
                     if(!extractTo.exists()){
@@ -397,8 +396,10 @@ public class MissionScriptAction extends BaseAction<EventObject>
                 	//
                 	// Create KML file 
                 	//
-                	String kmlPath = conf.getKmlOutputPath() != null ? conf.getKmlOutputPath() : unzippedPath;
-                	File kmlOutput = new File(kmlPath + File.separatorChar + zipName + ".kml");
+                	String kmlOutputPath = conf.getKmlOutputPath();
+                	String kmlPath = kmlOutputPath == null || kmlOutputPath.isEmpty() ? unzippedPath : kmlOutputPath;
+                	System.out.println(kmlPath);
+                	File kmlOutput = new File(kmlPath + File.separatorChar + extractTo.getName() + ".kml");
                 	FileOutputStream os = null;
                 	
                 	try{

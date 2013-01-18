@@ -41,7 +41,7 @@
 			<name>MissionScriptConfiguration</name>		
 
 			<cruiseName>NOMR12</cruiseName>
-			<unzipPath>C:/GEOBATCH_CONFIG_DIR/temp/missionscript/unzip</unzipPath>
+			<unzipPath>C:\GEOBATCH_CONFIG_DIR\temp\missionscript\unzip</unzipPath>
 			
 			<coordsApprox>100</coordsApprox>
 			<kmlIconScale>1.0</kmlIconScale>

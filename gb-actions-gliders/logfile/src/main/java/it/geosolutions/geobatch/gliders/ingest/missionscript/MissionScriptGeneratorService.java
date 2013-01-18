@@ -129,13 +129,13 @@ public class MissionScriptGeneratorService extends BaseService implements Action
         	Integer coordsApprox = configuration.getCoordsApprox();
         	
             if (coordsApprox != null){
-                LOGGER.info("Coordinate Approximation value is " + unzipPath);
+                LOGGER.info("Coordinate Approximation value is " + coordsApprox);
             }
             
         	Double kmlIconScale = configuration.getKmlIconScale();
         	
             if (kmlIconScale != null){
-                LOGGER.info("KML Icon Scale value is " + unzipPath);
+                LOGGER.info("KML Icon Scale value is " + kmlIconScale);
             }else{
                 if (LOGGER.isWarnEnabled()){
                     LOGGER.warn("MissionScriptGeneratorService::canCreateAction(): " +
@@ -148,7 +148,7 @@ public class MissionScriptGeneratorService extends BaseService implements Action
         	String kmlFirstIconURLpath = configuration.getKmlFirstIconURLpath();
         	
             if (kmlFirstIconURLpath != null){
-                LOGGER.info("First Icon URL path value is " + unzipPath);
+                LOGGER.info("First Icon URL path value is " + kmlFirstIconURLpath);
             }else{
                 if (LOGGER.isWarnEnabled()){
                     LOGGER.warn("MissionScriptGeneratorService::canCreateAction(): " +
@@ -161,7 +161,7 @@ public class MissionScriptGeneratorService extends BaseService implements Action
         	String kmlSecondIconURLpath = configuration.getKmlSecondIconURLpath();
         	
             if (kmlSecondIconURLpath != null){
-                LOGGER.info("Second Icon URL path value is " + unzipPath);
+                LOGGER.info("Second Icon URL path value is " + kmlSecondIconURLpath);
             }else{
                 if (LOGGER.isWarnEnabled()){
                     LOGGER.warn("MissionScriptGeneratorService::canCreateAction(): " +
@@ -174,7 +174,7 @@ public class MissionScriptGeneratorService extends BaseService implements Action
         	String placemarkLogoAnchor = configuration.getPlacemarkLogoAnchor();
         	
             if (placemarkLogoAnchor != null){
-                LOGGER.info("PlacemarkLogo Anchor value is " + unzipPath);
+                LOGGER.info("PlacemarkLogo Anchor value is " + placemarkLogoAnchor);
             }else{
                 if (LOGGER.isWarnEnabled()){
                     LOGGER.warn("MissionScriptGeneratorService::canCreateAction(): " +
@@ -187,7 +187,7 @@ public class MissionScriptGeneratorService extends BaseService implements Action
         	String placemarkLogoURL = configuration.getPlacemarkLogoURL();
         	
             if (placemarkLogoURL != null){
-                LOGGER.info("PlacemarkLogo Logo URL value is " + unzipPath);
+                LOGGER.info("PlacemarkLogo Logo URL value is " + placemarkLogoURL);
             }else{
                 if (LOGGER.isWarnEnabled()){
                     LOGGER.warn("MissionScriptGeneratorService::canCreateAction(): " +
@@ -200,7 +200,7 @@ public class MissionScriptGeneratorService extends BaseService implements Action
         	String kmlOutputPath = configuration.getKmlOutputPath();
         	
             if (kmlOutputPath != null){
-                LOGGER.info("KML Output path value is " + unzipPath);
+                LOGGER.info("KML Output path value is " + kmlOutputPath);
             }
             
         }
