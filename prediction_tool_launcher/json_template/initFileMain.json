@@ -1,0 +1,23 @@
+{
+	"experimentName": "",
+	"onDemandRunningMode": 0,
+	"lonCenter": 5.785196,
+	"latCenter": 42.341735,
+	"modelID": "EnKROMS",
+	"currentFieldDimension": "3D",
+	"bathymetryFileName": "",
+	"glider_names": "",
+	"gliderInputScriptName": "",
+	"calculateFlag": [0],
+	"ellipsesDeltaT": 1800,
+	"confidenceIntervalProb": 99.99999,
+	"subSamplingPath": 3,
+	"subSamplingElli": 1,
+	"dssArea": null,
+	"polyStruct": [
+		{
+			
+		}
+		
+	]
+}

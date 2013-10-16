@@ -1,0 +1,22 @@
+{
+	"cruiseName":"NOMR12",
+	"default_base_dir": "",
+    "json_files_folder": "initializationScripts/",
+    "outputDir":"outputDir/",
+	"mainfile_name":"initFileMain.json",
+	"template_mainfile_name":"initFileMain.json",
+	"template_gliderfile_name":"initGliderPathPrediction_.json",
+	"geostoreUrl":"http://localhost/geostore",
+    "gsUser":"admin",
+    "gsPassword":"admin",
+	"templateDir":"json_template",
+	"gliderFilePrefix":"initGliderPathPrediction_",
+    "categoryName":"ondemand",
+    "skipGliderParameters":["lonCenter","latCenter","experimentName"],
+    "runnerDir":"/home/prediction/predictionTool/",
+    "deployedMCRroot": "/opt/MATLAB/MATLAB_Component_Runtime/v77/",
+	"temp_dir":"tmp_files_dir/",
+    "kmz_regex_prefix":"[0-9]{8}T[0-9]{6}Z_",
+    "kmz_regex_suffix":"\\.kmz",
+    "kmz_dest_dir":"/root/kmz/"
+}

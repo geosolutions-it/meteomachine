@@ -1,0 +1,21 @@
+DEFGEOSTORE_URL=http://localhost:8080/geostore
+DEFUSER=admin
+DEFPASS=admin
+
+
+GEOSTORE_URL=${1-$DEFGEOSTORE_URL}
+USER=${2:-$DEFUSER}
+PASS=${3:-$DEFPASS}
+
+#category
+curl -u $USER:$PASS -XPOST -H 'Content-type: text/xml' -d '<Category><name>MAP</name></Category>' $GEOSTORE_URL/rest/categories
+curl -u $USER:$PASS -XPOST -H 'Content-type: text/xml' -d '<Category><name>batch</name></Category>' $GEOSTORE_URL/rest/categories
+curl -u $USER:$PASS -XPOST -H 'Content-type: text/xml' -d '<Category><name>ondemand</name></Category>' $GEOSTORE_URL/rest/categories
+
+
+#Cruises
+curl -u $USER:$PASS -XPOST -H 'Content-type: text/xml'  -d '<Resource><Attributes><attribute><name>owner</name><type>STRING</type><value>admin</value></attribute></Attributes><description>Test cruise</description><metadata></metadata><name>NOMR12</name><category><name>MAP</name></category><store><data>{ "cruiseName":"REP12","timeRange":["2013-05-08T00:00:00.000Z","2013-05-15T00:00:00.000Z"],"timeStep":"10","timeFrameRate":"1","timeUnits":"Hours","models":[{"format":"image/png8","group":"Ocean Models","name":"nurc:watvelingv","opacity":1,"selected":false,"source":"demo","title":"Watvel Forecast Model INGV","transparent":true,"visibility":true,"ratio":1,"elevation":1.472,"styles":"watvel_marker_ramp"},{"format":"image/png8","group":"Ocean Models","name":"nurc:watvelroms","opacity":1,"selected":false,"source":"demo","title":"Watvel Forecast Model ROMS","transparent":true,"visibility":true,"ratio":1,"elevation":10,"styles":"watvel_marker_ramp","style":"watvel_raster"}],"backgrounds":[{"format":"image/jpeg","transparent":false,"source":"demo1","group":"background","name":"GeoSolutions:ne_shaded","title":"Nurc Background"}],"gsSources":{},"watermarkUrl":"../theme/app/img/nurc-logo.png","watermarkText":"he, si","watermarkPosition":"position:absolute;left:5px;bottom:5px","bounds":[-7.66,33.00,18.71,44.78],"vehicleSelector": {"data":[[true,"sophie","http://84.33.199.62/geoserver-gliders/styles/img/gliders/glider_sophie.png",false]],"refreshIconPath": "../theme/app/img/silk/arrow_refresh.png","geoserverBaseURL": "http://84.33.199.62/geoserver-gliders/","gliderPropertyName": "glider_name","cruisePropertyName": "cruise_name","glidersFeatureType": "GlidersTracks","glidersPrefix": "it.geosolutions","wfsVersion": "1.1.0"} }</data></store></Resource>' $GEOSTORE_URL/rest/resources
+curl -u $USER:$PASS -XPOST -H 'Content-type: text/xml'  -d '<Resource><Attributes><attribute><name>owner</name><type>STRING</type><value>admin</value></attribute></Attributes><description>Test cruise</description><metadata></metadata><name>REP12</name><category><name>MAP</name></category><store><data>{ "cruiseName":"REP12","timeRange":["2013-05-08T00:00:00.000Z","2013-05-15T00:00:00.000Z"],"timeStep":"10","timeFrameRate":"1","timeUnits":"Hours","models":[{"format":"image/png8","group":"Ocean Models","name":"nurc:watvelingv","opacity":1,"selected":false,"source":"demo","title":"Watvel Forecast Model INGV","transparent":true,"visibility":true,"ratio":1,"elevation":1.472,"styles":"watvel_marker_ramp"},{"format":"image/png8","group":"Ocean Models","name":"nurc:watvelroms","opacity":1,"selected":false,"source":"demo","title":"Watvel Forecast Model ROMS","transparent":true,"visibility":true,"ratio":1,"elevation":10,"styles":"watvel_marker_ramp","style":"watvel_raster"}],"backgrounds":[{"format":"image/jpeg","transparent":false,"source":"demo1","group":"background","name":"GeoSolutions:ne_shaded","title":"Nurc Background"}],"gsSources":{},"watermarkUrl":"../theme/app/img/nurc-logo.png","watermarkText":"he, si","watermarkPosition":"position:absolute;left:5px;bottom:5px","bounds":[-7.66,33.00,18.71,44.78],"vehicleSelector": {"data":[[true,"sophie","http://84.33.199.62/geoserver-gliders/styles/img/gliders/glider_sophie.png",false]],"refreshIconPath": "../theme/app/img/silk/arrow_refresh.png","geoserverBaseURL": "http://84.33.199.62/geoserver-gliders/","gliderPropertyName": "glider_name","cruisePropertyName": "cruise_name","glidersFeatureType": "GlidersTracks","glidersPrefix": "it.geosolutions","wfsVersion": "1.1.0"} }</data></store></Resource>' $GEOSTORE_URL/rest/resources
+
+#batches
+. ./add_resource.sh NOMR12_batch.xml

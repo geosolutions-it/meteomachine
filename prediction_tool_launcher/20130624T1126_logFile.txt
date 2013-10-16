@@ -1,0 +1,3 @@
+2013-06-24 11:26:16.632 - -prediction_started---------------------------------------------------
+2013-06-24 11:27:38.037 - Errore: problemi durante l'esecuzione del 'mainPathPrediction' per il glider [elettra]
+2013-06-24 11:27:38.038 - -prediction_ended---------------------------------------------------
